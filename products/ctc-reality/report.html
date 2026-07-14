@@ -153,7 +153,7 @@
 
     .snapshot-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 16px;
     }
 
@@ -162,6 +162,7 @@
       border: 1px solid var(--line);
       padding: 28px;
       min-height: 210px;
+      min-width: 0;
     }
 
     .metric-card.primary {
@@ -182,12 +183,15 @@
     }
 
     .metric-number {
-      font-size: clamp(32px, 4vw, 52px);
+      font-size: clamp(30px, 3.2vw, 48px);
       font-weight: 800;
       line-height: 1;
       letter-spacing: -2px;
       margin-bottom: 14px;
-      overflow-wrap: anywhere;
+      white-space: nowrap;
+      overflow-wrap: normal;
+      word-break: normal;
+      font-variant-numeric: tabular-nums;
     }
 
     .metric-copy {
@@ -448,9 +452,13 @@
       margin-top: 15px;
     }
 
-    @media (max-width: 950px) {
+    @media (max-width: 1100px) {
       .snapshot-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .metric-number {
+        font-size: clamp(36px, 6vw, 52px);
       }
     }
 
@@ -486,6 +494,10 @@
         padding: 26px;
       }
 
+      .metric-number {
+        font-size: clamp(38px, 11vw, 52px);
+      }
+
       .section {
         margin-top: 55px;
       }
@@ -493,6 +505,34 @@
       .question {
         padding: 22px;
         grid-template-columns: 35px 1fr;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .topbar {
+        flex-direction: column;
+      }
+
+      .metric-number {
+        font-size: 36px;
+        letter-spacing: -1.5px;
+      }
+
+      .analysis-value {
+        font-size: 38px;
+      }
+
+      .planning-number {
+        font-size: 48px;
+      }
+
+      .row {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .row strong {
+        text-align: left;
       }
     }
 
@@ -1283,6 +1323,32 @@
       };
     }
 
+    function joinFactors(factors) {
+      if (factors.length === 0) {
+        return "the assumptions used by this simplified model";
+      }
+
+      if (factors.length === 1) {
+        return factors[0];
+      }
+
+      if (factors.length === 2) {
+        return (
+          factors[0] +
+          " and " +
+          factors[1]
+        );
+      }
+
+      return (
+        factors
+          .slice(0, -1)
+          .join(", ") +
+        " and " +
+        factors[factors.length - 1]
+      );
+    }
+
     function getGapAnalysis(
       takeHomeRatio,
       monthlyGap,
@@ -1306,9 +1372,7 @@
       }
 
       const factorText =
-        factors.length > 0
-          ? factors.join(", ")
-          : "the assumptions used by this simplified model";
+        joinFactors(factors);
 
       let gapLevel = "significant";
 
