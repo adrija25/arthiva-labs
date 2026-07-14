@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CTC Reality — CTC to In-Hand Salary Calculator India</title>
+  <meta
+    name="description"
+    content="Estimate your monthly in-hand salary from annual CTC. A simple India salary calculator by Arthiva Labs."
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #17231c;
+      --green: #173f2a;
+      --light-green: #e5eee8;
+      --cream: #f7f4ec;
+      --white: #ffffff;
+      --muted: #68716b;
+      --line: #d8ddd9;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    nav {
+      width: 100%;
+      padding: 22px 7%;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(247, 244, 236, 0.95);
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      font-size: 21px;
+    }
+
+    .labs {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .hero {
+      padding: 70px 7% 45px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(45px, 7vw, 85px);
+      line-height: 0.98;
+      letter-spacing: -4px;
+      max-width: 900px;
+    }
+
+    .hero-copy {
+      margin-top: 28px;
+      max-width: 650px;
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    .calculator-section {
+      padding: 30px 7% 80px;
+    }
+
+    .calculator {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .input-panel,
+    .result-panel {
+      padding: 50px;
+    }
+
+    .result-panel {
+      background: var(--green);
+      color: var(--white);
+    }
+
+    h2 {
+      font-size: 28px;
+      letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+
+    .panel-copy {
+      color: var(--muted);
+      margin-bottom: 35px;
+    }
+
+    .result-panel .panel-copy {
+      color: #c6d4ca;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: var(--white);
+      margin-bottom: 25px;
+    }
+
+    .currency {
+      padding: 0 0 0 18px;
+      font-size: 21px;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      padding: 18px;
+      border: 0;
+      outline: none;
+      font-size: 21px;
+      color: var(--ink);
+      background: transparent;
+    }
+
+    select {
+      width: 100%;
+      padding: 18px;
+      border: 1px solid var(--line);
+      outline: none;
+      font-size: 16px;
+      color: var(--ink);
+      background: var(--white);
+      margin-bottom: 25px;
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      border: 0;
+      background: var(--green);
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .main-result {
+      padding: 30px 0;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      margin: 25px 0 30px;
+    }
+
+    .result-label {
+      font-size: 13px;
+      color: #c6d4ca;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .result-number {
+      font-size: clamp(42px, 5vw, 65px);
+      font-weight: 800;
+      letter-spacing: -3px;
+      margin-top: 8px;
+    }
+
+    .per-month {
+      color: #c6d4ca;
+      margin-top: 4px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      gap: 20px;
+    }
+
+    .breakdown-row span:first-child {
+      color: #c6d4ca;
+    }
+
+    .note {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #aebfb3;
+      line-height: 1.6;
+    }
+
+    .explain {
+      max-width: 1000px;
+      margin: auto;
+      padding: 80px 7%;
+    }
+
+    .explain h2 {
+      font-size: 38px;
+      margin-bottom: 25px;
+    }
+
+    .explain p {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      max-width: 800px;
+    }
+
+    footer {
+      padding: 30px 7%;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 800px) {
+      nav {
+        padding: 20px 5%;
+      }
+
+      .labs {
+        display: none;
+      }
+
+      .hero {
+        padding: 50px 5% 30px;
+      }
+
+      h1 {
+        letter-spacing: -2.5px;
+      }
+
+      .hero-copy {
+        font-size: 18px;
+      }
+
+      .calculator-section {
+        padding: 20px 5% 60px;
+      }
+
+      .calculator {
+        grid-template-columns: 1fr;
+      }
+
+      .input-panel,
+      .result-panel {
+        padding: 35px 25px;
+      }
+
+      .explain {
+        padding: 60px 5%;
+      }
+
+      footer {
+        padding: 25px 5%;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="brand">CTC REALITY</div>
+    <div class="labs">An Arthiva Labs product</div>
+  </nav>
+
+  <section class="hero">
+    <div class="eyebrow">India Salary Calculator</div>
+
+    <h1>
+      Your CTC is not your salary.
+    </h1>
+
+    <p class="hero-copy">
+      Enter your annual CTC and get a simple estimate of what may actually
+      reach your bank account every month.
+    </p>
+  </section>
+
+  <section class="calculator-section">
+    <div class="calculator">
+
+      <div class="input-panel">
+        <h2>Enter your salary</h2>
+
+        <p class="panel-copy">
+          We'll turn the big annual number into a more realistic monthly estimate.
+        </p>
+
+        <label for="ctc">Annual CTC</label>
+
+        <div class="input-wrap">
+          <span class="currency">₹</span>
+          <input
+            id="ctc"
+            type="number"
+            placeholder="1200000"
+            min="0"
+          >
+        </div>
+
+        <label for="bonus">Annual variable pay or bonus</label>
+
+        <div class="input-wrap">
+          <span class="currency">₹</span>
+          <input
+            id="bonus"
+            type="number"
+            placeholder="0"
+            min="0"
+          >
+        </div>
+
+        <label for="pf">Provident Fund estimate</label>
+
+        <select id="pf">
+          <option value="1800">₹1,800 per month</option>
+          <option value="3600">₹3,600 per month</option>
+          <option value="0">Not sure / exclude PF</option>
+        </select>
+
+        <button onclick="calculateSalary()">
+          Show my salary reality
+        </button>
+      </div>
+
+      <div class="result-panel">
+        <h2>Your estimated reality</h2>
+
+        <p class="panel-copy">
+          A simplified monthly estimate based on the details you entered.
+        </p>
+
+        <div class="main-result">
+          <div class="result-label">Estimated monthly in-hand</div>
+
+          <div class="result-number" id="monthlyInHand">
+            ₹—
+          </div>
+
+          <div class="per-month">approximately per month</div>
+        </div>
+
+        <div class="breakdown-row">
+          <span>Monthly CTC</span>
+          <strong id="monthlyCtc">₹—</strong>
+        </div>
+
+        <div class="breakdown-row">
+          <span>Variable pay removed</span>
+          <strong id="variableRemoved">₹—</strong>
+        </div>
+
+        <div class="breakdown-row">
+          <span>Estimated PF</span>
+          <strong id="pfAmount">₹—</strong>
+        </div>
+
+        <div class="breakdown-row">
+          <span>Estimated tax</span>
+          <strong id="taxAmount">₹—</strong>
+        </div>
+
+        <p class="note">
+          This is a simplified estimate, not payroll, tax or financial advice.
+          Actual in-hand salary depends on your salary structure, employer
+          contributions, tax regime, deductions, benefits and payroll policies.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="explain">
+    <h2>Why is CTC different from in-hand salary?</h2>
+
+    <p>
+      CTC means Cost to Company. It can include money and benefits that do not
+      arrive in your bank account as monthly salary.
+    </p>
+
+    <p>
+      Variable pay, employer contributions, provident fund and estimated taxes
+      can all create a gap between the salary number in an offer and the amount
+      you actually receive.
+    </p>
+
+    <p>
+      CTC Reality exists to make that gap easier to understand.
+    </p>
+  </section>
+
+  <footer>
+    <span>CTC Reality · An Arthiva Labs product</span>
+    <span>© 2026 Arthiva Labs</span>
+  </footer>
+
+  <script>
+    function formatINR(number) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+      }).format(number);
+    }
+
+    function estimateTax(taxableIncome) {
+      let tax = 0;
+
+      if (taxableIncome <= 1200000) {
+        return 0;
+      }
+
+      const slabs = [
+        { from: 400000, to: 800000, rate: 0.05 },
+        { from: 800000, to: 1200000, rate: 0.10 },
+        { from: 1200000, to: 1600000, rate: 0.15 },
+        { from: 1600000, to: 2000000, rate: 0.20 },
+        { from: 2000000, to: 2400000, rate: 0.25 },
+        { from: 2400000, to: Infinity, rate: 0.30 }
+      ];
+
+      slabs.forEach(function(slab) {
+        if (taxableIncome > slab.from) {
+          const taxableAtRate =
+            Math.min(taxableIncome, slab.to) - slab.from;
+
+          if (taxableAtRate > 0) {
+            tax += taxableAtRate * slab.rate;
+          }
+        }
+      });
+
+      return tax * 1.04;
+    }
+
+    function calculateSalary() {
+      const ctc = Number(document.getElementById("ctc").value);
+      const bonus = Number(document.getElementById("bonus").value) || 0;
+      const monthlyPf = Number(document.getElementById("pf").value);
+
+      if (!ctc || ctc <= 0) {
+        alert("Please enter your annual CTC.");
+        return;
+      }
+
+      if (bonus > ctc) {
+        alert("Variable pay cannot be higher than your total CTC.");
+        return;
+      }
+
+      const fixedAnnual = ctc - bonus;
+      const annualPf = monthlyPf * 12;
+
+      const estimatedTaxableIncome = Math.max(
+        fixedAnnual - 75000,
+        0
+      );
+
+      const annualTax = estimateTax(estimatedTaxableIncome);
+
+      const estimatedAnnualInHand = Math.max(
+        fixedAnnual - annualPf - annualTax,
+        0
+      );
+
+      const monthlyInHand = estimatedAnnualInHand / 12;
+      const monthlyCtc = ctc / 12;
+      const monthlyVariable = bonus / 12;
+      const monthlyTax = annualTax / 12;
+
+      document.getElementById("monthlyInHand").textContent =
+        formatINR(monthlyInHand);
+
+      document.getElementById("monthlyCtc").textContent =
+        formatINR(monthlyCtc);
+
+      document.getElementById("variableRemoved").textContent =
+        formatINR(monthlyVariable);
+
+      document.getElementById("pfAmount").textContent =
+        formatINR(monthlyPf);
+
+      document.getElementById("taxAmount").textContent =
+        formatINR(monthlyTax);
+    }
+  </script>
+
+</body>
+</html>
