@@ -13,6 +13,19 @@
         "india": "razorpay",
         "international": "paypal"
       }
+    },
+    {
+      "id": 2,
+      "name": "GST Simple",
+      "slug": "gst-simple",
+      "status": "live",
+      "category": "business-tax",
+      "url": "/products/gst-simple/",
+      "monetisation": "accounting-affiliates-and-ca-leads",
+      "payments": {
+        "india": null,
+        "international": null
+      }
     }
   ]
 }
