@@ -1,3 +1,8 @@
+import {
+  isSupportedReportProduct,
+  normaliseReportData
+} from "./_lib/report-products.js";
+
 function bytesToHex(bytes) {
   return Array.from(bytes)
     .map((byte) =>
@@ -47,7 +52,6 @@ export async function onRequestPost(context) {
 
     const product = body.product;
     const offer = body.offer;
-
     const reportData = body.reportData;
 
     if (
@@ -72,8 +76,10 @@ export async function onRequestPost(context) {
     }
 
     if (
-      product !== "ctc-reality" ||
-      offer !== "salary-report"
+      !isSupportedReportProduct(
+        product,
+        offer
+      )
     ) {
       return Response.json(
         {
@@ -124,12 +130,16 @@ export async function onRequestPost(context) {
       await crypto.subtle.sign(
         "HMAC",
         cryptoKey,
-        encoder.encode(verificationMessage)
+        encoder.encode(
+          verificationMessage
+        )
       );
 
     const expectedSignature =
       bytesToHex(
-        new Uint8Array(signatureBuffer)
+        new Uint8Array(
+          signatureBuffer
+        )
       );
 
     const verified = safeEqual(
@@ -151,30 +161,21 @@ export async function onRequestPost(context) {
       );
     }
 
-    const annualCtc =
-      Number(reportData.annualCtc);
+    let normalisedReportData;
 
-    const bonus =
-      Number(reportData.bonus);
-
-    const monthlyPf =
-      Number(reportData.monthlyPf);
-
-    if (
-      !Number.isFinite(annualCtc) ||
-      annualCtc <= 0 ||
-      !Number.isFinite(bonus) ||
-      bonus < 0 ||
-      bonus > annualCtc ||
-      !Number.isFinite(monthlyPf) ||
-      monthlyPf < 0
-    ) {
+    try {
+      normalisedReportData =
+        normaliseReportData(
+          product,
+          offer,
+          reportData
+        );
+    } catch (reportError) {
       return Response.json(
         {
           success: false,
-          verified: false,
-          error:
-            "Invalid salary report information."
+          verified: true,
+          error: reportError.message
         },
         {
           status: 400
@@ -192,11 +193,9 @@ export async function onRequestPost(context) {
       now + 30 * 60 * 1000;
 
     const storedReportData =
-      JSON.stringify({
-        annualCtc: annualCtc,
-        bonus: bonus,
-        monthlyPf: monthlyPf
-      });
+      JSON.stringify(
+        normalisedReportData
+      );
 
     try {
       await context.env.DB
