@@ -527,5 +527,123 @@
     }
   </script>
 
+  <section style="max-width: 1100px; margin: 60px auto; padding: 40px; background: #ffffff; border: 1px solid #d8ddd9;">
+  <p style="text-transform: uppercase; letter-spacing: 2px; color: #68716b; font-size: 13px;">
+    Premium Salary Tool
+  </p>
+
+  <h2 style="font-size: 36px; margin: 12px 0;">
+    Want the full salary breakdown?
+  </h2>
+
+  <p style="font-size: 18px; color: #68716b; max-width: 650px;">
+    Get your CTC Reality Salary Report with a clearer breakdown of your estimated salary numbers.
+  </p>
+
+  <p style="font-size: 28px; font-weight: 700; margin: 25px 0;">
+    ₹199
+  </p>
+
+  <button
+    id="buySalaryReport"
+    type="button"
+    style="background: #173f2a; color: white; border: 0; padding: 18px 28px; font-size: 16px; font-weight: 700; cursor: pointer;"
+  >
+    Get my Salary Report — ₹199
+  </button>
+
+  <pre id="paymentStatus" style="margin-top: 25px; white-space: pre-wrap;"></pre>
+</section>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  const buySalaryReportButton = document.getElementById("buySalaryReport");
+  const paymentStatus = document.getElementById("paymentStatus");
+
+  buySalaryReportButton.addEventListener("click", async function () {
+    try {
+      paymentStatus.textContent = "Creating your secure payment...";
+
+      const orderResponse = await fetch("/api/create-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          product: "ctc-reality",
+          offer: "salary-report",
+          market: "india"
+        })
+      });
+
+      const order = await orderResponse.json();
+
+      if (!order.success) {
+        paymentStatus.textContent =
+          "Could not create payment.\n\n" +
+          JSON.stringify(order, null, 2);
+        return;
+      }
+
+      const options = {
+        key: order.razorpayKeyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Arthiva Labs",
+        description: order.offerName,
+        order_id: order.orderId,
+
+        handler: async function (response) {
+          paymentStatus.textContent = "Verifying your payment...";
+
+          const verifyResponse = await fetch("/api/verify-payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              product: "ctc-reality",
+              offer: "salary-report",
+              market: "india",
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
+
+          const verification = await verifyResponse.json();
+
+          if (verification.success) {
+            paymentStatus.textContent =
+              "PAYMENT VERIFIED ✅\n\nYour Salary Report payment is approved.\n\nPayment ID: " +
+              verification.paymentId;
+          } else {
+            paymentStatus.textContent =
+              "Payment verification failed.\n\n" +
+              JSON.stringify(verification, null, 2);
+          }
+        },
+
+        theme: {
+          color: "#173f2a"
+        }
+      };
+
+      const razorpay = new Razorpay(options);
+
+      razorpay.on("payment.failed", function (response) {
+        paymentStatus.textContent =
+          "Payment failed.\n\n" +
+          JSON.stringify(response.error, null, 2);
+      });
+
+      razorpay.open();
+    } catch (error) {
+      paymentStatus.textContent =
+        "Something went wrong.\n\n" + error.message;
+    }
+  });
+</script>
 </body>
 </html>
