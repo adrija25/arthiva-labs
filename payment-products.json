@@ -16,6 +16,22 @@
           }
         }
       }
+    },
+    "exit-date": {
+      "name": "Exit Date",
+      "offers": {
+        "transition-plan": {
+          "name": "Clean Exit & Strong Entry Plan",
+          "india": {
+            "currency": "INR",
+            "amount": 19900
+          },
+          "international": {
+            "currency": "USD",
+            "amount": 400
+          }
+        }
+      }
     }
   }
 }
