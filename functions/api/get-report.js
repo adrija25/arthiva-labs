@@ -1,3 +1,7 @@
+import {
+  isSupportedReportProduct
+} from "./_lib/report-products.js";
+
 export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
@@ -8,7 +12,8 @@ export async function onRequestPost(context) {
       return Response.json(
         {
           success: false,
-          error: "Report access token is missing."
+          error:
+            "Report access token is missing."
         },
         {
           status: 400
@@ -22,31 +27,33 @@ export async function onRequestPost(context) {
       );
     }
 
-    const reportAccess = await context.env.DB
-      .prepare(
-        `
-        SELECT
-          token,
-          product,
-          offer,
-          payment_id,
-          report_data,
-          created_at,
-          expires_at,
-          used_at
-        FROM report_access
-        WHERE token = ?
-        LIMIT 1
-        `
-      )
-      .bind(token)
-      .first();
+    const reportAccess =
+      await context.env.DB
+        .prepare(
+          `
+          SELECT
+            token,
+            product,
+            offer,
+            payment_id,
+            report_data,
+            created_at,
+            expires_at,
+            used_at
+          FROM report_access
+          WHERE token = ?
+          LIMIT 1
+          `
+        )
+        .bind(token)
+        .first();
 
     if (!reportAccess) {
       return Response.json(
         {
           success: false,
-          error: "Report access is invalid."
+          error:
+            "Report access is invalid."
         },
         {
           status: 404
@@ -56,11 +63,15 @@ export async function onRequestPost(context) {
 
     const now = Date.now();
 
-    if (now > Number(reportAccess.expires_at)) {
+    if (
+      now >
+      Number(reportAccess.expires_at)
+    ) {
       return Response.json(
         {
           success: false,
-          error: "Report access has expired."
+          error:
+            "Report access has expired."
         },
         {
           status: 410
@@ -69,13 +80,16 @@ export async function onRequestPost(context) {
     }
 
     if (
-      reportAccess.product !== "ctc-reality" ||
-      reportAccess.offer !== "salary-report"
+      !isSupportedReportProduct(
+        reportAccess.product,
+        reportAccess.offer
+      )
     ) {
       return Response.json(
         {
           success: false,
-          error: "Report access does not match this product."
+          error:
+            "Report access does not match a supported product."
         },
         {
           status: 403
@@ -98,10 +112,16 @@ export async function onRequestPost(context) {
     return Response.json({
       success: true,
       accessVerified: true,
-      product: reportAccess.product,
-      offer: reportAccess.offer,
-      reportData: reportData,
-      expiresAt: Number(reportAccess.expires_at)
+      product:
+        reportAccess.product,
+      offer:
+        reportAccess.offer,
+      reportData:
+        reportData,
+      expiresAt:
+        Number(
+          reportAccess.expires_at
+        )
     });
 
   } catch (error) {
@@ -113,7 +133,8 @@ export async function onRequestPost(context) {
     return Response.json(
       {
         success: false,
-        error: "Unable to load report."
+        error:
+          "Unable to load report."
       },
       {
         status: 500
