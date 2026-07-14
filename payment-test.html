@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Arthiva Payment Test</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 50px;
+      background: #f7f4ec;
+      color: #17231c;
+    }
+
+    button {
+      padding: 18px 30px;
+      background: #173f2a;
+      color: white;
+      border: 0;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    pre {
+      margin-top: 30px;
+      padding: 25px;
+      background: white;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Arthiva Payment Test</h1>
+
+  <p>
+    This page tests the shared Arthiva payment system.
+  </p>
+
+  <br>
+
+  <button onclick="testPayment()">
+    Test CTC Reality India Payment
+  </button>
+
+  <pre id="result">Waiting for test...</pre>
+
+  <script>
+    async function testPayment() {
+      const result = document.getElementById("result");
+
+      result.textContent = "Testing...";
+
+      try {
+        const response = await fetch("/api/create-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            product: "ctc-reality",
+            offer: "salary-report",
+            market: "india"
+          })
+        });
+
+        const data = await response.json();
+
+        result.textContent =
+          JSON.stringify(data, null, 2);
+
+      } catch (error) {
+        result.textContent =
+          "TEST FAILED: " + error.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
