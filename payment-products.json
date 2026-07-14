@@ -1,0 +1,21 @@
+{
+  "currencyVersion": 1,
+  "products": {
+    "ctc-reality": {
+      "name": "CTC Reality",
+      "offers": {
+        "salary-report": {
+          "name": "CTC Reality Salary Report",
+          "india": {
+            "currency": "INR",
+            "amount": 19900
+          },
+          "international": {
+            "currency": "USD",
+            "amount": 400
+          }
+        }
+      }
+    }
+  }
+}
