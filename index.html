@@ -2,9 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Arthiva Labs — Small Tools. Real Problems Solved.</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Arthiva Labs — Useful Tools for Real-Life Decisions
+  </title>
+
+  <meta
+    name="description"
+    content="Arthiva Labs builds focused calculators and digital utilities for creators, professionals and independent earners."
+  >
 
   <style>
     * {
@@ -13,86 +24,556 @@
       padding: 0;
     }
 
+    :root {
+      --ink: #17231c;
+      --green: #173f2a;
+      --green-hover: #0f321f;
+      --light-green: #e5eee8;
+      --cream: #f7f4ec;
+      --white: #ffffff;
+      --muted: #68716b;
+      --line: #d8ddd9;
+      --soft: #eeece4;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f7f5ef;
-      color: #171717;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
     }
 
     nav {
-      padding: 24px 8%;
+      width: 100%;
+      padding: 22px 7%;
+      border-bottom: 1px solid var(--line);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #d8d5cc;
+      background: rgba(247, 244, 236, 0.96);
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
 
     .logo {
       font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 1px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
     }
 
-    .nav-text {
-      font-size: 14px;
-      color: #666;
-    }
-
-    main {
-      min-height: 75vh;
+    .nav-links {
       display: flex;
       align-items: center;
-      padding: 80px 8%;
+      gap: 28px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
     }
 
     .hero {
-      max-width: 850px;
+      max-width: 1250px;
+      margin: auto;
+      padding: 100px 7% 85px;
     }
 
     .eyebrow {
+      color: var(--green);
       font-size: 13px;
-      text-transform: uppercase;
+      font-weight: 700;
       letter-spacing: 2px;
+      text-transform: uppercase;
       margin-bottom: 25px;
-      color: #666;
     }
 
     h1 {
-      font-size: clamp(55px, 8vw, 110px);
-      line-height: 0.95;
+      font-size: clamp(52px, 8vw, 105px);
+      line-height: 0.94;
       letter-spacing: -5px;
-      margin-bottom: 35px;
+      max-width: 1000px;
     }
 
-    .description {
-      max-width: 600px;
+    .hero-copy {
+      margin-top: 35px;
+      max-width: 720px;
       font-size: 21px;
+      color: var(--muted);
       line-height: 1.6;
-      color: #555;
     }
 
-    .status {
-      margin-top: 50px;
-      display: inline-block;
-      border: 1px solid #171717;
-      padding: 14px 20px;
+    .hero-actions {
+      margin-top: 38px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .primary-button,
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 22px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .primary-button {
+      background: var(--green);
+      color: var(--white);
+    }
+
+    .primary-button:hover {
+      background: var(--green-hover);
+    }
+
+    .secondary-button {
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .secondary-button:hover {
+      border-color: var(--ink);
+    }
+
+    .library {
+      padding: 75px 7% 95px;
+      border-top: 1px solid var(--line);
+    }
+
+    .library-inner {
+      max-width: 1250px;
+      margin: auto;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 30px;
+      margin-bottom: 38px;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(38px, 5vw, 64px);
+      letter-spacing: -3px;
+      line-height: 1;
+    }
+
+    .section-heading p {
+      max-width: 480px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .tool-controls {
+      margin-bottom: 38px;
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      outline: none;
+      background: var(--white);
+      color: var(--ink);
+      font-size: 17px;
+    }
+
+    .search-input:focus {
+      border-color: var(--green);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .filter-button {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 13px;
+      border-radius: 100px;
+    }
+
+    .filter-button:hover,
+    .filter-button.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--white);
+    }
+
+    .tool-count {
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .tool-card {
+      min-height: 390px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .tool-card.live:hover {
+      transform: translateY(-4px);
+      border-color: var(--green);
+    }
+
+    .tool-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 42px;
+    }
+
+    .tool-category {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+
+    .tool-status {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 7px 9px;
+      background: var(--light-green);
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .tool-status.coming {
+      background: var(--soft);
+      color: var(--muted);
+    }
+
+    .tool-name {
+      font-size: 30px;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+
+    .tool-description {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .tool-meta {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+
+    .tool-pricing {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+    }
+
+    .tool-link {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .tool-card.live:hover .tool-link {
+      text-decoration: underline;
+    }
+
+    .placeholder-card {
+      background: transparent;
+      border-style: dashed;
+    }
+
+    .no-results {
+      display: none;
+      padding: 55px 25px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .about {
+      background: var(--green);
+      color: var(--white);
+      padding: 95px 7%;
+    }
+
+    .about-inner {
+      max-width: 1250px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 80px;
+    }
+
+    .about-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #c6d4ca;
+    }
+
+    .about-copy h2 {
+      font-size: clamp(40px, 5vw, 68px);
+      line-height: 1;
+      letter-spacing: -3px;
+      margin-bottom: 30px;
+    }
+
+    .about-copy p {
+      color: #d6e0d9;
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 760px;
+      margin-bottom: 20px;
+    }
+
+    .payment-section {
+      padding: 85px 7%;
+    }
+
+    .payment-inner {
+      max-width: 1250px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .payment-copy,
+    .payment-points {
+      padding: 48px;
+    }
+
+    .payment-copy {
+      border-right: 1px solid var(--line);
+    }
+
+    .payment-label {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .payment-copy h2 {
+      font-size: 38px;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .payment-copy p {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .payment-point {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .payment-point:last-child {
+      border-bottom: 0;
+    }
+
+    .payment-point strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .payment-point span {
+      color: var(--muted);
       font-size: 14px;
+      line-height: 1.6;
     }
 
     footer {
-      padding: 30px 8%;
-      border-top: 1px solid #d8d5cc;
-      font-size: 13px;
-      color: #777;
+      border-top: 1px solid var(--line);
+      padding: 45px 7%;
     }
 
-    @media (max-width: 600px) {
+    .footer-inner {
+      max-width: 1250px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 35px;
+      align-items: end;
+    }
+
+    .footer-brand {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 450px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer-links a:hover {
+      color: var(--ink);
+    }
+
+    .copyright {
+      max-width: 1250px;
+      margin: 35px auto 0;
+      padding-top: 25px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 950px) {
+      .tool-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .about-inner {
+        grid-template-columns: 1fr;
+        gap: 35px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      nav {
+        padding: 20px 5%;
+      }
+
+      .nav-links a:not(:last-child) {
+        display: none;
+      }
+
+      .hero {
+        padding: 70px 5% 60px;
+      }
+
       h1 {
         letter-spacing: -3px;
       }
 
-      .description {
+      .hero-copy {
         font-size: 18px;
+      }
+
+      .library {
+        padding: 60px 5% 70px;
+      }
+
+      .section-heading {
+        display: block;
+      }
+
+      .section-heading h2 {
+        margin-bottom: 20px;
+      }
+
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-card {
+        min-height: 340px;
+      }
+
+      .about {
+        padding: 70px 5%;
+      }
+
+      .payment-section {
+        padding: 60px 5%;
+      }
+
+      .payment-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-copy {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .payment-copy,
+      .payment-points {
+        padding: 32px 25px;
+      }
+
+      footer {
+        padding: 40px 5%;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
       }
     }
   </style>
@@ -101,38 +582,621 @@
 <body>
 
   <nav>
-    <div class="logo">ARTHIVA LABS</div>
-    <div class="nav-text">Independent Digital Product Studio</div>
+    <a class="logo" href="/">
+      ARTHIVA LABS
+    </a>
+
+    <div class="nav-links">
+      <a href="#tools">Tools</a>
+      <a href="#about">About</a>
+      <a href="#payments">Payments</a>
+    </div>
   </nav>
 
-  <main>
-    <section class="hero">
+  <header class="hero">
+    <div class="eyebrow">
+      Independent Digital Product Studio
+    </div>
 
-      <div class="eyebrow">
-        Building 50 focused digital products
+    <h1>
+      Useful tools for real-life decisions.
+    </h1>
+
+    <p class="hero-copy">
+      Focused calculators and digital utilities for creators,
+      professionals and independent earners. No bloated software.
+      Just a clearer answer to the question you came with.
+    </p>
+
+    <div class="hero-actions">
+      <a class="primary-button" href="#tools">
+        Explore the tools
+      </a>
+
+      <a class="secondary-button" href="#about">
+        About Arthiva Labs
+      </a>
+    </div>
+  </header>
+
+  <section class="library" id="tools">
+    <div class="library-inner">
+
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">The Tool Library</div>
+
+          <h2>
+            One problem.<br>
+            One focused tool.
+          </h2>
+        </div>
+
+        <p>
+          Arthiva Labs is building a growing library of practical
+          utilities. Search by problem or browse by category.
+        </p>
       </div>
 
-      <h1>
-        Small tools.<br>
-        Real problems solved.
-      </h1>
+      <div class="tool-controls">
 
-      <p class="description">
-        Arthiva Labs builds focused digital products for the everyday
-        problems people actually deal with. Simple ideas. Useful tools.
-        No unnecessary complexity.
+        <div class="search-wrap">
+          <input
+            id="toolSearch"
+            class="search-input"
+            type="search"
+            placeholder="Search tools by name or problem..."
+            aria-label="Search Arthiva Labs tools"
+          >
+        </div>
+
+        <div class="filters">
+          <button
+            class="filter-button active"
+            type="button"
+            data-filter="all"
+          >
+            All
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="creator-money"
+          >
+            Creator Money
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="tax-finance"
+          >
+            Tax & Finance
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="salary-career"
+          >
+            Salary & Career
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="business"
+          >
+            Business
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="freelance"
+          >
+            Freelance
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="productivity"
+          >
+            Productivity
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="everyday-money"
+          >
+            Everyday Money
+          </button>
+        </div>
+
+      </div>
+
+      <p class="tool-count" id="toolCount">
+        3 tools available
       </p>
 
-      <div class="status">
-        0 products live · 50 being built
+      <div class="tool-grid" id="toolGrid">
+
+        <a
+          class="tool-card live"
+          href="/products/brand-rate/"
+          data-category="creator-money freelance"
+          data-search="brand rate creator pricing brand deal collaboration influencer sponsorship rate calculator"
+        >
+          <div class="tool-top">
+            <span class="tool-category">
+              Creator Money
+            </span>
+
+            <span class="tool-status">
+              Live
+            </span>
+          </div>
+
+          <div>
+            <h3 class="tool-name">
+              Brand Rate
+            </h3>
+
+            <p class="tool-description">
+              Estimate a starting rate for brand collaborations
+              based on your platform, audience and engagement.
+            </p>
+          </div>
+
+          <div class="tool-meta">
+            <div class="tool-pricing">
+              Free calculator · Premium available
+            </div>
+
+            <span class="tool-link">
+              Open tool →
+            </span>
+          </div>
+        </a>
+
+        <a
+          class="tool-card live"
+          href="/products/creator-tax-india/"
+          data-category="tax-finance creator-money freelance"
+          data-search="creator tax india income tax creator freelancer tax estimate finance"
+        >
+          <div class="tool-top">
+            <span class="tool-category">
+              Tax & Finance
+            </span>
+
+            <span class="tool-status">
+              Live
+            </span>
+          </div>
+
+          <div>
+            <h3 class="tool-name">
+              Creator Tax India
+            </h3>
+
+            <p class="tool-description">
+              Get a simplified estimate of taxes on creator
+              and freelance income in India.
+            </p>
+          </div>
+
+          <div class="tool-meta">
+            <div class="tool-pricing">
+              Free calculator · Premium available
+            </div>
+
+            <span class="tool-link">
+              Open tool →
+            </span>
+          </div>
+        </a>
+
+        <a
+          class="tool-card live"
+          href="/products/ctc-reality/"
+          data-category="salary-career everyday-money"
+          data-search="ctc reality salary in hand take home monthly salary cost to company career"
+        >
+          <div class="tool-top">
+            <span class="tool-category">
+              Salary & Career
+            </span>
+
+            <span class="tool-status">
+              Live
+            </span>
+          </div>
+
+          <div>
+            <h3 class="tool-name">
+              CTC Reality
+            </h3>
+
+            <p class="tool-description">
+              Estimate your monthly in-hand salary and understand
+              the gap between annual CTC and take-home pay.
+            </p>
+          </div>
+
+          <div class="tool-meta">
+            <div class="tool-pricing">
+              Free calculator · ₹199 premium report
+            </div>
+
+            <span class="tool-link">
+              Open tool →
+            </span>
+          </div>
+        </a>
+
+        <article
+          class="tool-card placeholder-card"
+          data-category="business"
+          data-search="future business utility coming soon"
+        >
+          <div class="tool-top">
+            <span class="tool-category">
+              Business
+            </span>
+
+            <span class="tool-status coming">
+              Coming soon
+            </span>
+          </div>
+
+          <div>
+            <h3 class="tool-name">
+              Next focused utility
+            </h3>
+
+            <p class="tool-description">
+              A new practical tool is currently being built
+              for the Arthiva Labs library.
+            </p>
+          </div>
+
+          <div class="tool-meta">
+            <div class="tool-pricing">
+              In development
+            </div>
+
+            <span class="tool-link">
+              Coming soon
+            </span>
+          </div>
+        </article>
+
+        <article
+          class="tool-card placeholder-card"
+          data-category="productivity"
+          data-search="future productivity utility coming soon"
+        >
+          <div class="tool-top">
+            <span class="tool-category">
+              Productivity
+            </span>
+
+            <span class="tool-status coming">
+              Coming soon
+            </span>
+          </div>
+
+          <div>
+            <h3 class="tool-name">
+              More useful tools
+            </h3>
+
+            <p class="tool-description">
+              The library will continue expanding with focused
+              utilities built around specific everyday problems.
+            </p>
+          </div>
+
+          <div class="tool-meta">
+            <div class="tool-pricing">
+              Library expanding
+            </div>
+
+            <span class="tool-link">
+              Coming soon
+            </span>
+          </div>
+        </article>
+
+        <article
+          class="tool-card placeholder-card"
+          data-category="everyday-money"
+          data-search="future money finance utility coming soon"
+        >
+          <div class="tool-top">
+            <span class="tool-category">
+              Everyday Money
+            </span>
+
+            <span class="tool-status coming">
+              Coming soon
+            </span>
+          </div>
+
+          <div>
+            <h3 class="tool-name">
+              Built one problem at a time
+            </h3>
+
+            <p class="tool-description">
+              Each Arthiva Labs product is designed to answer
+              one clear question without unnecessary complexity.
+            </p>
+          </div>
+
+          <div class="tool-meta">
+            <div class="tool-pricing">
+              More tools on the way
+            </div>
+
+            <span class="tool-link">
+              Coming soon
+            </span>
+          </div>
+        </article>
+
       </div>
 
-    </section>
-  </main>
+      <div class="no-results" id="noResults">
+        No tools match your search yet.
+      </div>
+
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-inner">
+
+      <div class="about-label">
+        About Arthiva Labs
+      </div>
+
+      <div class="about-copy">
+        <h2>
+          Useful tools. Clear answers.
+        </h2>
+
+        <p>
+          Arthiva Labs is an independent digital product studio
+          building focused utilities for creators, professionals
+          and independent earners.
+        </p>
+
+        <p>
+          Each product begins with one specific real-life question:
+          what should I charge, how much tax should I prepare for,
+          or what might my salary actually look like?
+        </p>
+
+        <p>
+          The goal is simple — turn confusing numbers and everyday
+          decisions into clearer, easier-to-understand information.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="payment-section" id="payments">
+    <div class="payment-inner">
+
+      <div class="payment-copy">
+        <div class="payment-label">
+          Payments & Digital Products
+        </div>
+
+        <h2>
+          Clear pricing before you pay.
+        </h2>
+
+        <p>
+          Many Arthiva Labs tools include a free calculator or
+          utility. Some products also offer optional paid digital
+          reports or premium features.
+        </p>
+      </div>
+
+      <div class="payment-points">
+
+        <div class="payment-point">
+          <strong>
+            Prices are displayed before purchase
+          </strong>
+
+          <span>
+            The price of a premium digital product is shown clearly
+            before the payment process begins.
+          </span>
+        </div>
+
+        <div class="payment-point">
+          <strong>
+            Secure payment processing
+          </strong>
+
+          <span>
+            Payments for eligible digital products are processed
+            through secure payment partners.
+          </span>
+        </div>
+
+        <div class="payment-point">
+          <strong>
+            Digital access after verification
+          </strong>
+
+          <span>
+            Premium digital reports and eligible paid features are
+            unlocked after successful payment verification.
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
 
   <footer>
-    © 2026 Arthiva Labs. Built independently.
+    <div class="footer-inner">
+
+      <div>
+        <div class="footer-brand">
+          ARTHIVA LABS
+        </div>
+
+        <p class="footer-copy">
+          Focused calculators, digital utilities and educational
+          tools for everyday decisions.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#tools">Tools</a>
+        <a href="#payments">Payments</a>
+        <a href="mailto:adrijachoudhury42@gmail.com">
+          Contact
+        </a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/refund.html">Refund Policy</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © 2026 Arthiva Labs. Independent digital product studio.
+    </div>
   </footer>
+
+  <script>
+    const searchInput =
+      document.getElementById("toolSearch");
+
+    const filterButtons =
+      document.querySelectorAll(".filter-button");
+
+    const toolCards =
+      document.querySelectorAll(".tool-card");
+
+    const toolCount =
+      document.getElementById("toolCount");
+
+    const noResults =
+      document.getElementById("noResults");
+
+    let activeFilter = "all";
+
+    function filterTools() {
+      const searchTerm =
+        searchInput.value
+          .trim()
+          .toLowerCase();
+
+      let visibleCount = 0;
+      let liveCount = 0;
+
+      toolCards.forEach(function (card) {
+        const categories =
+          card.dataset.category || "";
+
+        const searchContent =
+          (
+            card.dataset.search +
+            " " +
+            card.textContent
+          ).toLowerCase();
+
+        const matchesFilter =
+          activeFilter === "all" ||
+          categories
+            .split(" ")
+            .includes(activeFilter);
+
+        const matchesSearch =
+          !searchTerm ||
+          searchContent.includes(searchTerm);
+
+        const visible =
+          matchesFilter && matchesSearch;
+
+        card.style.display =
+          visible ? "flex" : "none";
+
+        if (visible) {
+          visibleCount += 1;
+
+          if (card.classList.contains("live")) {
+            liveCount += 1;
+          }
+        }
+      });
+
+      if (visibleCount === 0) {
+        noResults.style.display = "block";
+
+        toolCount.textContent =
+          "No matching tools";
+      } else {
+        noResults.style.display = "none";
+
+        if (activeFilter === "all" && !searchTerm) {
+          toolCount.textContent =
+            liveCount +
+            " tools available · More being built";
+        } else {
+          toolCount.textContent =
+            visibleCount +
+            (
+              visibleCount === 1
+                ? " matching tool"
+                : " matching tools"
+            );
+        }
+      }
+    }
+
+    searchInput.addEventListener(
+      "input",
+      filterTools
+    );
+
+    filterButtons.forEach(function (button) {
+      button.addEventListener(
+        "click",
+        function () {
+          filterButtons.forEach(
+            function (item) {
+              item.classList.remove("active");
+            }
+          );
+
+          button.classList.add("active");
+
+          activeFilter =
+            button.dataset.filter;
+
+          filterTools();
+        }
+      );
+    });
+
+    filterTools();
+  </script>
 
 </body>
 </html>
