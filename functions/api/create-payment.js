@@ -35,7 +35,9 @@ export async function onRequestPost(context) {
       context.request.url
     );
 
-    const priceListResponse = await fetch(priceListUrl);
+    const priceListResponse = await context.env.ASSETS.fetch(
+      priceListUrl
+    );
 
     if (!priceListResponse.ok) {
       throw new Error("Unable to load Arthiva price list.");
@@ -59,8 +61,76 @@ export async function onRequestPost(context) {
       );
     }
 
-    const paymentProvider =
-      market === "india" ? "razorpay" : "paypal";
+    if (market === "india") {
+      const razorpayKeyId = context.env.RAZORPAY_KEY_ID;
+      const razorpayKeySecret = context.env.RAZORPAY_KEY_SECRET;
+
+      if (!razorpayKeyId || !razorpayKeySecret) {
+        throw new Error("Razorpay secrets are missing.");
+      }
+
+      const credentials = btoa(
+        razorpayKeyId + ":" + razorpayKeySecret
+      );
+
+      const receipt =
+        "arthiva_" +
+        product.replace(/[^a-zA-Z0-9]/g, "_") +
+        "_" +
+        Date.now();
+
+      const razorpayResponse = await fetch(
+        "https://api.razorpay.com/v1/orders",
+        {
+          method: "POST",
+          headers: {
+            "Authorization": "Basic " + credentials,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            amount: priceDetails.amount,
+            currency: priceDetails.currency,
+            receipt: receipt,
+            notes: {
+              product: product,
+              offer: offer,
+              studio: "Arthiva Labs"
+            }
+          })
+        }
+      );
+
+      const razorpayOrder = await razorpayResponse.json();
+
+      if (!razorpayResponse.ok) {
+        console.error("Razorpay order error", razorpayOrder);
+
+        return Response.json(
+          {
+            success: false,
+            error: "Razorpay could not create the test order."
+          },
+          {
+            status: 502
+          }
+        );
+      }
+
+      return Response.json({
+        success: true,
+        product: product,
+        productName: productDetails.name,
+        offer: offer,
+        offerName: offerDetails.name,
+        market: market,
+        paymentProvider: "razorpay",
+        currency: priceDetails.currency,
+        amount: priceDetails.amount,
+        orderId: razorpayOrder.id,
+        razorpayKeyId: razorpayKeyId,
+        status: "razorpay-order-created"
+      });
+    }
 
     return Response.json({
       success: true,
@@ -69,13 +139,15 @@ export async function onRequestPost(context) {
       offer: offer,
       offerName: offerDetails.name,
       market: market,
-      paymentProvider: paymentProvider,
+      paymentProvider: "paypal",
       currency: priceDetails.currency,
       amount: priceDetails.amount,
-      status: "price-verified"
+      status: "paypal-not-connected-yet"
     });
 
   } catch (error) {
+    console.error("Arthiva payment error", error);
+
     return Response.json(
       {
         success: false,
