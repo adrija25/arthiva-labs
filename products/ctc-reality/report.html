@@ -324,191 +324,288 @@
   </section>
 
   <script>
+    function estimateTax(taxableIncome) {
+      let tax = 0;
+
+      if (taxableIncome <= 1200000) {
+        return 0;
+      }
+
+      const slabs = [
+        {
+          from: 400000,
+          to: 800000,
+          rate: 0.05
+        },
+        {
+          from: 800000,
+          to: 1200000,
+          rate: 0.10
+        },
+        {
+          from: 1200000,
+          to: 1600000,
+          rate: 0.15
+        },
+        {
+          from: 1600000,
+          to: 2000000,
+          rate: 0.20
+        },
+        {
+          from: 2000000,
+          to: 2400000,
+          rate: 0.25
+        },
+        {
+          from: 2400000,
+          to: Infinity,
+          rate: 0.30
+        }
+      ];
+
+      slabs.forEach(function (slab) {
+        if (taxableIncome > slab.from) {
+          const taxableAtRate =
+            Math.min(
+              taxableIncome,
+              slab.to
+            ) - slab.from;
+
+          if (taxableAtRate > 0) {
+            tax +=
+              taxableAtRate *
+              slab.rate;
+          }
+        }
+      });
+
+      return tax * 1.04;
+    }
+
     function formatINR(value) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0
-      }).format(Number(value) || 0);
+      return new Intl.NumberFormat(
+        "en-IN",
+        {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0
+        }
+      ).format(
+        Number(value) || 0
+      );
     }
 
     async function loadSecureReport() {
-  try {
-    const params = new URLSearchParams(
-      window.location.search
-    );
+      try {
+        const params =
+          new URLSearchParams(
+            window.location.search
+          );
 
-    const token = params.get("token");
+        const token =
+          params.get("token");
 
-    if (!token) {
-      throw new Error(
-        "Report access token is missing."
-      );
-    }
+        if (!token) {
+          throw new Error(
+            "Report access token is missing."
+          );
+        }
 
-    const reportResponse = await fetch(
-      "/api/get-report",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          token: token
-        })
-      }
-    );
+        const reportResponse =
+          await fetch(
+            "/api/get-report",
+            {
+              method: "POST",
 
-    const result = await reportResponse.json();
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
-    if (!result.success) {
-      throw new Error(
-        result.error ||
-        "Unable to load salary report."
-      );
-    }
+              body: JSON.stringify({
+                token: token
+              })
+            }
+          );
 
-    const data =
-      result.reportData ||
-      result.report_data ||
-      result.data;
+        const result =
+          await reportResponse.json();
 
-    if (!data) {
-      throw new Error(
-        "Salary report data is missing."
-      );
-    }
+        if (!result.success) {
+          throw new Error(
+            result.error ||
+            "Unable to load salary report."
+          );
+        }
 
-    const annualCtc =
-      Number(data.annualCtc) || 0;
+        const data =
+          result.reportData ||
+          result.report_data ||
+          result.data;
 
-    const bonus =
-      Number(data.bonus) || 0;
+        if (!data) {
+          throw new Error(
+            "Salary report data is missing."
+          );
+        }
 
-    const monthlyPf =
-      Number(data.monthlyPf) || 0;
+        const annualCtc =
+          Number(data.annualCtc) || 0;
 
-    if (!annualCtc || annualCtc <= 0) {
-      throw new Error(
-        "Salary report information is invalid."
-      );
-    }
+        const bonus =
+          Number(data.bonus) || 0;
 
-    const fixedAnnual =
-      Math.max(annualCtc - bonus, 0);
+        const monthlyPf =
+          Number(data.monthlyPf) || 0;
 
-    const annualPf =
-      monthlyPf * 12;
+        if (
+          !annualCtc ||
+          annualCtc <= 0
+        ) {
+          throw new Error(
+            "Salary report information is invalid."
+          );
+        }
 
-    const estimatedTaxableIncome =
-      Math.max(
-        fixedAnnual - 75000,
-        0
-      );
+        const fixedAnnual =
+          Math.max(
+            annualCtc - bonus,
+            0
+          );
 
-    const annualTax =
-      estimateTax(
-        estimatedTaxableIncome
-      );
+        const annualPf =
+          monthlyPf * 12;
 
-    const annualInHand =
-      Math.max(
-        fixedAnnual -
-        annualPf -
-        annualTax,
-        0
-      );
+        const estimatedTaxableIncome =
+          Math.max(
+            fixedAnnual - 75000,
+            0
+          );
 
-    const monthlyInHand =
-      annualInHand / 12;
+        const annualTax =
+          estimateTax(
+            estimatedTaxableIncome
+          );
 
-    const monthlyCtc =
-      annualCtc / 12;
+        const annualInHand =
+          Math.max(
+            fixedAnnual -
+            annualPf -
+            annualTax,
+            0
+          );
 
-    document
-      .getElementById("lockedPage")
-      .style.display = "none";
+        const monthlyInHand =
+          annualInHand / 12;
 
-    document
-      .getElementById("reportPage")
-      .style.display = "block";
+        const monthlyCtc =
+          annualCtc / 12;
 
-    document
-      .getElementById("reportMonthlyInHand")
-      .textContent =
-      formatINR(monthlyInHand);
+        document
+          .getElementById("lockedPage")
+          .style.display = "none";
 
-    document
-      .getElementById("reportMonthlyCtc")
-      .textContent =
-      formatINR(monthlyCtc);
+        document
+          .getElementById("reportPage")
+          .style.display = "block";
 
-    document
-      .getElementById("reportAnnualCtc")
-      .textContent =
-      formatINR(annualCtc);
-
-    document
-      .getElementById("reportBonus")
-      .textContent =
-      formatINR(bonus);
-
-    document
-      .getElementById("reportAnnualPf")
-      .textContent =
-      formatINR(annualPf);
-
-    document
-      .getElementById("reportAnnualTax")
-      .textContent =
-      formatINR(annualTax);
-
-    document
-      .getElementById("reportAnnualInHand")
-      .textContent =
-      formatINR(annualInHand);
-
-    const monthlyGap =
-      Math.max(
-        monthlyCtc - monthlyInHand,
-        0
-      );
-
-    const inHandPercent =
-      monthlyCtc > 0
-        ? Math.round(
-            (monthlyInHand / monthlyCtc) * 100
+        document
+          .getElementById(
+            "reportMonthlyInHand"
           )
-        : 0;
+          .textContent =
+          formatINR(monthlyInHand);
 
-    document
-      .getElementById("salaryInsight")
-      .textContent =
-      "Based on the details you entered, your estimated monthly in-hand is " +
-      formatINR(monthlyInHand) +
-      ". That is approximately " +
-      inHandPercent +
-      "% of your monthly CTC equivalent. The estimated gap is " +
-      formatINR(monthlyGap) +
-      " per month, influenced by variable pay, provident fund and estimated tax.";
+        document
+          .getElementById(
+            "reportMonthlyCtc"
+          )
+          .textContent =
+          formatINR(monthlyCtc);
 
-  } catch (error) {
-    console.error(
-      "Salary report loading error",
-      error
-    );
+        document
+          .getElementById(
+            "reportAnnualCtc"
+          )
+          .textContent =
+          formatINR(annualCtc);
 
-    document
-      .getElementById("reportPage")
-      .style.display = "none";
+        document
+          .getElementById(
+            "reportBonus"
+          )
+          .textContent =
+          formatINR(bonus);
 
-    document
-      .getElementById("lockedPage")
-      .style.display = "block";
-  }
-}
+        document
+          .getElementById(
+            "reportAnnualPf"
+          )
+          .textContent =
+          formatINR(annualPf);
 
-loadSecureReport();
+        document
+          .getElementById(
+            "reportAnnualTax"
+          )
+          .textContent =
+          formatINR(annualTax);
+
+        document
+          .getElementById(
+            "reportAnnualInHand"
+          )
+          .textContent =
+          formatINR(annualInHand);
+
+        const monthlyGap =
+          Math.max(
+            monthlyCtc -
+            monthlyInHand,
+            0
+          );
+
+        const inHandPercent =
+          monthlyCtc > 0
+            ? Math.round(
+                (
+                  monthlyInHand /
+                  monthlyCtc
+                ) * 100
+              )
+            : 0;
+
+        document
+          .getElementById(
+            "salaryInsight"
+          )
+          .textContent =
+          "Based on the details you entered, your estimated monthly in-hand is " +
+          formatINR(monthlyInHand) +
+          ". That is approximately " +
+          inHandPercent +
+          "% of your monthly CTC equivalent. The estimated gap is " +
+          formatINR(monthlyGap) +
+          " per month, influenced by variable pay, provident fund and estimated tax.";
+
+      } catch (error) {
+        console.error(
+          "Salary report loading error",
+          error
+        );
+
+        document
+          .getElementById("reportPage")
+          .style.display = "none";
+
+        document
+          .getElementById("lockedPage")
+          .style.display = "block";
+      }
+    }
+
+    loadSecureReport();
   </script>
 
 </body>
