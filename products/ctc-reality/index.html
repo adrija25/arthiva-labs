@@ -602,13 +602,18 @@
             headers: {
               "Content-Type": "application/json"
             },
-           body: JSON.stringify({
+          body: JSON.stringify({
   product: "ctc-reality",
   offer: "salary-report",
   market: "india",
   orderId: response.razorpay_order_id,
   paymentId: response.razorpay_payment_id,
-  signature: response.razorpay_signature
+  signature: response.razorpay_signature,
+  reportData: {
+    annualCtc: Number(document.getElementById("ctc").value),
+    bonus: Number(document.getElementById("bonus").value) || 0,
+    monthlyPf: Number(document.getElementById("pf").value) || 0
+  }
 })
           });
 
