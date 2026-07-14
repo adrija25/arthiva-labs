@@ -332,69 +332,183 @@
       }).format(Number(value) || 0);
     }
 
-    const reportDataRaw = sessionStorage.getItem("ctcRealityReport");
+    async function loadSecureReport() {
+  try {
+    const params = new URLSearchParams(
+      window.location.search
+    );
 
-    if (!reportDataRaw) {
-      document.getElementById("reportPage").style.display = "none";
-      document.getElementById("lockedPage").style.display = "block";
-    } else {
-      try {
-        const data = JSON.parse(reportDataRaw);
+    const token = params.get("token");
 
-        if (!data.paymentVerified) {
-          throw new Error("Payment not verified");
-        }
-
-        const annualCtc = Number(data.annualCtc) || 0;
-        const bonus = Number(data.bonus) || 0;
-        const monthlyPf = Number(data.monthlyPf) || 0;
-        const annualTax = Number(data.annualTax) || 0;
-        const monthlyInHand = Number(data.monthlyInHand) || 0;
-
-        const monthlyCtc = annualCtc / 12;
-        const annualPf = monthlyPf * 12;
-        const annualInHand = monthlyInHand * 12;
-
-        document.getElementById("reportMonthlyInHand").textContent =
-          formatINR(monthlyInHand);
-
-        document.getElementById("reportMonthlyCtc").textContent =
-          formatINR(monthlyCtc);
-
-        document.getElementById("reportAnnualCtc").textContent =
-          formatINR(annualCtc);
-
-        document.getElementById("reportBonus").textContent =
-          formatINR(bonus);
-
-        document.getElementById("reportAnnualPf").textContent =
-          formatINR(annualPf);
-
-        document.getElementById("reportAnnualTax").textContent =
-          formatINR(annualTax);
-
-        document.getElementById("reportAnnualInHand").textContent =
-          formatINR(annualInHand);
-
-        const monthlyGap = Math.max(monthlyCtc - monthlyInHand, 0);
-        const inHandPercent =
-          monthlyCtc > 0
-            ? Math.round((monthlyInHand / monthlyCtc) * 100)
-            : 0;
-
-        document.getElementById("salaryInsight").textContent =
-          "Based on the details you entered, your estimated monthly in-hand is " +
-          formatINR(monthlyInHand) +
-          ". That is approximately " +
-          inHandPercent +
-          "% of your monthly CTC equivalent. The estimated gap is " +
-          formatINR(monthlyGap) +
-          " per month, influenced by variable pay, provident fund and estimated tax.";
-      } catch (error) {
-        document.getElementById("reportPage").style.display = "none";
-        document.getElementById("lockedPage").style.display = "block";
-      }
+    if (!token) {
+      throw new Error(
+        "Report access token is missing."
+      );
     }
+
+    const reportResponse = await fetch(
+      "/api/get-report",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          token: token
+        })
+      }
+    );
+
+    const result = await reportResponse.json();
+
+    if (!result.success) {
+      throw new Error(
+        result.error ||
+        "Unable to load salary report."
+      );
+    }
+
+    const data =
+      result.reportData ||
+      result.report_data ||
+      result.data;
+
+    if (!data) {
+      throw new Error(
+        "Salary report data is missing."
+      );
+    }
+
+    const annualCtc =
+      Number(data.annualCtc) || 0;
+
+    const bonus =
+      Number(data.bonus) || 0;
+
+    const monthlyPf =
+      Number(data.monthlyPf) || 0;
+
+    if (!annualCtc || annualCtc <= 0) {
+      throw new Error(
+        "Salary report information is invalid."
+      );
+    }
+
+    const fixedAnnual =
+      Math.max(annualCtc - bonus, 0);
+
+    const annualPf =
+      monthlyPf * 12;
+
+    const estimatedTaxableIncome =
+      Math.max(
+        fixedAnnual - 75000,
+        0
+      );
+
+    const annualTax =
+      estimateTax(
+        estimatedTaxableIncome
+      );
+
+    const annualInHand =
+      Math.max(
+        fixedAnnual -
+        annualPf -
+        annualTax,
+        0
+      );
+
+    const monthlyInHand =
+      annualInHand / 12;
+
+    const monthlyCtc =
+      annualCtc / 12;
+
+    document
+      .getElementById("lockedPage")
+      .style.display = "none";
+
+    document
+      .getElementById("reportPage")
+      .style.display = "block";
+
+    document
+      .getElementById("reportMonthlyInHand")
+      .textContent =
+      formatINR(monthlyInHand);
+
+    document
+      .getElementById("reportMonthlyCtc")
+      .textContent =
+      formatINR(monthlyCtc);
+
+    document
+      .getElementById("reportAnnualCtc")
+      .textContent =
+      formatINR(annualCtc);
+
+    document
+      .getElementById("reportBonus")
+      .textContent =
+      formatINR(bonus);
+
+    document
+      .getElementById("reportAnnualPf")
+      .textContent =
+      formatINR(annualPf);
+
+    document
+      .getElementById("reportAnnualTax")
+      .textContent =
+      formatINR(annualTax);
+
+    document
+      .getElementById("reportAnnualInHand")
+      .textContent =
+      formatINR(annualInHand);
+
+    const monthlyGap =
+      Math.max(
+        monthlyCtc - monthlyInHand,
+        0
+      );
+
+    const inHandPercent =
+      monthlyCtc > 0
+        ? Math.round(
+            (monthlyInHand / monthlyCtc) * 100
+          )
+        : 0;
+
+    document
+      .getElementById("salaryInsight")
+      .textContent =
+      "Based on the details you entered, your estimated monthly in-hand is " +
+      formatINR(monthlyInHand) +
+      ". That is approximately " +
+      inHandPercent +
+      "% of your monthly CTC equivalent. The estimated gap is " +
+      formatINR(monthlyGap) +
+      " per month, influenced by variable pay, provident fund and estimated tax.";
+
+  } catch (error) {
+    console.error(
+      "Salary report loading error",
+      error
+    );
+
+    document
+      .getElementById("reportPage")
+      .style.display = "none";
+
+    document
+      .getElementById("lockedPage")
+      .style.display = "block";
+  }
+}
+
+loadSecureReport();
   </script>
 
 </body>
