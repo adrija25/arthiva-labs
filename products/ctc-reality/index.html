@@ -182,8 +182,8 @@
 
     .main-result {
       padding: 30px 0;
-      border-top: 1px solid rgba(255,255,255,0.2);
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
       margin: 25px 0 30px;
     }
 
@@ -210,7 +210,7 @@
       display: flex;
       justify-content: space-between;
       padding: 14px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
       gap: 20px;
     }
 
@@ -541,9 +541,14 @@
     }
 
     function calculateSalary() {
-      const ctc = Number(document.getElementById("ctc").value);
-      const bonus = Number(document.getElementById("bonus").value) || 0;
-      const monthlyPf = Number(document.getElementById("pf").value) || 0;
+      const ctc =
+        Number(document.getElementById("ctc").value);
+
+      const bonus =
+        Number(document.getElementById("bonus").value) || 0;
+
+      const monthlyPf =
+        Number(document.getElementById("pf").value) || 0;
 
       if (!ctc || ctc <= 0) {
         alert("Please enter your annual CTC.");
@@ -551,7 +556,9 @@
       }
 
       if (bonus > ctc) {
-        alert("Variable pay cannot be higher than your total CTC.");
+        alert(
+          "Variable pay cannot be higher than your total CTC."
+        );
         return;
       }
 
@@ -563,32 +570,45 @@
         0
       );
 
-      const annualTax = estimateTax(estimatedTaxableIncome);
+      const annualTax =
+        estimateTax(estimatedTaxableIncome);
 
       const estimatedAnnualInHand = Math.max(
         fixedAnnual - annualPf - annualTax,
         0
       );
 
-      const monthlyInHand = estimatedAnnualInHand / 12;
-      const monthlyCtc = ctc / 12;
-      const monthlyVariable = bonus / 12;
-      const monthlyTax = annualTax / 12;
+      const monthlyInHand =
+        estimatedAnnualInHand / 12;
 
-      document.getElementById("monthlyInHand").textContent =
-        formatINR(monthlyInHand);
+      const monthlyCtc =
+        ctc / 12;
 
-      document.getElementById("monthlyCtc").textContent =
-        formatINR(monthlyCtc);
+      const monthlyVariable =
+        bonus / 12;
 
-      document.getElementById("variableRemoved").textContent =
-        formatINR(monthlyVariable);
+      const monthlyTax =
+        annualTax / 12;
 
-      document.getElementById("pfAmount").textContent =
-        formatINR(monthlyPf);
+      document.getElementById(
+        "monthlyInHand"
+      ).textContent = formatINR(monthlyInHand);
 
-      document.getElementById("taxAmount").textContent =
-        formatINR(monthlyTax);
+      document.getElementById(
+        "monthlyCtc"
+      ).textContent = formatINR(monthlyCtc);
+
+      document.getElementById(
+        "variableRemoved"
+      ).textContent = formatINR(monthlyVariable);
+
+      document.getElementById(
+        "pfAmount"
+      ).textContent = formatINR(monthlyPf);
+
+      document.getElementById(
+        "taxAmount"
+      ).textContent = formatINR(monthlyTax);
     }
   </script>
 
@@ -606,16 +626,25 @@
       async function () {
         try {
           const ctc =
-            Number(document.getElementById("ctc").value) || 0;
+            Number(
+              document.getElementById("ctc").value
+            ) || 0;
 
           const bonus =
-            Number(document.getElementById("bonus").value) || 0;
+            Number(
+              document.getElementById("bonus").value
+            ) || 0;
 
           const monthlyPf =
-            Number(document.getElementById("pf").value) || 0;
+            Number(
+              document.getElementById("pf").value
+            ) || 0;
 
           if (!ctc || ctc <= 0) {
-            alert("Please enter your annual CTC first.");
+            alert(
+              "Please enter your annual CTC first."
+            );
+
             return;
           }
 
@@ -623,6 +652,7 @@
             alert(
               "Variable pay cannot be higher than your total CTC."
             );
+
             return;
           }
 
@@ -633,9 +663,11 @@
             "/api/create-payment",
             {
               method: "POST",
+
               headers: {
                 "Content-Type": "application/json"
               },
+
               body: JSON.stringify({
                 product: "ctc-reality",
                 offer: "salary-report",
@@ -644,12 +676,17 @@
             }
           );
 
-          const order = await orderResponse.json();
+          const order =
+            await orderResponse.json();
 
           if (!order.success) {
             paymentStatus.textContent =
               "Could not create payment.\n\n" +
-              JSON.stringify(order, null, 2);
+              JSON.stringify(
+                order,
+                null,
+                2
+              );
 
             return;
           }
@@ -671,25 +708,33 @@
                   "/api/verify-payment",
                   {
                     method: "POST",
+
                     headers: {
                       "Content-Type": "application/json"
                     },
-                  body: JSON.stringify({
-  product: "ctc-reality",
-  offer: "salary-report",
-  market: "india",
 
-  razorpay_order_id: response.razorpay_order_id,
-  razorpay_payment_id: response.razorpay_payment_id,
-  razorpay_signature: response.razorpay_signature,
+                    body: JSON.stringify({
+                      product: "ctc-reality",
+                      offer: "salary-report",
+                      market: "india",
 
-  reportData: {
-    annualCtc: ctc,
-    bonus: bonus,
-    monthlyPf: monthlyPf
- })
-  }
-);
+                      razorpay_order_id:
+                        response.razorpay_order_id,
+
+                      razorpay_payment_id:
+                        response.razorpay_payment_id,
+
+                      razorpay_signature:
+                        response.razorpay_signature,
+
+                      reportData: {
+                        annualCtc: ctc,
+                        bonus: bonus,
+                        monthlyPf: monthlyPf
+                      }
+                    })
+                  }
+                );
 
                 const verification =
                   await verifyResponse.json();
@@ -711,7 +756,10 @@
                   "Preparing your personalised Salary Report...";
 
                 const fixedAnnual =
-                  Math.max(ctc - bonus, 0);
+                  Math.max(
+                    ctc - bonus,
+                    0
+                  );
 
                 const annualPf =
                   monthlyPf * 12;
