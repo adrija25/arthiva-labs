@@ -1,6 +1,8 @@
 function bytesToHex(bytes) {
   return Array.from(bytes)
-    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .map((byte) =>
+      byte.toString(16).padStart(2, "0")
+    )
     .join("");
 }
 
@@ -31,9 +33,17 @@ export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
 
-    const orderId = body.orderId;
-    const paymentId = body.paymentId;
-    const signature = body.signature;
+    const orderId =
+      body.razorpay_order_id ||
+      body.orderId;
+
+    const paymentId =
+      body.razorpay_payment_id ||
+      body.paymentId;
+
+    const signature =
+      body.razorpay_signature ||
+      body.signature;
 
     const product = body.product;
     const offer = body.offer;
@@ -69,7 +79,8 @@ export async function onRequestPost(context) {
         {
           success: false,
           verified: false,
-          error: "Invalid product or offer."
+          error:
+            "Invalid product or offer."
         },
         {
           status: 400
@@ -116,9 +127,10 @@ export async function onRequestPost(context) {
         encoder.encode(verificationMessage)
       );
 
-    const expectedSignature = bytesToHex(
-      new Uint8Array(signatureBuffer)
-    );
+    const expectedSignature =
+      bytesToHex(
+        new Uint8Array(signatureBuffer)
+      );
 
     const verified = safeEqual(
       expectedSignature,
@@ -130,7 +142,8 @@ export async function onRequestPost(context) {
         {
           success: false,
           verified: false,
-          error: "Payment verification failed."
+          error:
+            "Payment verification failed."
         },
         {
           status: 400
@@ -160,7 +173,8 @@ export async function onRequestPost(context) {
         {
           success: false,
           verified: false,
-          error: "Invalid salary report information."
+          error:
+            "Invalid salary report information."
         },
         {
           status: 400
@@ -168,18 +182,21 @@ export async function onRequestPost(context) {
       );
     }
 
-    const token = createAccessToken();
+    const token =
+      createAccessToken();
 
-    const now = Date.now();
+    const now =
+      Date.now();
 
     const expiresAt =
       now + 30 * 60 * 1000;
 
-    const storedReportData = JSON.stringify({
-      annualCtc: annualCtc,
-      bonus: bonus,
-      monthlyPf: monthlyPf
-    });
+    const storedReportData =
+      JSON.stringify({
+        annualCtc: annualCtc,
+        bonus: bonus,
+        monthlyPf: monthlyPf
+      });
 
     try {
       await context.env.DB
@@ -208,6 +225,7 @@ export async function onRequestPost(context) {
           expiresAt
         )
         .run();
+
     } catch (databaseError) {
       console.error(
         "Arthiva report access insert error",
@@ -231,6 +249,7 @@ export async function onRequestPost(context) {
       success: true,
       verified: true,
       status: "payment-verified",
+      paymentId: paymentId,
       reportAccessCreated: true,
       reportToken: token,
       reportExpiresAt: expiresAt
@@ -246,7 +265,8 @@ export async function onRequestPost(context) {
       {
         success: false,
         verified: false,
-        error: "Unable to verify payment."
+        error:
+          "Unable to verify payment."
       },
       {
         status: 500
