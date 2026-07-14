@@ -26,6 +26,19 @@
         "india": null,
         "international": null
       }
+    },
+    {
+      "id": 3,
+      "name": "Exit Date",
+      "slug": "exit-date",
+      "status": "live",
+      "category": "career-transition",
+      "url": "/products/exit-date/",
+      "monetisation": "free-assessment-and-paid-report",
+      "payments": {
+        "india": "razorpay",
+        "international": "paypal"
+      }
     }
   ]
 }
