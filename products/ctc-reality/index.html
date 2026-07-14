@@ -602,14 +602,14 @@
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-              product: "ctc-reality",
-              offer: "salary-report",
-              market: "india",
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
-            })
+           body: JSON.stringify({
+  product: "ctc-reality",
+  offer: "salary-report",
+  market: "india",
+  orderId: response.razorpay_order_id,
+  paymentId: response.razorpay_payment_id,
+  signature: response.razorpay_signature
+})
           });
 
           const verification = await verifyResponse.json();
