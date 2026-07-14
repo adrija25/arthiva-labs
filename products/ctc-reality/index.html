@@ -614,11 +614,49 @@
 
           const verification = await verifyResponse.json();
 
-          if (verification.success) {
-            paymentStatus.textContent =
-              "PAYMENT VERIFIED ✅\n\nYour Salary Report payment is approved.\n\nPayment ID: " +
-              verification.paymentId;
-          } else {
+         if (verification.success) {
+  paymentStatus.textContent =
+    "PAYMENT VERIFIED ✅\n\nPreparing your personalised Salary Report...";
+
+  const ctc = Number(document.getElementById("ctc").value) || 0;
+  const bonus = Number(document.getElementById("bonus").value) || 0;
+  const monthlyPf = Number(document.getElementById("pf").value) || 0;
+
+  const fixedAnnual = Math.max(ctc - bonus, 0);
+
+  const annualPf = monthlyPf * 12;
+
+  const estimatedTaxableIncome = Math.max(
+    fixedAnnual - 75000,
+    0
+  );
+
+  const annualTax = estimateTax(estimatedTaxableIncome);
+
+  const estimatedAnnualInHand = Math.max(
+    fixedAnnual - annualPf - annualTax,
+    0
+  );
+
+  const monthlyInHand = estimatedAnnualInHand / 12;
+
+  const reportData = {
+    paymentVerified: true,
+    paymentId: verification.paymentId,
+    annualCtc: ctc,
+    bonus: bonus,
+    monthlyPf: monthlyPf,
+    annualTax: annualTax,
+    monthlyInHand: monthlyInHand
+  };
+
+  sessionStorage.setItem(
+    "ctcRealityReport",
+    JSON.stringify(reportData)
+  );
+
+  window.location.href = "./report.html";
+} else {
             paymentStatus.textContent =
               "Payment verification failed.\n\n" +
               JSON.stringify(verification, null, 2);
