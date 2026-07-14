@@ -44,16 +44,16 @@
 
 <body>
 
-  <h1>Arthiva Payment Test</h1>
+  <h1>Arthiva Payment Verification Test</h1>
 
   <p>
-    This page tests Arthiva's shared Razorpay Checkout.
+    This page tests Arthiva's shared Razorpay payment system.
   </p>
 
   <br>
 
   <button id="paymentButton">
-    Open Razorpay Test Payment
+    Test ₹199 Razorpay Payment
   </button>
 
   <pre id="result">Waiting for test...</pre>
@@ -76,10 +76,10 @@
       paymentButton.disabled = true;
 
       result.textContent =
-        "Asking Arthiva to create a Razorpay order...";
+        "Creating Razorpay test order...";
 
       try {
-        const response = await fetch(
+        const orderResponse = await fetch(
           "/api/create-payment",
           {
             method: "POST",
@@ -94,44 +94,86 @@
           }
         );
 
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(
-            data.error || "Unable to create payment."
-          );
-        }
+        const orderData =
+          await orderResponse.json();
 
         if (
-          data.status !== "razorpay-order-created" ||
-          !data.orderId ||
-          !data.razorpayKeyId
+          !orderResponse.ok ||
+          !orderData.success
         ) {
           throw new Error(
-            "Arthiva did not return a Razorpay order."
+            orderData.error ||
+            "Unable to create payment."
           );
         }
 
         result.textContent =
-          "Order created.\nOpening Razorpay Test Checkout...";
+          "Order created.\nOpening Razorpay Checkout...";
 
         const options = {
-          key: data.razorpayKeyId,
-          amount: data.amount,
-          currency: data.currency,
+          key: orderData.razorpayKeyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
           name: "Arthiva Labs",
-          description: data.offerName,
-          order_id: data.orderId,
+          description: orderData.offerName,
+          order_id: orderData.orderId,
 
-          handler: function (paymentResponse) {
+          handler: async function (
+            paymentResponse
+          ) {
             result.textContent =
-              "TEST CHECKOUT RETURNED A PAYMENT RESPONSE.\n\n" +
-              "Payment ID: " +
-              paymentResponse.razorpay_payment_id +
-              "\n\nOrder ID: " +
-              paymentResponse.razorpay_order_id +
-              "\n\nIMPORTANT: Payment is not unlocked yet." +
-              "\nServer signature verification is next.";
+              "Razorpay returned payment.\n" +
+              "Asking Arthiva security guard to verify...";
+
+            try {
+              const verifyResponse = await fetch(
+                "/api/verify-payment",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type":
+                      "application/json"
+                  },
+                  body: JSON.stringify({
+                    orderId:
+                      paymentResponse.razorpay_order_id,
+
+                    paymentId:
+                      paymentResponse.razorpay_payment_id,
+
+                    signature:
+                      paymentResponse.razorpay_signature
+                  })
+                }
+              );
+
+              const verifyData =
+                await verifyResponse.json();
+
+              if (
+                !verifyResponse.ok ||
+                !verifyData.verified
+              ) {
+                throw new Error(
+                  verifyData.error ||
+                  "Payment verification failed."
+                );
+              }
+
+              result.textContent =
+                "PAYMENT VERIFIED ✅\n\n" +
+                "Arthiva security guard approved the payment.\n\n" +
+                "Status: " +
+                verifyData.status +
+                "\n\n" +
+                "Payment ID: " +
+                verifyData.paymentId;
+
+            } catch (verificationError) {
+              result.textContent =
+                "PAYMENT NOT VERIFIED ❌\n\n" +
+                verificationError.message;
+            }
           },
 
           modal: {
@@ -142,8 +184,8 @@
           },
 
           notes: {
-            product: data.product,
-            offer: data.offer
+            product: orderData.product,
+            offer: orderData.offer
           }
         };
 
