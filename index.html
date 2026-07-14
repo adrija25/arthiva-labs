@@ -9,12 +9,12 @@
   >
 
   <title>
-    Arthiva Labs — Useful Tools for Real-Life Decisions
+    Arthiva Labs — Small Digital Tools for Real-Life Problems
   </title>
 
   <meta
     name="description"
-    content="Arthiva Labs builds focused calculators and digital utilities for creators, professionals and independent earners."
+    content="Arthiva Labs builds focused digital tools for everyday problems, decisions, work, money, planning and practical life."
   >
 
   <style>
@@ -91,7 +91,7 @@
     .hero {
       max-width: 1250px;
       margin: auto;
-      padding: 100px 7% 85px;
+      padding: 105px 7% 90px;
     }
 
     .eyebrow {
@@ -107,19 +107,19 @@
       font-size: clamp(52px, 8vw, 105px);
       line-height: 0.94;
       letter-spacing: -5px;
-      max-width: 1000px;
+      max-width: 1050px;
     }
 
     .hero-copy {
       margin-top: 35px;
-      max-width: 720px;
+      max-width: 760px;
       font-size: 21px;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     .hero-actions {
-      margin-top: 38px;
+      margin-top: 40px;
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
@@ -178,18 +178,14 @@
     }
 
     .section-heading p {
-      max-width: 480px;
+      max-width: 500px;
       color: var(--muted);
       font-size: 17px;
+      line-height: 1.65;
     }
 
     .tool-controls {
       margin-bottom: 38px;
-    }
-
-    .search-wrap {
-      position: relative;
-      margin-bottom: 18px;
     }
 
     .search-input {
@@ -200,6 +196,7 @@
       background: var(--white);
       color: var(--ink);
       font-size: 17px;
+      margin-bottom: 18px;
     }
 
     .search-input:focus {
@@ -299,7 +296,7 @@
     .tool-description {
       color: var(--muted);
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.65;
       margin-bottom: 25px;
     }
 
@@ -374,12 +371,53 @@
       color: #d6e0d9;
       font-size: 18px;
       line-height: 1.7;
-      max-width: 760px;
+      max-width: 780px;
       margin-bottom: 20px;
     }
 
-    .payment-section {
+    .principle-section {
       padding: 85px 7%;
+    }
+
+    .principle-inner {
+      max-width: 1250px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .principle {
+      padding: 42px;
+      border-right: 1px solid var(--line);
+    }
+
+    .principle:last-child {
+      border-right: 0;
+    }
+
+    .principle-number {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      margin-bottom: 30px;
+    }
+
+    .principle h3 {
+      font-size: 25px;
+      letter-spacing: -1px;
+      margin-bottom: 15px;
+    }
+
+    .principle p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .payment-section {
+      padding: 0 7% 90px;
     }
 
     .payment-inner {
@@ -465,7 +503,7 @@
     .footer-copy {
       color: var(--muted);
       font-size: 13px;
-      max-width: 450px;
+      max-width: 470px;
     }
 
     .footer-links {
@@ -499,6 +537,19 @@
         grid-template-columns: 1fr;
         gap: 35px;
       }
+
+      .principle-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .principle {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .principle:last-child {
+        border-bottom: 0;
+      }
     }
 
     @media (max-width: 760px) {
@@ -506,7 +557,7 @@
         padding: 20px 5%;
       }
 
-      .nav-links a:not(:last-child) {
+      .nav-links a:not(:first-child) {
         display: none;
       }
 
@@ -546,8 +597,16 @@
         padding: 70px 5%;
       }
 
-      .payment-section {
+      .principle-section {
         padding: 60px 5%;
+      }
+
+      .principle {
+        padding: 32px 25px;
+      }
+
+      .payment-section {
+        padding: 0 5% 60px;
       }
 
       .payment-inner {
@@ -599,13 +658,15 @@
     </div>
 
     <h1>
-      Useful tools for real-life decisions.
+      Small digital tools for the problems real life keeps giving you.
     </h1>
 
     <p class="hero-copy">
-      Focused calculators and digital utilities for creators,
-      professionals and independent earners. No bloated software.
-      Just a clearer answer to the question you came with.
+      Arthiva Labs builds focused utilities for everyday decisions,
+      work, money, planning and the small practical problems that
+      usually take too much time to solve.
+      No bloated software. No complicated setup.
+      Just useful tools built around one clear problem.
     </p>
 
     <div class="hero-actions">
@@ -614,7 +675,7 @@
       </a>
 
       <a class="secondary-button" href="#about">
-        About Arthiva Labs
+        Why Arthiva?
       </a>
     </div>
   </header>
@@ -624,33 +685,35 @@
 
       <div class="section-heading">
         <div>
-          <div class="eyebrow">The Tool Library</div>
+          <div class="eyebrow">
+            The Tool Library
+          </div>
 
           <h2>
             One problem.<br>
-            One focused tool.
+            One useful tool.
           </h2>
         </div>
 
         <p>
-          Arthiva Labs is building a growing library of practical
-          utilities. Search by problem or browse by category.
+          Some tools help you understand money. Some make work
+          easier. Others help you plan, compare, organise or make
+          a decision. Search the growing Arthiva library.
         </p>
       </div>
 
       <div class="tool-controls">
 
-        <div class="search-wrap">
-          <input
-            id="toolSearch"
-            class="search-input"
-            type="search"
-            placeholder="Search tools by name or problem..."
-            aria-label="Search Arthiva Labs tools"
-          >
-        </div>
+        <input
+          id="toolSearch"
+          class="search-input"
+          type="search"
+          placeholder="What do you need help with?"
+          aria-label="Search Arthiva Labs tools"
+        >
 
         <div class="filters">
+
           <button
             class="filter-button active"
             type="button"
@@ -662,25 +725,25 @@
           <button
             class="filter-button"
             type="button"
-            data-filter="creator-money"
+            data-filter="money"
           >
-            Creator Money
+            Money
           </button>
 
           <button
             class="filter-button"
             type="button"
-            data-filter="tax-finance"
+            data-filter="work-career"
           >
-            Tax & Finance
+            Work & Career
           </button>
 
           <button
             class="filter-button"
             type="button"
-            data-filter="salary-career"
+            data-filter="creator-tools"
           >
-            Salary & Career
+            Creator Tools
           </button>
 
           <button
@@ -694,14 +757,6 @@
           <button
             class="filter-button"
             type="button"
-            data-filter="freelance"
-          >
-            Freelance
-          </button>
-
-          <button
-            class="filter-button"
-            type="button"
             data-filter="productivity"
           >
             Productivity
@@ -710,249 +765,178 @@
           <button
             class="filter-button"
             type="button"
-            data-filter="everyday-money"
+            data-filter="planning"
           >
-            Everyday Money
+            Planning
           </button>
-        </div>
 
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="home-life"
+          >
+            Home & Life
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="travel"
+          >
+            Travel
+          </button>
+
+          <button
+            class="filter-button"
+            type="button"
+            data-filter="documents-admin"
+          >
+            Documents & Admin
+          </button>
+
+        </div>
       </div>
 
       <p class="tool-count" id="toolCount">
-        3 tools available
+        1 tool available · More being built
       </p>
 
       <div class="tool-grid" id="toolGrid">
 
         <a
           class="tool-card live"
-          href="/products/brand-rate/"
-          data-category="creator-money freelance"
-          data-search="brand rate creator pricing brand deal collaboration influencer sponsorship rate calculator"
-        >
-          <div class="tool-top">
-            <span class="tool-category">
-              Creator Money
-            </span>
-
-            <span class="tool-status">
-              Live
-            </span>
-          </div>
-
-          <div>
-            <h3 class="tool-name">
-              Brand Rate
-            </h3>
-
-            <p class="tool-description">
-              Estimate a starting rate for brand collaborations
-              based on your platform, audience and engagement.
-            </p>
-          </div>
-
-          <div class="tool-meta">
-            <div class="tool-pricing">
-              Free calculator · Premium available
-            </div>
-
-            <span class="tool-link">
-              Open tool →
-            </span>
-          </div>
-        </a>
-
-        <a
-          class="tool-card live"
-          href="/products/creator-tax-india/"
-          data-category="tax-finance creator-money freelance"
-          data-search="creator tax india income tax creator freelancer tax estimate finance"
-        >
-          <div class="tool-top">
-            <span class="tool-category">
-              Tax & Finance
-            </span>
-
-            <span class="tool-status">
-              Live
-            </span>
-          </div>
-
-          <div>
-            <h3 class="tool-name">
-              Creator Tax India
-            </h3>
-
-            <p class="tool-description">
-              Get a simplified estimate of taxes on creator
-              and freelance income in India.
-            </p>
-          </div>
-
-          <div class="tool-meta">
-            <div class="tool-pricing">
-              Free calculator · Premium available
-            </div>
-
-            <span class="tool-link">
-              Open tool →
-            </span>
-          </div>
-        </a>
-
-        <a
-          class="tool-card live"
           href="/products/ctc-reality/"
-          data-category="salary-career everyday-money"
-          data-search="ctc reality salary in hand take home monthly salary cost to company career"
+          data-category="money work-career"
+          data-search="ctc reality salary in hand take home pay annual ctc monthly salary career job offer money"
         >
           <div class="tool-top">
+
             <span class="tool-category">
-              Salary & Career
+              Work & Career
             </span>
 
             <span class="tool-status">
               Live
             </span>
+
           </div>
 
           <div>
+
             <h3 class="tool-name">
               CTC Reality
             </h3>
 
             <p class="tool-description">
-              Estimate your monthly in-hand salary and understand
-              the gap between annual CTC and take-home pay.
+              Turn an annual CTC number into a clearer estimate
+              of what may actually reach your bank account each month.
             </p>
+
           </div>
 
           <div class="tool-meta">
+
             <div class="tool-pricing">
-              Free calculator · ₹199 premium report
+              Free tool · Optional ₹199 report
             </div>
 
             <span class="tool-link">
               Open tool →
             </span>
+
           </div>
         </a>
 
         <article
           class="tool-card placeholder-card"
-          data-category="business"
-          data-search="future business utility coming soon"
+          data-category="planning productivity"
+          data-search="planning productivity future tools organise decision coming soon"
         >
           <div class="tool-top">
+
             <span class="tool-category">
-              Business
+              Planning & Productivity
             </span>
 
             <span class="tool-status coming">
-              Coming soon
+              Growing
             </span>
+
           </div>
 
           <div>
+
             <h3 class="tool-name">
-              Next focused utility
+              More focused tools are being built.
             </h3>
 
             <p class="tool-description">
-              A new practical tool is currently being built
-              for the Arthiva Labs library.
+              Arthiva is expanding into practical tools for planning,
+              organising, comparing and making everyday decisions easier.
             </p>
+
           </div>
 
           <div class="tool-meta">
+
             <div class="tool-pricing">
-              In development
+              Library in development
             </div>
 
             <span class="tool-link">
-              Coming soon
+              More soon
             </span>
+
           </div>
         </article>
 
         <article
           class="tool-card placeholder-card"
-          data-category="productivity"
-          data-search="future productivity utility coming soon"
+          data-category="home-life travel documents-admin business creator-tools"
+          data-search="home life travel documents admin business creator everyday problems future tools"
         >
           <div class="tool-top">
+
             <span class="tool-category">
-              Productivity
+              Everyday Life
             </span>
 
             <span class="tool-status coming">
-              Coming soon
+              50-tool portfolio
             </span>
+
           </div>
 
           <div>
+
             <h3 class="tool-name">
-              More useful tools
+              Built around problems people actually have.
             </h3>
 
             <p class="tool-description">
-              The library will continue expanding with focused
-              utilities built around specific everyday problems.
+              Work, money, digital life, admin, travel and the small
+              frustrating tasks that should be easier than they are.
             </p>
+
           </div>
 
           <div class="tool-meta">
+
             <div class="tool-pricing">
+              One problem at a time
+            </div>
+
+            <span class="tool-link">
               Library expanding
-            </div>
-
-            <span class="tool-link">
-              Coming soon
-            </span>
-          </div>
-        </article>
-
-        <article
-          class="tool-card placeholder-card"
-          data-category="everyday-money"
-          data-search="future money finance utility coming soon"
-        >
-          <div class="tool-top">
-            <span class="tool-category">
-              Everyday Money
             </span>
 
-            <span class="tool-status coming">
-              Coming soon
-            </span>
-          </div>
-
-          <div>
-            <h3 class="tool-name">
-              Built one problem at a time
-            </h3>
-
-            <p class="tool-description">
-              Each Arthiva Labs product is designed to answer
-              one clear question without unnecessary complexity.
-            </p>
-          </div>
-
-          <div class="tool-meta">
-            <div class="tool-pricing">
-              More tools on the way
-            </div>
-
-            <span class="tool-link">
-              Coming soon
-            </span>
           </div>
         </article>
 
       </div>
 
       <div class="no-results" id="noResults">
-        No tools match your search yet.
+        No matching live tool yet. The Arthiva library is still growing.
       </div>
 
     </div>
@@ -966,27 +950,89 @@
       </div>
 
       <div class="about-copy">
+
         <h2>
-          Useful tools. Clear answers.
+          One problem. One useful tool.
         </h2>
 
         <p>
           Arthiva Labs is an independent digital product studio
-          building focused utilities for creators, professionals
-          and independent earners.
+          building focused web utilities for everyday life.
         </p>
 
         <p>
-          Each product begins with one specific real-life question:
-          what should I charge, how much tax should I prepare for,
-          or what might my salary actually look like?
+          Some help you understand money. Some make work easier.
+          Some help you plan, compare, calculate, organise or make
+          a decision.
         </p>
 
         <p>
-          The goal is simple — turn confusing numbers and everyday
-          decisions into clearer, easier-to-understand information.
+          Each product starts with a simple question:
+          is this an annoying real-life problem that a small digital
+          tool could make easier?
         </p>
+
+        <p>
+          If the answer is yes, we build around it.
+        </p>
+
       </div>
+    </div>
+  </section>
+
+  <section class="principle-section">
+    <div class="principle-inner">
+
+      <article class="principle">
+
+        <div class="principle-number">
+          01
+        </div>
+
+        <h3>
+          Focused
+        </h3>
+
+        <p>
+          Each tool is built around one clear problem instead of
+          trying to become another complicated all-in-one platform.
+        </p>
+
+      </article>
+
+      <article class="principle">
+
+        <div class="principle-number">
+          02
+        </div>
+
+        <h3>
+          Practical
+        </h3>
+
+        <p>
+          Arthiva tools are designed to give you something useful:
+          an estimate, a clearer comparison, a plan or a simpler next step.
+        </p>
+
+      </article>
+
+      <article class="principle">
+
+        <div class="principle-number">
+          03
+        </div>
+
+        <h3>
+          Easy to use
+        </h3>
+
+        <p>
+          No bloated dashboards or complicated onboarding.
+          Open the tool, use it and get the information you came for.
+        </p>
+
+      </article>
 
     </div>
   </section>
@@ -995,6 +1041,7 @@
     <div class="payment-inner">
 
       <div class="payment-copy">
+
         <div class="payment-label">
           Payments & Digital Products
         </div>
@@ -1004,45 +1051,52 @@
         </h2>
 
         <p>
-          Many Arthiva Labs tools include a free calculator or
-          utility. Some products also offer optional paid digital
-          reports or premium features.
+          Many Arthiva Labs tools are free to use. Some products
+          may also include an optional paid digital report, download
+          or premium feature.
         </p>
+
       </div>
 
       <div class="payment-points">
 
         <div class="payment-point">
+
           <strong>
-            Prices are displayed before purchase
+            Free tools stay useful
           </strong>
 
           <span>
-            The price of a premium digital product is shown clearly
+            When a product includes a free utility, the free experience
+            is designed to provide real value.
+          </span>
+
+        </div>
+
+        <div class="payment-point">
+
+          <strong>
+            Prices are shown before purchase
+          </strong>
+
+          <span>
+            The price and nature of a paid digital product are displayed
             before the payment process begins.
           </span>
+
         </div>
 
         <div class="payment-point">
+
           <strong>
-            Secure payment processing
+            Digital access after payment verification
           </strong>
 
           <span>
-            Payments for eligible digital products are processed
-            through secure payment partners.
+            Eligible paid reports and digital features are unlocked
+            after successful payment verification.
           </span>
-        </div>
 
-        <div class="payment-point">
-          <strong>
-            Digital access after verification
-          </strong>
-
-          <span>
-            Premium digital reports and eligible paid features are
-            unlocked after successful payment verification.
-          </span>
         </div>
 
       </div>
@@ -1051,29 +1105,52 @@
   </section>
 
   <footer>
+
     <div class="footer-inner">
 
       <div>
+
         <div class="footer-brand">
           ARTHIVA LABS
         </div>
 
         <p class="footer-copy">
-          Focused calculators, digital utilities and educational
-          tools for everyday decisions.
+          Small digital tools for everyday problems, decisions
+          and practical life.
         </p>
+
       </div>
 
       <div class="footer-links">
-        <a href="#about">About</a>
-        <a href="#tools">Tools</a>
-        <a href="#payments">Payments</a>
+
+        <a href="#about">
+          About
+        </a>
+
+        <a href="#tools">
+          Tools
+        </a>
+
+        <a href="#payments">
+          Payments
+        </a>
+
         <a href="mailto:adrijachoudhury42@gmail.com">
           Contact
         </a>
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
-        <a href="/refund.html">Refund Policy</a>
+
+        <a href="/privacy.html">
+          Privacy
+        </a>
+
+        <a href="/terms.html">
+          Terms
+        </a>
+
+        <a href="/refund.html">
+          Refund Policy
+        </a>
+
       </div>
 
     </div>
@@ -1081,6 +1158,7 @@
     <div class="copyright">
       © 2026 Arthiva Labs. Independent digital product studio.
     </div>
+
   </footer>
 
   <script>
@@ -1116,7 +1194,7 @@
 
         const searchContent =
           (
-            card.dataset.search +
+            (card.dataset.search || "") +
             " " +
             card.textContent
           ).toLowerCase();
@@ -1132,7 +1210,8 @@
           searchContent.includes(searchTerm);
 
         const visible =
-          matchesFilter && matchesSearch;
+          matchesFilter &&
+          matchesSearch;
 
         card.style.display =
           visible ? "flex" : "none";
@@ -1140,31 +1219,42 @@
         if (visible) {
           visibleCount += 1;
 
-          if (card.classList.contains("live")) {
+          if (
+            card.classList.contains("live")
+          ) {
             liveCount += 1;
           }
         }
       });
 
       if (visibleCount === 0) {
-        noResults.style.display = "block";
+        noResults.style.display =
+          "block";
 
         toolCount.textContent =
-          "No matching tools";
+          "No matching live tool yet";
       } else {
-        noResults.style.display = "none";
+        noResults.style.display =
+          "none";
 
-        if (activeFilter === "all" && !searchTerm) {
+        if (
+          activeFilter === "all" &&
+          !searchTerm
+        ) {
           toolCount.textContent =
             liveCount +
-            " tools available · More being built";
+            (
+              liveCount === 1
+                ? " tool available · More being built"
+                : " tools available · More being built"
+            );
         } else {
           toolCount.textContent =
             visibleCount +
             (
               visibleCount === 1
-                ? " matching tool"
-                : " matching tools"
+                ? " matching item"
+                : " matching items"
             );
         }
       }
@@ -1175,25 +1265,31 @@
       filterTools
     );
 
-    filterButtons.forEach(function (button) {
-      button.addEventListener(
-        "click",
-        function () {
-          filterButtons.forEach(
-            function (item) {
-              item.classList.remove("active");
-            }
-          );
+    filterButtons.forEach(
+      function (button) {
+        button.addEventListener(
+          "click",
+          function () {
+            filterButtons.forEach(
+              function (item) {
+                item.classList.remove(
+                  "active"
+                );
+              }
+            );
 
-          button.classList.add("active");
+            button.classList.add(
+              "active"
+            );
 
-          activeFilter =
-            button.dataset.filter;
+            activeFilter =
+              button.dataset.filter;
 
-          filterTools();
-        }
-      );
-    });
+            filterTools();
+          }
+        );
+      }
+    );
 
     filterTools();
   </script>
