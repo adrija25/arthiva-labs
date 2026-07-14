@@ -1029,16 +1029,17 @@
                 id="premiumPlanButton"
                 class="premium-button"
                 type="button"
-                disabled
               >
-                ₹199 Purchase Setup Coming Next
+                Get My Personalised Plan · ₹199
               </button>
 
-              <p class="premium-note">
-                The paid purchase button is intentionally inactive in this first
-                functional build. Payment and secure personalised-plan delivery
-                will be connected through Arthiva Labs infrastructure after the
-                free calculator and assessment are tested live.
+              <p
+                id="premiumPlanStatus"
+                class="premium-note"
+              >
+                Secure payment through Arthiva Labs. Complete both the exit-date
+                calculator and transition assessment before purchasing your
+                personalised plan.
               </p>
 
             </div>
@@ -1120,6 +1121,8 @@
     </div>
   </footer>
 
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   <script>
     const tabButtons = document.querySelectorAll(".tab-button");
     const toolPanels = document.querySelectorAll(".tool-panel");
@@ -1166,6 +1169,9 @@
       "resultCalendarDays"
     );
 
+    let latestExitCalculationData = null;
+    let latestAssessmentReportData = null;
+
     noticePeriod.addEventListener("change", () => {
       customNoticeField.style.display =
         noticePeriod.value === "custom"
@@ -1191,6 +1197,14 @@
       }).format(date);
     }
 
+    function formatIsoLocalDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
+
     calculateExitDate.addEventListener("click", () => {
       const selectedDate = resignationDate.value;
 
@@ -1207,6 +1221,7 @@
       ) {
         calculatorError.classList.add("visible");
         exitResult.classList.remove("visible");
+        latestExitCalculationData = null;
         return;
       }
 
@@ -1223,6 +1238,15 @@
       estimatedLastDay.setDate(
         estimatedLastDay.getDate() + daysToAdd
       );
+
+      latestExitCalculationData = {
+        resignationDate: selectedDate,
+        noticePeriodDays: noticeDays,
+        noticeCountingMethod: countingMethod.value,
+        estimatedLastWorkingDay: formatIsoLocalDate(
+          estimatedLastDay
+        )
+      };
 
       lastWorkingDay.textContent = formatDate(estimatedLastDay);
       resultResignationDate.textContent = formatDate(startDate);
@@ -1458,6 +1482,7 @@
       if (answers.length !== assessmentQuestions.length) {
         assessmentError.classList.add("visible");
         assessmentResult.classList.remove("visible");
+        latestAssessmentReportData = null;
         return;
       }
 
@@ -1491,6 +1516,11 @@
       const strongestCategory = categoryAverages[0].category;
       const weakestCategory =
         categoryAverages[categoryAverages.length - 1].category;
+
+      latestAssessmentReportData = {
+        assessmentAnswers: answers,
+        assessmentScore: percentageScore
+      };
 
       let title;
       let summary;
@@ -1535,6 +1565,201 @@
         behavior: "smooth",
         block: "start"
       });
+    });
+
+    const premiumPlanButton = document.getElementById(
+      "premiumPlanButton"
+    );
+
+    const premiumPlanStatus = document.getElementById(
+      "premiumPlanStatus"
+    );
+
+    premiumPlanButton.addEventListener("click", async () => {
+      if (!latestExitCalculationData) {
+        premiumPlanStatus.textContent =
+          "Calculate your estimated exit date first. Your personalised plan uses your exit timeline.";
+
+        switchTab("calculator");
+
+        document
+          .getElementById("calculator")
+          .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+
+        return;
+      }
+
+      if (!latestAssessmentReportData) {
+        premiumPlanStatus.textContent =
+          "Complete the transition assessment before purchasing your personalised plan.";
+
+        switchTab("assessment");
+
+        transitionAssessment.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        return;
+      }
+
+      const reportData = {
+        ...latestExitCalculationData,
+        ...latestAssessmentReportData
+      };
+
+      premiumPlanButton.disabled = true;
+      premiumPlanButton.textContent =
+        "Preparing secure payment...";
+
+      premiumPlanStatus.textContent =
+        "Connecting to Arthiva Labs secure payment infrastructure.";
+
+      try {
+        const paymentResponse = await fetch(
+          "/api/create-payment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              product: "exit-date",
+              offer: "transition-plan",
+              market: "india"
+            })
+          }
+        );
+
+        const paymentData = await paymentResponse.json();
+
+        if (
+          !paymentResponse.ok ||
+          !paymentData.success ||
+          paymentData.paymentProvider !== "razorpay"
+        ) {
+          throw new Error(
+            paymentData.error ||
+            "Unable to prepare payment."
+          );
+        }
+
+        if (typeof Razorpay === "undefined") {
+          throw new Error(
+            "Secure payment checkout could not be loaded."
+          );
+        }
+
+        const checkout = new Razorpay({
+          key: paymentData.razorpayKeyId,
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+          name: "Arthiva Labs",
+          description: paymentData.offerName,
+          order_id: paymentData.orderId,
+
+          handler: async function (razorpayResponse) {
+            premiumPlanButton.textContent =
+              "Verifying payment...";
+
+            premiumPlanStatus.textContent =
+              "Payment received. Creating your secure personalised plan access.";
+
+            try {
+              const verificationResponse = await fetch(
+                "/api/verify-payment",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    razorpay_order_id:
+                      razorpayResponse.razorpay_order_id,
+                    razorpay_payment_id:
+                      razorpayResponse.razorpay_payment_id,
+                    razorpay_signature:
+                      razorpayResponse.razorpay_signature,
+                    product: "exit-date",
+                    offer: "transition-plan",
+                    reportData: reportData
+                  })
+                }
+              );
+
+              const verificationData =
+                await verificationResponse.json();
+
+              if (
+                !verificationResponse.ok ||
+                !verificationData.success ||
+                !verificationData.verified ||
+                !verificationData.reportToken
+              ) {
+                throw new Error(
+                  verificationData.error ||
+                  "Payment verification failed."
+                );
+              }
+
+              premiumPlanStatus.textContent =
+                "Payment verified. Loading your personalised transition plan.";
+
+              window.location.href =
+                "/products/exit-date/report.html?token=" +
+                encodeURIComponent(
+                  verificationData.reportToken
+                );
+
+            } catch (verificationError) {
+              console.error(
+                "Exit Date payment verification error",
+                verificationError
+              );
+
+              premiumPlanStatus.textContent =
+                "Your payment may have completed, but the personalised plan could not be opened. Please contact Arthiva Labs support before trying to pay again.";
+
+              premiumPlanButton.disabled = false;
+              premiumPlanButton.textContent =
+                "Get My Personalised Plan · ₹199";
+            }
+          },
+
+          modal: {
+            ondismiss: function () {
+              premiumPlanStatus.textContent =
+                "Payment was not completed. You can try again when ready.";
+
+              premiumPlanButton.disabled = false;
+              premiumPlanButton.textContent =
+                "Get My Personalised Plan · ₹199";
+            }
+          },
+
+          theme: {
+            color: "#173b31"
+          }
+        });
+
+        checkout.open();
+
+      } catch (paymentError) {
+        console.error(
+          "Exit Date payment preparation error",
+          paymentError
+        );
+
+        premiumPlanStatus.textContent =
+          "Secure payment could not be prepared right now. Please try again.";
+
+        premiumPlanButton.disabled = false;
+        premiumPlanButton.textContent =
+          "Get My Personalised Plan · ₹199";
+      }
     });
   </script>
 
