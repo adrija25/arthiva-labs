@@ -1,0 +1,18 @@
+{
+  "studio": "Arthiva Labs",
+  "products": [
+    {
+      "id": 1,
+      "name": "CTC Reality",
+      "slug": "ctc-reality",
+      "status": "live",
+      "category": "salary",
+      "url": "/products/ctc-reality/",
+      "monetisation": "affiliate-leads-and-paid-report",
+      "payments": {
+        "india": "razorpay",
+        "international": "paypal"
+      }
+    }
+  ]
+}
