@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Exit Date — Notice Period & Last Working Day Calculator India</title>
+  <meta
+    name="description"
+    content="Calculate your estimated last working day, understand your notice period timeline and assess how ready you are to leave your current company and start the next role well."
+  >
+
+  <link
+    rel="canonical"
+    href="https://arthiva-labs.pages.dev/products/exit-date/"
+  >
+
+  <meta property="og:title" content="Exit Date — Leave Well. Start Strong.">
+  <meta
+    property="og:description"
+    content="Calculate your estimated last working day and assess your career transition readiness."
+  >
+  <meta
+    property="og:url"
+    content="https://arthiva-labs.pages.dev/products/exit-date/"
+  >
+  <meta property="og:type" content="website">
+
+  <style>
+    :root {
+      --ink: #18231f;
+      --forest: #214d40;
+      --forest-dark: #173b31;
+      --sage: #708c7e;
+      --cream: #f6f1e7;
+      --paper: #fffdf8;
+      --gold: #c99635;
+      --gold-soft: #e8d4a6;
+      --line: #ddd5c7;
+      --muted: #62706a;
+      --soft: #efebe1;
+      --white: #ffffff;
+      --danger: #8a433b;
+      --shadow: 0 18px 45px rgba(35, 48, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.6;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .site-header {
+      border-top: 1px solid var(--ink);
+      padding: 24px 0;
+    }
+
+    .header-inner,
+    .container {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--forest-dark);
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--forest-dark);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .arthiva-label {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .hero {
+      padding: 72px 0 54px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 15px;
+      border: 1px solid var(--gold-soft);
+      border-radius: 999px;
+      color: var(--forest);
+      background: rgba(255, 253, 248, 0.72);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      max-width: 860px;
+      margin: 18px auto 20px;
+      color: var(--forest-dark);
+      font-size: clamp(46px, 7vw, 82px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .hero p {
+      max-width: 730px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 23px);
+    }
+
+    .tool-shell {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 64px;
+    }
+
+    .tool-nav {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      padding: 10px;
+      gap: 10px;
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-button {
+      border: 0;
+      border-radius: 18px;
+      padding: 17px 20px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .tab-button.active {
+      background: var(--forest-dark);
+      color: var(--white);
+      box-shadow: 0 10px 25px rgba(23, 59, 49, 0.15);
+    }
+
+    .tool-panel {
+      display: none;
+      padding: 54px;
+    }
+
+    .tool-panel.active {
+      display: block;
+    }
+
+    .section-heading {
+      margin: 0;
+      color: var(--forest-dark);
+      font-size: clamp(32px, 4vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .section-copy {
+      margin: 14px 0 36px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 800;
+      color: var(--forest-dark);
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--white);
+      color: var(--ink);
+      border-radius: 17px;
+      padding: 17px 18px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--forest);
+      box-shadow: 0 0 0 4px rgba(33, 77, 64, 0.08);
+    }
+
+    .primary-button {
+      width: 100%;
+      border: 0;
+      border-radius: 17px;
+      padding: 18px 24px;
+      margin-top: 28px;
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 900;
+      font-size: 18px;
+      box-shadow: 0 12px 30px rgba(201, 150, 53, 0.16);
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .result {
+      display: none;
+      margin-top: 34px;
+      padding-top: 34px;
+      border-top: 1px solid var(--line);
+    }
+
+    .result.visible {
+      display: block;
+    }
+
+    .result-label {
+      color: var(--sage);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .result-hero {
+      background: var(--forest-dark);
+      color: var(--white);
+      padding: 28px;
+      border-radius: 22px;
+      margin-top: 15px;
+    }
+
+    .result-hero small {
+      display: block;
+      color: rgba(255, 255, 255, 0.72);
+      font-weight: 700;
+    }
+
+    .result-hero strong {
+      display: block;
+      font-size: clamp(36px, 6vw, 62px);
+      line-height: 1;
+      margin-top: 10px;
+      letter-spacing: -0.04em;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .result-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      background: var(--white);
+    }
+
+    .result-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .result-card strong {
+      display: block;
+      color: var(--forest-dark);
+      margin-top: 6px;
+      font-size: 21px;
+    }
+
+    .note {
+      background: var(--soft);
+      color: var(--muted);
+      padding: 17px 20px;
+      border-radius: 16px;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .assessment-intro {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 36px;
+    }
+
+    .assessment-stat {
+      background: var(--forest-dark);
+      color: var(--white);
+      border-radius: 22px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .assessment-stat strong {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .assessment-stat span {
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .question {
+      padding: 26px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .question:first-child {
+      border-top: 0;
+    }
+
+    .question-number {
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .question h3 {
+      margin: 7px 0 15px;
+      color: var(--forest-dark);
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .answer-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .answer-option {
+      position: relative;
+    }
+
+    .answer-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .answer-option label {
+      min-height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px;
+      background: var(--white);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .answer-option input:checked + label {
+      background: var(--forest-dark);
+      color: var(--white);
+      border-color: var(--forest-dark);
+    }
+
+    .assessment-result {
+      display: none;
+      margin-top: 38px;
+      padding-top: 38px;
+      border-top: 1px solid var(--line);
+    }
+
+    .assessment-result.visible {
+      display: block;
+    }
+
+    .score-card {
+      background: var(--forest-dark);
+      color: var(--white);
+      border-radius: 24px;
+      padding: 34px;
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+    }
+
+    .score-card h3 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.05;
+    }
+
+    .score-number {
+      font-size: clamp(48px, 7vw, 74px);
+      font-weight: 900;
+      line-height: 0.9;
+      white-space: nowrap;
+    }
+
+    .score-card p {
+      color: rgba(255, 255, 255, 0.76);
+      margin: 18px 0 0;
+      max-width: 760px;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .insight-card {
+      border: 1px solid var(--line);
+      background: var(--white);
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    .insight-card h4 {
+      margin: 0 0 10px;
+      color: var(--forest-dark);
+      font-size: 20px;
+    }
+
+    .insight-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .premium-card {
+      margin-top: 22px;
+      border: 1px solid var(--gold-soft);
+      background: #fbf4e3;
+      border-radius: 24px;
+      padding: 30px;
+    }
+
+    .premium-card .premium-tag {
+      color: var(--forest);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .premium-card h3 {
+      color: var(--forest-dark);
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      margin: 10px 0;
+    }
+
+    .premium-card p {
+      color: var(--muted);
+    }
+
+    .premium-list {
+      margin: 20px 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .premium-list li {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid var(--gold-soft);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--forest-dark);
+      font-weight: 700;
+    }
+
+    .premium-button {
+      border: 0;
+      background: var(--forest-dark);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 17px 22px;
+      font-weight: 900;
+      width: 100%;
+    }
+
+    .premium-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.72;
+    }
+
+    .premium-note {
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .content-section {
+      padding: 24px 0 72px;
+    }
+
+    .content-section h2 {
+      color: var(--forest-dark);
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      max-width: 780px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .content-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 26px;
+    }
+
+    .content-card h3 {
+      color: var(--forest-dark);
+      margin-top: 0;
+    }
+
+    .content-card p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 40px 0 50px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 28px;
+      align-items: flex-start;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links a {
+      color: var(--forest-dark);
+    }
+
+    .error-message {
+      display: none;
+      color: var(--danger);
+      font-weight: 700;
+      margin-top: 14px;
+    }
+
+    .error-message.visible {
+      display: block;
+    }
+
+    @media (max-width: 800px) {
+      .hero {
+        padding-top: 46px;
+      }
+
+      .tool-panel {
+        padding: 32px 22px;
+      }
+
+      .form-grid,
+      .result-grid,
+      .assessment-intro,
+      .insight-grid,
+      .content-grid,
+      .premium-list {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .score-row,
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .arthiva-label {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .header-inner,
+      .container {
+        width: min(100% - 24px, 1120px);
+      }
+
+      .brand {
+        font-size: 17px;
+      }
+
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .hero h1 {
+        font-size: 48px;
+      }
+
+      .tool-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-options {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-shell {
+        border-radius: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/products/exit-date/">
+        <span class="brand-icon">↗</span>
+        <span>Exit Date</span>
+      </a>
+
+      <a class="arthiva-label" href="/">
+        An Arthiva Labs utility
+      </a>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">Career transition utility</span>
+
+        <h1>Leave well.<br>Start strong.</h1>
+
+        <p>
+          Calculate your estimated last working day, then assess whether
+          you are genuinely ready to close one professional chapter and
+          enter the next without carrying avoidable chaos with you.
+        </p>
+      </div>
+    </section>
+
+    <div class="container">
+
+      <section class="tool-shell">
+
+        <nav class="tool-nav" aria-label="Exit Date tools">
+          <button
+            class="tab-button active"
+            type="button"
+            data-tab="calculator"
+          >
+            Exit Date Calculator
+          </button>
+
+          <button
+            class="tab-button"
+            type="button"
+            data-tab="assessment"
+          >
+            Transition Assessment
+          </button>
+        </nav>
+
+        <section
+          id="calculator"
+          class="tool-panel active"
+        >
+          <h2 class="section-heading">
+            Calculate your estimated last working day
+          </h2>
+
+          <p class="section-copy">
+            Enter your resignation date and notice period. Exit Date will
+            calculate a simple calendar-day estimate of your final working
+            date.
+          </p>
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label for="resignationDate">
+                Resignation date
+              </label>
+
+              <input
+                id="resignationDate"
+                type="date"
+              >
+            </div>
+
+            <div class="field">
+              <label for="noticePeriod">
+                Notice period
+              </label>
+
+              <select id="noticePeriod">
+                <option value="7">7 days</option>
+                <option value="15">15 days</option>
+                <option value="30" selected>30 days</option>
+                <option value="45">45 days</option>
+                <option value="60">60 days</option>
+                <option value="90">90 days</option>
+                <option value="custom">Custom notice period</option>
+              </select>
+            </div>
+
+            <div
+              id="customNoticeField"
+              class="field full"
+              style="display: none;"
+            >
+              <label for="customNotice">
+                Custom notice period in days
+              </label>
+
+              <input
+                id="customNotice"
+                type="number"
+                min="0"
+                max="365"
+                placeholder="Example: 75"
+              >
+            </div>
+
+            <div class="field full">
+              <label for="countingMethod">
+                How should this estimate count the notice period?
+              </label>
+
+              <select id="countingMethod">
+                <option value="after" selected>
+                  Day after resignation is Day 1
+                </option>
+
+                <option value="same">
+                  Resignation date is Day 1
+                </option>
+              </select>
+            </div>
+
+          </div>
+
+          <button
+            id="calculateExitDate"
+            class="primary-button"
+            type="button"
+          >
+            Calculate My Exit Date
+          </button>
+
+          <p
+            id="calculatorError"
+            class="error-message"
+          >
+            Please enter a valid resignation date and notice period.
+          </p>
+
+          <div
+            id="exitResult"
+            class="result"
+          >
+            <span class="result-label">
+              Your estimated exit timeline
+            </span>
+
+            <div class="result-hero">
+              <small>Estimated last working day</small>
+              <strong id="lastWorkingDay">—</strong>
+            </div>
+
+            <div class="result-grid">
+
+              <div class="result-card">
+                <span>Resignation date</span>
+                <strong id="resultResignationDate">—</strong>
+              </div>
+
+              <div class="result-card">
+                <span>Notice period</span>
+                <strong id="resultNoticePeriod">—</strong>
+              </div>
+
+              <div class="result-card">
+                <span>Estimated calendar timeline</span>
+                <strong id="resultCalendarDays">—</strong>
+              </div>
+
+            </div>
+
+            <div class="note">
+              This is a calendar-day planning estimate, not an HR or legal
+              determination. Your employment contract, HR policy, resignation
+              acceptance date, notice waiver, notice buyout, leave adjustment,
+              weekends, holidays or employer-specific counting rules may change
+              your official last working day. Confirm the final date with your
+              employer or HR team.
+            </div>
+
+            <button
+              id="openAssessment"
+              class="primary-button"
+              type="button"
+            >
+              Check My Career Transition Readiness
+            </button>
+          </div>
+
+        </section>
+
+        <section
+          id="assessment"
+          class="tool-panel"
+        >
+          <div class="assessment-intro">
+
+            <div>
+              <h2 class="section-heading">
+                Are you ready to leave well and enter the next company well?
+              </h2>
+
+              <p class="section-copy">
+                This is not a personality test. It is a practical self-assessment
+                across professional closure, handover, reputation, new-company
+                research and first-30-day readiness.
+              </p>
+            </div>
+
+            <div class="assessment-stat">
+              <strong>15</strong>
+              <span>practical transition questions</span>
+            </div>
+
+          </div>
+
+          <form id="transitionAssessment">
+
+            <div id="questionsContainer"></div>
+
+            <p
+              id="assessmentError"
+              class="error-message"
+            >
+              Please answer all 15 questions before viewing your result.
+            </p>
+
+            <button
+              class="primary-button"
+              type="submit"
+            >
+              See My Transition Readiness
+            </button>
+
+          </form>
+
+          <div
+            id="assessmentResult"
+            class="assessment-result"
+          >
+
+            <div class="score-card">
+
+              <div class="score-row">
+                <div>
+                  <span class="result-label">
+                    Your transition readiness
+                  </span>
+
+                  <h3 id="readinessTitle">
+                    Your result
+                  </h3>
+                </div>
+
+                <div
+                  id="readinessScore"
+                  class="score-number"
+                >
+                  0/100
+                </div>
+              </div>
+
+              <p id="readinessSummary"></p>
+
+            </div>
+
+            <div class="insight-grid">
+
+              <article class="insight-card">
+                <h4>Your strongest transition area</h4>
+                <p id="strongestArea"></p>
+              </article>
+
+              <article class="insight-card">
+                <h4>Your biggest avoidable risk</h4>
+                <p id="riskArea"></p>
+              </article>
+
+            </div>
+
+            <div class="premium-card">
+
+              <span class="premium-tag">
+                Personalised transition plan · ₹199
+              </span>
+
+              <h3>
+                Clean Exit & Strong Entry Plan
+              </h3>
+
+              <p>
+                Your free assessment tells you where you stand. The personalised
+                plan is designed to turn your answers into a practical exit and
+                entry checklist for your specific transition profile.
+              </p>
+
+              <ul class="premium-list">
+                <li>Your personalised clean-exit priorities</li>
+                <li>Handover and documentation checklist</li>
+                <li>Relationship-preserving exit guidance</li>
+                <li>What to research about the new company</li>
+                <li>New-company etiquette risk checklist</li>
+                <li>Your first 30-day entry priorities</li>
+              </ul>
+
+              <button
+                id="premiumPlanButton"
+                class="premium-button"
+                type="button"
+                disabled
+              >
+                ₹199 Purchase Setup Coming Next
+              </button>
+
+              <p class="premium-note">
+                The paid purchase button is intentionally inactive in this first
+                functional build. Payment and secure personalised-plan delivery
+                will be connected through Arthiva Labs infrastructure after the
+                free calculator and assessment are tested live.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </section>
+
+      <section class="content-section">
+
+        <span class="eyebrow">
+          Beyond the resignation email
+        </span>
+
+        <h2>
+          A career transition is two professional moments, not one.
+        </h2>
+
+        <div class="content-grid">
+
+          <article class="content-card">
+            <h3>Close the old role properly</h3>
+            <p>
+              Your final weeks can affect references, former-manager
+              relationships and whether colleagues remember your departure
+              as dependable or disruptive.
+            </p>
+          </article>
+
+          <article class="content-card">
+            <h3>Research the new environment</h3>
+            <p>
+              A company website and job description rarely tell you everything.
+              Reporting structure, communication norms, business context and
+              role expectations deserve deliberate research.
+            </p>
+          </article>
+
+          <article class="content-card">
+            <h3>Enter without overperforming blindly</h3>
+            <p>
+              Starting strong does not mean proving everything in your first
+              week. Observe, ask useful questions, understand expectations and
+              build professional trust deliberately.
+            </p>
+          </article>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+
+      <div>
+        <strong>Exit Date</strong>
+
+        <p>
+          Exit Date is a digital product developed and operated by Arthiva Labs.
+          <br>
+          © 2026 Arthiva Labs. All rights reserved.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="/">Explore Arthiva Labs</a>
+        <a href="/#privacy">Privacy</a>
+        <a href="/#terms">Terms</a>
+        <a href="/#refunds">Refunds</a>
+        <a href="/#contact">Contact</a>
+      </div>
+
+    </div>
+  </footer>
+
+  <script>
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const toolPanels = document.querySelectorAll(".tool-panel");
+
+    function switchTab(tabId) {
+      tabButtons.forEach((button) => {
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === tabId
+        );
+      });
+
+      toolPanels.forEach((panel) => {
+        panel.classList.toggle(
+          "active",
+          panel.id === tabId
+        );
+      });
+    }
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        switchTab(button.dataset.tab);
+      });
+    });
+
+    const resignationDate = document.getElementById("resignationDate");
+    const noticePeriod = document.getElementById("noticePeriod");
+    const customNoticeField = document.getElementById("customNoticeField");
+    const customNotice = document.getElementById("customNotice");
+    const countingMethod = document.getElementById("countingMethod");
+    const calculateExitDate = document.getElementById("calculateExitDate");
+    const calculatorError = document.getElementById("calculatorError");
+    const exitResult = document.getElementById("exitResult");
+
+    const lastWorkingDay = document.getElementById("lastWorkingDay");
+    const resultResignationDate = document.getElementById(
+      "resultResignationDate"
+    );
+    const resultNoticePeriod = document.getElementById(
+      "resultNoticePeriod"
+    );
+    const resultCalendarDays = document.getElementById(
+      "resultCalendarDays"
+    );
+
+    noticePeriod.addEventListener("change", () => {
+      customNoticeField.style.display =
+        noticePeriod.value === "custom"
+          ? "flex"
+          : "none";
+    });
+
+    function parseLocalDate(value) {
+      const parts = value.split("-");
+
+      return new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2])
+      );
+    }
+
+    function formatDate(date) {
+      return new Intl.DateTimeFormat("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    calculateExitDate.addEventListener("click", () => {
+      const selectedDate = resignationDate.value;
+
+      const noticeDays =
+        noticePeriod.value === "custom"
+          ? Number(customNotice.value)
+          : Number(noticePeriod.value);
+
+      if (
+        !selectedDate ||
+        !Number.isFinite(noticeDays) ||
+        noticeDays < 0 ||
+        noticeDays > 365
+      ) {
+        calculatorError.classList.add("visible");
+        exitResult.classList.remove("visible");
+        return;
+      }
+
+      calculatorError.classList.remove("visible");
+
+      const startDate = parseLocalDate(selectedDate);
+      const estimatedLastDay = new Date(startDate);
+
+      const daysToAdd =
+        countingMethod.value === "same"
+          ? Math.max(noticeDays - 1, 0)
+          : noticeDays;
+
+      estimatedLastDay.setDate(
+        estimatedLastDay.getDate() + daysToAdd
+      );
+
+      lastWorkingDay.textContent = formatDate(estimatedLastDay);
+      resultResignationDate.textContent = formatDate(startDate);
+      resultNoticePeriod.textContent = `${noticeDays} days`;
+      resultCalendarDays.textContent = `${daysToAdd} days after resignation`;
+
+      exitResult.classList.add("visible");
+
+      exitResult.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+
+    document
+      .getElementById("openAssessment")
+      .addEventListener("click", () => {
+        switchTab("assessment");
+
+        document
+          .getElementById("assessment")
+          .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+      });
+
+    const assessmentQuestions = [
+      {
+        text: "I know exactly what work, files, responsibilities and open tasks need to be handed over before I leave.",
+        category: "closure"
+      },
+      {
+        text: "My important work is documented well enough that another person can understand what happens next.",
+        category: "closure"
+      },
+      {
+        text: "I can explain the status of my active projects without relying entirely on memory.",
+        category: "closure"
+      },
+      {
+        text: "I have a professional plan for communicating my departure to colleagues, clients or stakeholders who need to know.",
+        category: "relationships"
+      },
+      {
+        text: "I can leave without using my final weeks to settle scores, prove a point or publicly criticise people.",
+        category: "relationships"
+      },
+      {
+        text: "I know which professional relationships I genuinely want to preserve after leaving.",
+        category: "relationships"
+      },
+      {
+        text: "I have reviewed my employment documents or HR information for notice, handover and exit requirements.",
+        category: "closure"
+      },
+      {
+        text: "I understand what company information, files or data I should not take with me when I leave.",
+        category: "closure"
+      },
+      {
+        text: "I have researched the new company's business, products or services beyond reading the job description.",
+        category: "research"
+      },
+      {
+        text: "I understand who I am likely to report to and what success in my new role may look like.",
+        category: "research"
+      },
+      {
+        text: "I have thought about the new company's communication style, work norms and professional expectations.",
+        category: "research"
+      },
+      {
+        text: "I have useful questions prepared for my manager or team during my first weeks.",
+        category: "entry"
+      },
+      {
+        text: "I can enter the new role without feeling I must prove my entire value in the first few days.",
+        category: "entry"
+      },
+      {
+        text: "I have a realistic plan for learning names, systems, priorities and workflows during my first month.",
+        category: "entry"
+      },
+      {
+        text: "I know which habits, frustrations or assumptions from my current company I do not want to carry into the new one.",
+        category: "entry"
+      }
+    ];
+
+    const answerChoices = [
+      {
+        label: "Not at all",
+        value: 0
+      },
+      {
+        label: "A little",
+        value: 1
+      },
+      {
+        label: "Mostly",
+        value: 2
+      },
+      {
+        label: "Yes, clearly",
+        value: 3
+      }
+    ];
+
+    const questionsContainer = document.getElementById(
+      "questionsContainer"
+    );
+
+    assessmentQuestions.forEach((question, questionIndex) => {
+      const questionElement = document.createElement("div");
+      questionElement.className = "question";
+
+      const options = answerChoices
+        .map((choice, choiceIndex) => {
+          const inputId =
+            `question-${questionIndex}-choice-${choiceIndex}`;
+
+          return `
+            <div class="answer-option">
+              <input
+                id="${inputId}"
+                type="radio"
+                name="question-${questionIndex}"
+                value="${choice.value}"
+              >
+              <label for="${inputId}">
+                ${choice.label}
+              </label>
+            </div>
+          `;
+        })
+        .join("");
+
+      questionElement.innerHTML = `
+        <span class="question-number">
+          Question ${questionIndex + 1}
+        </span>
+
+        <h3>${question.text}</h3>
+
+        <div class="answer-options">
+          ${options}
+        </div>
+      `;
+
+      questionsContainer.appendChild(questionElement);
+    });
+
+    const transitionAssessment = document.getElementById(
+      "transitionAssessment"
+    );
+    const assessmentError = document.getElementById(
+      "assessmentError"
+    );
+    const assessmentResult = document.getElementById(
+      "assessmentResult"
+    );
+
+    const readinessTitle = document.getElementById(
+      "readinessTitle"
+    );
+    const readinessScore = document.getElementById(
+      "readinessScore"
+    );
+    const readinessSummary = document.getElementById(
+      "readinessSummary"
+    );
+    const strongestArea = document.getElementById(
+      "strongestArea"
+    );
+    const riskArea = document.getElementById("riskArea");
+
+    const categoryInformation = {
+      closure: {
+        name: "Professional closure and handover",
+        strong:
+          "You appear comparatively prepared to close your current responsibilities with structure, documentation and clearer handover awareness.",
+        risk:
+          "Your exit could become unnecessarily messy if tasks, documents, policy requirements or ownership of open work remain unclear."
+      },
+      relationships: {
+        name: "Professional relationship preservation",
+        strong:
+          "You show awareness that leaving a company is also a reputation and relationship moment, not only an administrative event.",
+        risk:
+          "The way you communicate and behave during your final weeks may create avoidable damage to relationships you could later value."
+      },
+      research: {
+        name: "New-company research",
+        strong:
+          "You are doing more than simply accepting a role. You show stronger awareness of the business and professional environment you are entering.",
+        risk:
+          "You may be entering the new company with too little context about its business, expectations, structure or working norms."
+      },
+      entry: {
+        name: "First-30-day entry readiness",
+        strong:
+          "You show a comparatively grounded approach to learning, observing and building trust during the first month of a new role.",
+        risk:
+          "You may enter the new role reactively, overperform too early or carry assumptions from your previous company into a different environment."
+      }
+    };
+
+    transitionAssessment.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const answers = [];
+      const categoryScores = {
+        closure: [],
+        relationships: [],
+        research: [],
+        entry: []
+      };
+
+      assessmentQuestions.forEach((question, index) => {
+        const selectedAnswer = document.querySelector(
+          `input[name="question-${index}"]:checked`
+        );
+
+        if (selectedAnswer) {
+          const value = Number(selectedAnswer.value);
+
+          answers.push(value);
+          categoryScores[question.category].push(value);
+        }
+      });
+
+      if (answers.length !== assessmentQuestions.length) {
+        assessmentError.classList.add("visible");
+        assessmentResult.classList.remove("visible");
+        return;
+      }
+
+      assessmentError.classList.remove("visible");
+
+      const totalScore = answers.reduce(
+        (sum, value) => sum + value,
+        0
+      );
+
+      const maximumScore = assessmentQuestions.length * 3;
+
+      const percentageScore = Math.round(
+        (totalScore / maximumScore) * 100
+      );
+
+      const categoryAverages = Object.entries(categoryScores)
+        .map(([category, scores]) => {
+          const total = scores.reduce(
+            (sum, value) => sum + value,
+            0
+          );
+
+          return {
+            category,
+            average: total / scores.length
+          };
+        })
+        .sort((a, b) => b.average - a.average);
+
+      const strongestCategory = categoryAverages[0].category;
+      const weakestCategory =
+        categoryAverages[categoryAverages.length - 1].category;
+
+      let title;
+      let summary;
+
+      if (percentageScore >= 85) {
+        title = "Strong transition readiness";
+
+        summary =
+          "You appear highly intentional about both professional closure and entering the next environment with awareness. Your main opportunity is refinement: identify the few remaining weak points before your final working weeks become busy.";
+      } else if (percentageScore >= 65) {
+        title = "Mostly ready, with visible gaps";
+
+        summary =
+          "You have a useful transition foundation, but some parts of your exit or new-role preparation remain underdeveloped. These gaps are easier to solve now than during your final week or first days at the new company.";
+      } else if (percentageScore >= 40) {
+        title = "Your transition needs structure";
+
+        summary =
+          "You may know that you are leaving, but your professional closure and new-company entry plan are not yet equally prepared. A more deliberate checklist could reduce avoidable stress, confusion and relationship damage.";
+      } else {
+        title = "High risk of a reactive transition";
+
+        summary =
+          "Your answers suggest that several important parts of the transition are currently being left to chance. Focus first on handover clarity, professional communication, company research and a realistic first-month learning plan.";
+      }
+
+      readinessTitle.textContent = title;
+      readinessScore.textContent = `${percentageScore}/100`;
+      readinessSummary.textContent = summary;
+
+      strongestArea.textContent =
+        `${categoryInformation[strongestCategory].name}: ` +
+        categoryInformation[strongestCategory].strong;
+
+      riskArea.textContent =
+        `${categoryInformation[weakestCategory].name}: ` +
+        categoryInformation[weakestCategory].risk;
+
+      assessmentResult.classList.add("visible");
+
+      assessmentResult.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+  </script>
+
+</body>
+</html>
