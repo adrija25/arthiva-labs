@@ -800,13 +800,18 @@
                   monthlyInHand: monthlyInHand
                 };
 
-                sessionStorage.setItem(
-                  "ctcRealityReport",
-                  JSON.stringify(reportData)
-                );
+            const reportToken = verification.reportToken;
 
-                window.location.href =
-                  "./report.html";
+if (!reportToken) {
+  paymentStatus.textContent =
+    "Payment was verified, but the report access token is missing.";
+
+  return;
+}
+
+window.location.href =
+  "./report.html?token=" +
+  encodeURIComponent(reportToken);
 
               } catch (error) {
                 paymentStatus.textContent =
