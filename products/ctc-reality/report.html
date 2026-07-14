@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Your CTC Reality Salary Report</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #17231c;
+      --green: #173f2a;
+      --light-green: #e5eee8;
+      --cream: #f7f4ec;
+      --white: #ffffff;
+      --muted: #68716b;
+      --line: #d8ddd9;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+
+    .brand {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 48px;
+    }
+
+    .hero {
+      max-width: 800px;
+      margin-bottom: 48px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1;
+      letter-spacing: -3px;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--muted);
+      max-width: 680px;
+    }
+
+    .status {
+      background: var(--light-green);
+      border: 1px solid var(--line);
+      padding: 18px 22px;
+      margin-bottom: 32px;
+      font-weight: 700;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      padding: 34px;
+    }
+
+    .card.dark {
+      background: var(--green);
+      color: var(--white);
+    }
+
+    .card-label {
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .dark .card-label {
+      color: #cbd8d0;
+    }
+
+    .big-number {
+      font-size: clamp(42px, 6vw, 68px);
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .card-copy {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .dark .card-copy {
+      color: #d8e3dc;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .breakdown {
+      margin-top: 24px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .row span:first-child {
+      color: var(--muted);
+    }
+
+    .row strong {
+      text-align: right;
+    }
+
+    .insight {
+      font-size: 26px;
+      line-height: 1.35;
+      max-width: 850px;
+    }
+
+    .footer-note {
+      margin-top: 42px;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 850px;
+    }
+
+    .locked {
+      display: none;
+      max-width: 700px;
+      margin: 100px auto;
+      background: var(--white);
+      border: 1px solid var(--line);
+      padding: 50px;
+      text-align: center;
+    }
+
+    .locked h1 {
+      font-size: 42px;
+      letter-spacing: -2px;
+    }
+
+    .locked p {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 36px 20px 60px;
+      }
+
+      .report-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .card {
+        padding: 26px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main id="reportPage" class="page">
+
+    <div class="brand">CTC Reality · Arthiva Labs</div>
+
+    <section class="hero">
+      <div class="eyebrow">Your premium salary report</div>
+
+      <h1>Your salary number, explained.</h1>
+
+      <p>
+        A clearer view of the gap between your annual CTC and the money
+        that may actually reach your bank account each month.
+      </p>
+    </section>
+
+    <div class="status">
+      ✓ Payment verified. Your personalised report is unlocked.
+    </div>
+
+    <section class="report-grid">
+
+      <article class="card dark">
+        <div class="card-label">Estimated monthly in-hand</div>
+
+        <div class="big-number" id="reportMonthlyInHand">₹0</div>
+
+        <p class="card-copy">
+          Your simplified estimated monthly take-home amount.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="card-label">Monthly CTC</div>
+
+        <div class="big-number" id="reportMonthlyCtc">₹0</div>
+
+        <p class="card-copy">
+          The monthly equivalent of the annual CTC you entered.
+        </p>
+      </article>
+
+      <article class="card full">
+        <div class="card-label">Your salary breakdown</div>
+
+        <div class="breakdown">
+
+          <div class="row">
+            <span>Annual CTC entered</span>
+            <strong id="reportAnnualCtc">₹0</strong>
+          </div>
+
+          <div class="row">
+            <span>Annual variable pay or bonus</span>
+            <strong id="reportBonus">₹0</strong>
+          </div>
+
+          <div class="row">
+            <span>Estimated annual provident fund</span>
+            <strong id="reportAnnualPf">₹0</strong>
+          </div>
+
+          <div class="row">
+            <span>Estimated annual tax</span>
+            <strong id="reportAnnualTax">₹0</strong>
+          </div>
+
+          <div class="row">
+            <span>Estimated annual in-hand</span>
+            <strong id="reportAnnualInHand">₹0</strong>
+          </div>
+
+        </div>
+      </article>
+
+      <article class="card full">
+        <div class="card-label">Your CTC reality</div>
+
+        <p class="insight" id="salaryInsight">
+          Your personalised salary insight will appear here.
+        </p>
+      </article>
+
+    </section>
+
+    <p class="footer-note">
+      This report is a simplified estimate and is not payroll, tax, legal or
+      financial advice. Actual salary structure and in-hand pay depend on your
+      employer, tax regime, benefits, deductions, payroll policies and other
+      salary components.
+    </p>
+
+  </main>
+
+  <section id="lockedPage" class="locked">
+    <h1>Report unavailable</h1>
+
+    <p>
+      We could not find your verified CTC Reality report details.
+      Return to the calculator and complete the premium report purchase.
+    </p>
+  </section>
+
+  <script>
+    function formatINR(value) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+      }).format(Number(value) || 0);
+    }
+
+    const reportDataRaw = sessionStorage.getItem("ctcRealityReport");
+
+    if (!reportDataRaw) {
+      document.getElementById("reportPage").style.display = "none";
+      document.getElementById("lockedPage").style.display = "block";
+    } else {
+      try {
+        const data = JSON.parse(reportDataRaw);
+
+        if (!data.paymentVerified) {
+          throw new Error("Payment not verified");
+        }
+
+        const annualCtc = Number(data.annualCtc) || 0;
+        const bonus = Number(data.bonus) || 0;
+        const monthlyPf = Number(data.monthlyPf) || 0;
+        const annualTax = Number(data.annualTax) || 0;
+        const monthlyInHand = Number(data.monthlyInHand) || 0;
+
+        const monthlyCtc = annualCtc / 12;
+        const annualPf = monthlyPf * 12;
+        const annualInHand = monthlyInHand * 12;
+
+        document.getElementById("reportMonthlyInHand").textContent =
+          formatINR(monthlyInHand);
+
+        document.getElementById("reportMonthlyCtc").textContent =
+          formatINR(monthlyCtc);
+
+        document.getElementById("reportAnnualCtc").textContent =
+          formatINR(annualCtc);
+
+        document.getElementById("reportBonus").textContent =
+          formatINR(bonus);
+
+        document.getElementById("reportAnnualPf").textContent =
+          formatINR(annualPf);
+
+        document.getElementById("reportAnnualTax").textContent =
+          formatINR(annualTax);
+
+        document.getElementById("reportAnnualInHand").textContent =
+          formatINR(annualInHand);
+
+        const monthlyGap = Math.max(monthlyCtc - monthlyInHand, 0);
+        const inHandPercent =
+          monthlyCtc > 0
+            ? Math.round((monthlyInHand / monthlyCtc) * 100)
+            : 0;
+
+        document.getElementById("salaryInsight").textContent =
+          "Based on the details you entered, your estimated monthly in-hand is " +
+          formatINR(monthlyInHand) +
+          ". That is approximately " +
+          inHandPercent +
+          "% of your monthly CTC equivalent. The estimated gap is " +
+          formatINR(monthlyGap) +
+          " per month, influenced by variable pay, provident fund and estimated tax.";
+      } catch (error) {
+        document.getElementById("reportPage").style.display = "none";
+        document.getElementById("lockedPage").style.display = "block";
+      }
+    }
+  </script>
+
+</body>
+</html>
