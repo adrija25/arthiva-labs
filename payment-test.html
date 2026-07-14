@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Arthiva Payment Test</title>
 
@@ -23,6 +27,11 @@
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     pre {
       margin-top: 30px;
       padding: 25px;
@@ -38,44 +47,129 @@
   <h1>Arthiva Payment Test</h1>
 
   <p>
-    This page tests the shared Arthiva payment system.
+    This page tests Arthiva's shared Razorpay Checkout.
   </p>
 
   <br>
 
-  <button onclick="testPayment()">
-    Test CTC Reality India Payment
+  <button id="paymentButton">
+    Open Razorpay Test Payment
   </button>
 
   <pre id="result">Waiting for test...</pre>
 
-  <script>
-    async function testPayment() {
-      const result = document.getElementById("result");
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-      result.textContent = "Testing...";
+  <script>
+    const paymentButton =
+      document.getElementById("paymentButton");
+
+    const result =
+      document.getElementById("result");
+
+    paymentButton.addEventListener(
+      "click",
+      startPayment
+    );
+
+    async function startPayment() {
+      paymentButton.disabled = true;
+
+      result.textContent =
+        "Asking Arthiva to create a Razorpay order...";
 
       try {
-        const response = await fetch("/api/create-payment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            product: "ctc-reality",
-            offer: "salary-report",
-            market: "india"
-          })
-        });
+        const response = await fetch(
+          "/api/create-payment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              product: "ctc-reality",
+              offer: "salary-report",
+              market: "india"
+            })
+          }
+        );
 
         const data = await response.json();
 
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.error || "Unable to create payment."
+          );
+        }
+
+        if (
+          data.status !== "razorpay-order-created" ||
+          !data.orderId ||
+          !data.razorpayKeyId
+        ) {
+          throw new Error(
+            "Arthiva did not return a Razorpay order."
+          );
+        }
+
         result.textContent =
-          JSON.stringify(data, null, 2);
+          "Order created.\nOpening Razorpay Test Checkout...";
+
+        const options = {
+          key: data.razorpayKeyId,
+          amount: data.amount,
+          currency: data.currency,
+          name: "Arthiva Labs",
+          description: data.offerName,
+          order_id: data.orderId,
+
+          handler: function (paymentResponse) {
+            result.textContent =
+              "TEST CHECKOUT RETURNED A PAYMENT RESPONSE.\n\n" +
+              "Payment ID: " +
+              paymentResponse.razorpay_payment_id +
+              "\n\nOrder ID: " +
+              paymentResponse.razorpay_order_id +
+              "\n\nIMPORTANT: Payment is not unlocked yet." +
+              "\nServer signature verification is next.";
+          },
+
+          modal: {
+            ondismiss: function () {
+              result.textContent =
+                "Razorpay Checkout was closed.";
+            }
+          },
+
+          notes: {
+            product: data.product,
+            offer: data.offer
+          }
+        };
+
+        const razorpay =
+          new Razorpay(options);
+
+        razorpay.on(
+          "payment.failed",
+          function (failureResponse) {
+            result.textContent =
+              "TEST PAYMENT FAILED.\n\n" +
+              JSON.stringify(
+                failureResponse.error,
+                null,
+                2
+              );
+          }
+        );
+
+        razorpay.open();
 
       } catch (error) {
         result.textContent =
           "TEST FAILED: " + error.message;
+      } finally {
+        paymentButton.disabled = false;
       }
     }
   </script>
