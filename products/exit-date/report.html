@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Clean Exit & Strong Entry Plan — Exit Date
+  </title>
+
+  <meta
+    name="description"
+    content="Your personalised Clean Exit and Strong Entry transition plan from Exit Date, an Arthiva Labs utility."
+  >
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <style>
+    :root {
+      --ink: #18231f;
+      --forest: #173f35;
+      --forest-soft: #245648;
+      --sage: #708c7e;
+      --cream: #f7f2e8;
+      --paper: #fffdf9;
+      --gold: #d29b31;
+      --gold-soft: #f8edcf;
+      --line: #ded5c5;
+      --muted: #63706b;
+      --danger: #8b3f36;
+      --danger-soft: #f8e8e5;
+      --shadow: 0 18px 55px rgba(24, 35, 31, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at top left,
+          rgba(210, 155, 49, 0.08),
+          transparent 30%
+        ),
+        var(--cream);
+      color: var(--ink);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.6;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .site-header {
+      width: 100%;
+      border-bottom: 1px solid rgba(222, 213, 197, 0.8);
+      background: rgba(247, 242, 232, 0.9);
+    }
+
+    .header-inner {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      color: var(--forest);
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--forest);
+      color: white;
+      box-shadow: var(--shadow);
+      font-size: 18px;
+    }
+
+    .brand-name {
+      font-size: 18px;
+    }
+
+    .studio-label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .page-shell {
+      width: min(1100px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 72px 0 90px;
+    }
+
+    .loading-card,
+    .error-card {
+      max-width: 760px;
+      margin: 70px auto;
+      padding: 52px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .loading-mark {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 24px;
+      border-radius: 50%;
+      border: 5px solid var(--gold-soft);
+      border-top-color: var(--gold);
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-card h1,
+    .error-card h1 {
+      margin: 0 0 14px;
+      color: var(--forest);
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.05;
+    }
+
+    .loading-card p,
+    .error-card p {
+      margin: 0 auto;
+      max-width: 600px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .error-card {
+      display: none;
+    }
+
+    .error-label {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--danger-soft);
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .return-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 28px;
+      padding: 14px 22px;
+      border-radius: 14px;
+      background: var(--forest);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    #report {
+      display: none;
+    }
+
+    .report-hero {
+      padding: 54px;
+      border-radius: 30px;
+      background: var(--forest);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .report-hero h1 {
+      max-width: 850px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy {
+      max-width: 780px;
+      margin: 28px 0 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 19px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .profile-card {
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .profile-card span {
+      display: block;
+      margin-bottom: 7px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .profile-card strong {
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .report-intro {
+      margin: 44px 0;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+    }
+
+    .report-intro h2 {
+      margin: 0 0 12px;
+      color: var(--forest);
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .report-intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 42px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--paper);
+      box-shadow: 0 8px 30px rgba(24, 35, 31, 0.04);
+    }
+
+    .section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 22px;
+      border-radius: 14px;
+      background: var(--gold-soft);
+      color: var(--forest);
+      font-weight: 900;
+    }
+
+    .section h2 {
+      margin: 0;
+      color: var(--forest);
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+
+    .section-lead {
+      max-width: 790px;
+      margin: 16px 0 30px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .plan-list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plan-item {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .item-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--forest);
+      color: white;
+      font-weight: 900;
+    }
+
+    .plan-item h3 {
+      margin: 0 0 6px;
+      color: var(--forest);
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .plan-item p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .priority-banner {
+      margin-top: 28px;
+      padding: 26px;
+      border-radius: 20px;
+      background: var(--gold-soft);
+    }
+
+    .priority-banner strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--forest);
+      font-size: 19px;
+    }
+
+    .priority-banner p {
+      margin: 0;
+      color: #5f5a4e;
+    }
+
+    .report-footer {
+      margin-top: 48px;
+      padding: 36px;
+      border-radius: 24px;
+      background: #ece6da;
+      text-align: center;
+    }
+
+    .report-footer strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--forest);
+      font-size: 20px;
+    }
+
+    .report-footer p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--muted);
+    }
+
+    .print-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 22px;
+      padding: 14px 24px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--forest);
+      color: white;
+      font-weight: 800;
+    }
+
+    @media (max-width: 760px) {
+      .header-inner {
+        width: min(100% - 28px, 1180px);
+        min-height: 76px;
+      }
+
+      .studio-label {
+        display: none;
+      }
+
+      .page-shell {
+        width: min(100% - 28px, 1100px);
+        padding: 38px 0 60px;
+      }
+
+      .loading-card,
+      .error-card {
+        padding: 34px 24px;
+        margin: 34px auto;
+      }
+
+      .report-hero {
+        padding: 34px 24px;
+        border-radius: 24px;
+      }
+
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 30px 22px;
+        border-radius: 22px;
+      }
+
+      .report-intro {
+        padding: 26px 22px;
+      }
+
+      .plan-item {
+        grid-template-columns: 36px 1fr;
+        padding: 17px;
+      }
+
+      .item-mark {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .site-header,
+      .print-button {
+        display: none !important;
+      }
+
+      .page-shell {
+        width: 100%;
+        padding: 0;
+      }
+
+      .report-hero,
+      .section,
+      .report-intro {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .section {
+        margin-top: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark">↗</div>
+
+        <div class="brand-name">
+          Exit Date
+        </div>
+      </div>
+
+      <div class="studio-label">
+        An Arthiva Labs utility
+      </div>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section
+      id="loadingCard"
+      class="loading-card"
+    >
+      <div class="loading-mark"></div>
+
+      <h1>
+        Building your transition plan.
+      </h1>
+
+      <p>
+        Your verified assessment is being turned into a practical
+        clean-exit and strong-entry plan.
+      </p>
+    </section>
+
+    <section
+      id="errorCard"
+      class="error-card"
+    >
+      <div class="error-label">
+        Report unavailable
+      </div>
+
+      <h1 id="errorTitle">
+        We could not open this plan.
+      </h1>
+
+      <p id="errorMessage">
+        The report link may be invalid or expired.
+      </p>
+
+      <a
+        class="return-link"
+        href="/products/exit-date/"
+      >
+        Return to Exit Date
+      </a>
+    </section>
+
+    <article id="report">
+      <section class="report-hero">
+        <p class="eyebrow">
+          Your personalised transition plan
+        </p>
+
+        <h1>
+          Clean Exit &amp;<br>
+          Strong Entry Plan
+        </h1>
+
+        <p class="hero-copy" id="heroCopy"></p>
+
+        <div class="profile-grid">
+          <div class="profile-card">
+            <span>
+              Transition readiness
+            </span>
+
+            <strong id="scoreValue">
+              —
+            </strong>
+          </div>
+
+          <div class="profile-card">
+            <span>
+              Strongest area
+            </span>
+
+            <strong id="strongestArea">
+              —
+            </strong>
+          </div>
+
+          <div class="profile-card">
+            <span>
+              Priority risk
+            </span>
+
+            <strong id="riskArea">
+              —
+            </strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-intro">
+        <h2>
+          How to use this plan
+        </h2>
+
+        <p>
+          This is a practical transition-planning report based on the
+          answers you gave in your Exit Date assessment. Work through
+          the sections in order. Focus first on the actions that reduce
+          professional ambiguity, preserve relationships and help you
+          enter your next company with better context.
+        </p>
+      </section>
+
+      <section class="section">
+        <div class="section-number">1</div>
+
+        <h2>
+          Your clean-exit priorities
+        </h2>
+
+        <p class="section-lead">
+          Before your last working day, reduce the number of loose ends
+          that can follow you out of the company.
+        </p>
+
+        <ul
+          class="plan-list"
+          id="exitPriorities"
+        ></ul>
+
+        <div class="priority-banner">
+          <strong>
+            Your exit principle
+          </strong>
+
+          <p id="exitPrinciple"></p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-number">2</div>
+
+        <h2>
+          Handover and documentation checklist
+        </h2>
+
+        <p class="section-lead">
+          A good handover makes your departure easier for the people
+          staying behind and protects your professional reputation.
+        </p>
+
+        <ul
+          class="plan-list"
+          id="handoverChecklist"
+        ></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-number">3</div>
+
+        <h2>
+          Leave with the relationship intact
+        </h2>
+
+        <p class="section-lead">
+          Professional closure is not about pretending every experience
+          was positive. It is about choosing what you want your final
+          professional impression to be.
+        </p>
+
+        <ul
+          class="plan-list"
+          id="relationshipGuidance"
+        ></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-number">4</div>
+
+        <h2>
+          What to research about the new company
+        </h2>
+
+        <p class="section-lead">
+          Do not enter your next company knowing only the job
+          description. Build a working map of the organisation before
+          your first week.
+        </p>
+
+        <ul
+          class="plan-list"
+          id="companyResearch"
+        ></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-number">5</div>
+
+        <h2>
+          New-company etiquette risk checklist
+        </h2>
+
+        <p class="section-lead">
+          Most early-career transition mistakes are not competence
+          failures. They are context failures: moving too quickly before
+          understanding how the new organisation actually works.
+        </p>
+
+        <ul
+          class="plan-list"
+          id="etiquetteChecklist"
+        ></ul>
+      </section>
+
+      <section class="section">
+        <div class="section-number">6</div>
+
+        <h2>
+          Your first 30-day entry priorities
+        </h2>
+
+        <p class="section-lead">
+          Your first month does not need to prove everything. It should
+          help you understand expectations, relationships and operating
+          context.
+        </p>
+
+        <ul
+          class="plan-list"
+          id="entryPriorities"
+        ></ul>
+
+        <div class="priority-banner">
+          <strong>
+            Your first-month principle
+          </strong>
+
+          <p id="entryPrinciple"></p>
+        </div>
+      </section>
+
+      <footer class="report-footer">
+        <strong>
+          Prepared by Exit Date
+        </strong>
+
+        <p>
+          An Arthiva Labs planning utility. This report is general
+          career-transition guidance and is not legal, contractual or
+          HR advice. Confirm official notice-period, employment and
+          joining requirements with the relevant employer or HR team.
+        </p>
+
+        <button
+          class="print-button"
+          type="button"
+          onclick="window.print()"
+        >
+          Print or Save This Plan
+        </button>
+      </footer>
+    </article>
+  </main>
+
+  <script>
+    const loadingCard =
+      document.getElementById("loadingCard");
+
+    const errorCard =
+      document.getElementById("errorCard");
+
+    const report =
+      document.getElementById("report");
+
+    const errorTitle =
+      document.getElementById("errorTitle");
+
+    const errorMessage =
+      document.getElementById("errorMessage");
+
+    function firstDefined(...values) {
+      for (const value of values) {
+        if (
+          value !== undefined &&
+          value !== null &&
+          value !== ""
+        ) {
+          return value;
+        }
+      }
+
+      return undefined;
+    }
+
+    function numberOrDefault(value, fallback) {
+      const parsed = Number(value);
+
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+
+      return fallback;
+    }
+
+    function textOrDefault(value, fallback) {
+      if (
+        typeof value === "string" &&
+        value.trim()
+      ) {
+        return value.trim();
+      }
+
+      return fallback;
+    }
+
+    function normaliseKey(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    function showError(title, message) {
+      loadingCard.style.display = "none";
+      report.style.display = "none";
+      errorCard.style.display = "block";
+
+      errorTitle.textContent = title;
+      errorMessage.textContent = message;
+    }
+
+    function addPlanItems(elementId, items) {
+      const list =
+        document.getElementById(elementId);
+
+      list.innerHTML = "";
+
+      items.forEach((item, index) => {
+        const listItem =
+          document.createElement("li");
+
+        listItem.className = "plan-item";
+
+        const mark =
+          document.createElement("div");
+
+        mark.className = "item-mark";
+        mark.textContent = index + 1;
+
+        const content =
+          document.createElement("div");
+
+        const heading =
+          document.createElement("h3");
+
+        heading.textContent = item.title;
+
+        const copy =
+          document.createElement("p");
+
+        copy.textContent = item.copy;
+
+        content.appendChild(heading);
+        content.appendChild(copy);
+
+        listItem.appendChild(mark);
+        listItem.appendChild(content);
+
+        list.appendChild(listItem);
+      });
+    }
+
+    function getProfile(reportData) {
+      const score = numberOrDefault(
+        firstDefined(
+          reportData.score,
+          reportData.readinessScore,
+          reportData.transitionScore,
+          reportData.totalScore
+        ),
+        60
+      );
+
+      const strongestRaw = firstDefined(
+        reportData.strongestArea,
+        reportData.strongest,
+        reportData.strengthArea,
+        reportData.strength
+      );
+
+      const riskRaw = firstDefined(
+        reportData.riskArea,
+        reportData.biggestRisk,
+        reportData.risk,
+        reportData.weakestArea
+      );
+
+      return {
+        score: Math.max(
+          0,
+          Math.min(100, Math.round(score))
+        ),
+        strongestKey: normaliseKey(strongestRaw),
+        riskKey: normaliseKey(riskRaw),
+        strongestRaw: strongestRaw,
+        riskRaw: riskRaw
+      };
+    }
+
+    const areaNames = {
+      "professional-relationship-preservation":
+        "Relationship preservation",
+
+      "relationship-preservation":
+        "Relationship preservation",
+
+      "professional-closure-and-handover":
+        "Closure & handover",
+
+      "closure-and-handover":
+        "Closure & handover",
+
+      "handover":
+        "Closure & handover",
+
+      "new-company-research":
+        "New-company research",
+
+      "company-research":
+        "New-company research",
+
+      "new-company-etiquette":
+        "New-company etiquette",
+
+      "etiquette":
+        "New-company etiquette",
+
+      "entry-readiness":
+        "Entry readiness",
+
+      "first-30-days":
+        "First 30 days"
+    };
+
+    function readableArea(key, raw, fallback) {
+      if (areaNames[key]) {
+        return areaNames[key];
+      }
+
+      if (
+        typeof raw === "string" &&
+        raw.trim()
+      ) {
+        return raw.trim();
+      }
+
+      return fallback;
+    }
+
+    function buildPlan(reportData) {
+      const profile = getProfile(reportData);
+
+      const strongestName = readableArea(
+        profile.strongestKey,
+        profile.strongestRaw,
+        "Professional awareness"
+      );
+
+      const riskName = readableArea(
+        profile.riskKey,
+        profile.riskRaw,
+        "Transition structure"
+      );
+
+      document.getElementById(
+        "scoreValue"
+      ).textContent =
+        profile.score + "/100";
+
+      document.getElementById(
+        "strongestArea"
+      ).textContent =
+        strongestName;
+
+      document.getElementById(
+        "riskArea"
+      ).textContent =
+        riskName;
+
+      let heroCopy;
+
+      if (profile.score >= 80) {
+        heroCopy =
+          "You appear relatively prepared for this transition. Your plan is designed to protect that preparation from the smaller closure and entry mistakes that can still create unnecessary friction.";
+      } else if (profile.score >= 60) {
+        heroCopy =
+          "You have some useful transition awareness, but your exit and new-company entry may not yet be equally structured. This plan turns that awareness into a clearer sequence of actions.";
+      } else if (profile.score >= 40) {
+        heroCopy =
+          "Your transition currently needs more structure. The priority is not to do everything at once, but to reduce avoidable uncertainty around your handover, relationships and new-company entry.";
+      } else {
+        heroCopy =
+          "Your transition may currently feel more reactive than planned. This report gives you a simple order of operations so that your departure and next-company entry are less dependent on memory, urgency or last-minute decisions.";
+      }
+
+      document.getElementById(
+        "heroCopy"
+      ).textContent = heroCopy;
+
+      const exitPriorities = [
+        {
+          title:
+            "Write down every open responsibility",
+          copy:
+            "Create one list of active tasks, pending decisions, recurring responsibilities and unresolved dependencies. Do not rely on memory during your final weeks."
+        },
+        {
+          title:
+            "Separate what you must finish from what you must hand over",
+          copy:
+            "Some work needs closure before you leave. Other work needs a clear owner, context and next action. Mark the difference explicitly."
+        },
+        {
+          title:
+            "Confirm the official exit process",
+          copy:
+            "Check your employer's requirements for notice, assets, access, documents, reimbursements, leave adjustment and final settlement."
+        }
+      ];
+
+      if (
+        profile.riskKey.includes("handover") ||
+        profile.riskKey.includes("closure")
+      ) {
+        exitPriorities.unshift({
+          title:
+            "Make handover your first exit project",
+          copy:
+            "Your assessment suggests that professional closure may be the most avoidable risk in this transition. Start the handover document before your final week."
+        });
+      }
+
+      addPlanItems(
+        "exitPriorities",
+        exitPriorities
+      );
+
+      document.getElementById(
+        "exitPrinciple"
+      ).textContent =
+        "Leave less ambiguity behind than you inherited. A clean exit is easier to remember positively than a dramatic final week.";
+
+      const handoverChecklist = [
+        {
+          title:
+            "Create a responsibility map",
+          copy:
+            "List each responsibility, its current status, the next action, the relevant deadline and the person who needs context."
+        },
+        {
+          title:
+            "Document recurring work",
+          copy:
+            "For repeated tasks, note the frequency, tools, dependencies, common failure points and where the latest files or references live."
+        },
+        {
+          title:
+            "Record decision context",
+          copy:
+            "Do not only say what was decided. Briefly record why important decisions were made so the next owner does not unknowingly restart old debates."
+        },
+        {
+          title:
+            "Flag unresolved risks clearly",
+          copy:
+            "Name pending approvals, delayed dependencies, difficult stakeholders or fragile processes factually. Avoid blame; preserve operational context."
+        },
+        {
+          title:
+            "Ask for handover confirmation",
+          copy:
+            "Where appropriate, confirm that the relevant person has received the handover and knows where the core information is located."
+        }
+      ];
+
+      addPlanItems(
+        "handoverChecklist",
+        handoverChecklist
+      );
+
+      const relationshipGuidance = [
+        {
+          title:
+            "Keep the resignation story consistent",
+          copy:
+            "Use one calm, professional explanation for your move. You do not need to give every colleague a different emotional version of why you are leaving."
+        },
+        {
+          title:
+            "Thank people specifically",
+          copy:
+            "If someone helped you, name the actual contribution. Specific appreciation feels more genuine and is more memorable than a generic farewell."
+        },
+        {
+          title:
+            "Do not use the final week for delayed confrontation",
+          copy:
+            "Resolve essential operational issues. Avoid turning your exit into a final opportunity to correct every person or retell every workplace grievance."
+        },
+        {
+          title:
+            "Preserve useful professional connections",
+          copy:
+            "Before leaving, identify the colleagues, managers, clients or collaborators you genuinely want to remain connected with and exchange appropriate contact details."
+        },
+        {
+          title:
+            "Close without overpromising",
+          copy:
+            "You can leave warmly without promising unlimited post-exit availability. Be clear about what support, if any, you can realistically provide after your last day."
+        }
+      ];
+
+      if (
+        profile.strongestKey.includes("relationship")
+      ) {
+        relationshipGuidance.unshift({
+          title:
+            "Use your relationship awareness deliberately",
+          copy:
+            "Relationship preservation appears to be one of your stronger transition areas. Use it to create thoughtful closure, but do not let goodwill turn into unclear post-exit obligations."
+        });
+      }
+
+      addPlanItems(
+        "relationshipGuidance",
+        relationshipGuidance
+      );
+
+      const companyResearch = [
+        {
+          title:
+            "Map the business model",
+          copy:
+            "Understand what the company sells, who pays it, which customers matter most and how your team contributes to revenue, retention, delivery or risk."
+        },
+        {
+          title:
+            "Research the recent company story",
+          copy:
+            "Review recent announcements, leadership changes, product launches, acquisitions, funding, restructuring or major strategic shifts that may affect your role."
+        },
+        {
+          title:
+            "Understand the leadership map",
+          copy:
+            "Know the senior leaders relevant to your function, your manager's reporting line and the teams your role is likely to depend on."
+        },
+        {
+          title:
+            "Learn the language of the organisation",
+          copy:
+            "Notice recurring terms, metrics, product names, internal priorities and customer language. Context becomes easier when you understand the company's vocabulary."
+        },
+        {
+          title:
+            "Research your function beyond your job title",
+          copy:
+            "Look at how the company describes similar roles, the team's public work and the likely interfaces between your role and adjacent departments."
+        }
+      ];
+
+      if (
+        profile.riskKey.includes("research")
+      ) {
+        companyResearch.unshift({
+          title:
+            "Do your company research before Day 1",
+          copy:
+            "Your assessment suggests new-company context may be a weak point. Schedule a focused research session before joining rather than expecting orientation to explain the whole organisation."
+        });
+      }
+
+      addPlanItems(
+        "companyResearch",
+        companyResearch
+      );
+
+      const etiquetteChecklist = [
+        {
+          title:
+            "Observe before comparing",
+          copy:
+            "Avoid repeatedly explaining how your previous company did everything. Learn why the new process exists before proposing that an old process is better."
+        },
+        {
+          title:
+            "Learn communication norms",
+          copy:
+            "Notice which conversations belong in email, chat, meetings or documents, how quickly responses are expected and how decisions are formally recorded."
+        },
+        {
+          title:
+            "Clarify before escalating",
+          copy:
+            "When something seems blocked, first understand ownership, dependencies and existing attempts. Early escalation without context can create unnecessary friction."
+        },
+        {
+          title:
+            "Do not mistake friendliness for full context",
+          copy:
+            "Early colleagues may share opinions about teams or people. Treat informal narratives as one perspective until you have enough direct experience."
+        },
+        {
+          title:
+            "Ask how success is measured",
+          copy:
+            "Do not assume the job description is the complete performance standard. Clarify priorities, expected outcomes and what a strong first 30 to 90 days looks like."
+        }
+      ];
+
+      if (
+        profile.riskKey.includes("etiquette")
+      ) {
+        etiquetteChecklist.unshift({
+          title:
+            "Make observation an active first-week task",
+          copy:
+            "Your assessment suggests new-company etiquette may deserve extra attention. Keep a private context log of communication norms, decision patterns and unwritten expectations."
+        });
+      }
+
+      addPlanItems(
+        "etiquetteChecklist",
+        etiquetteChecklist
+      );
+
+      const entryPriorities = [
+        {
+          title:
+            "Week 1: build the context map",
+          copy:
+            "Clarify your role, manager expectations, team responsibilities, important systems, recurring meetings and the people you need to understand."
+        },
+        {
+          title:
+            "Week 1–2: identify your dependency network",
+          copy:
+            "List the people and teams your work depends on. Understand what you need from them and what they are likely to need from you."
+        },
+        {
+          title:
+            "Week 2: confirm the priority order",
+          copy:
+            "Check that the work you believe is urgent matches your manager's view. Early alignment is more useful than quietly working hard on the wrong priority."
+        },
+        {
+          title:
+            "Week 2–3: look for one useful early contribution",
+          copy:
+            "Choose a contribution that is valuable, realistic and informed by context. Avoid selecting a highly visible problem before understanding its history."
+        },
+        {
+          title:
+            "By Day 30: request an alignment conversation",
+          copy:
+            "Ask what is going well, where expectations need adjustment and what should become your focus for the next phase of the role."
+        }
+      ];
+
+      if (
+        profile.riskKey.includes("entry") ||
+        profile.riskKey.includes("30")
+      ) {
+        entryPriorities.unshift({
+          title:
+            "Do not improvise your first month",
+          copy:
+            "Entry structure appears to be a priority risk for you. Put the first 30-day actions into your calendar now so that onboarding urgency does not replace intentional learning."
+        });
+      }
+
+      addPlanItems(
+        "entryPriorities",
+        entryPriorities
+      );
+
+      document.getElementById(
+        "entryPrinciple"
+      ).textContent =
+        "Your first month is for becoming contextually useful. Learn the system, align on expectations and then increase speed.";
+
+      loadingCard.style.display = "none";
+      errorCard.style.display = "none";
+      report.style.display = "block";
+    }
+
+    async function loadReport() {
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const token =
+        params.get("token");
+
+      if (!token) {
+        showError(
+          "This report link is incomplete.",
+          "No report access token was found. Return to Exit Date and complete the paid transition-plan flow."
+        );
+
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "/api/get-report",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+            body: JSON.stringify({
+              token: token
+            })
+          }
+        );
+
+        let result;
+
+        try {
+          result = await response.json();
+        } catch (jsonError) {
+          throw new Error(
+            "The report service returned an invalid response."
+          );
+        }
+
+        if (
+          !response.ok ||
+          !result.success ||
+          !result.accessVerified
+        ) {
+          throw new Error(
+            result.error ||
+            "This report could not be verified."
+          );
+        }
+
+        if (
+          result.product !== "exit-date" ||
+          result.offer !== "transition-plan"
+        ) {
+          throw new Error(
+            "This report link belongs to a different Arthiva product."
+          );
+        }
+
+        if (
+          !result.reportData ||
+          typeof result.reportData !== "object"
+        ) {
+          throw new Error(
+            "The verified transition information is missing."
+          );
+        }
+
+        buildPlan(result.reportData);
+
+      } catch (error) {
+        console.error(
+          "Exit Date report load error",
+          error
+        );
+
+        showError(
+          "We could not open this plan.",
+          error.message ||
+          "The report link may be invalid or expired."
+        );
+      }
+    }
+
+    loadReport();
+  </script>
+</body>
+</html>
