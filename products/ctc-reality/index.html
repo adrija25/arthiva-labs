@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>CTC Reality — CTC to In-Hand Salary Calculator India</title>
 
@@ -180,6 +184,11 @@
       opacity: 0.92;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     .main-result {
       padding: 30px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -269,15 +278,30 @@
       max-width: 650px;
     }
 
+    .premium-payment-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .payment-option {
+      padding: 24px;
+      border: 1px solid var(--line);
+      background: var(--cream);
+    }
+
     .premium-price {
       font-size: 28px;
       font-weight: 700;
-      margin: 25px 0;
+      margin: 0 0 20px;
     }
 
     #paymentStatus {
       margin-top: 25px;
       white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
     }
 
     footer {
@@ -333,6 +357,10 @@
         padding: 30px 25px;
       }
 
+      .premium-payment-options {
+        grid-template-columns: 1fr;
+      }
+
       footer {
         padding: 25px 5%;
         flex-direction: column;
@@ -373,6 +401,7 @@
 
         <div class="input-wrap">
           <span class="currency">₹</span>
+
           <input
             id="ctc"
             type="number"
@@ -385,6 +414,7 @@
 
         <div class="input-wrap">
           <span class="currency">₹</span>
+
           <input
             id="bonus"
             type="number"
@@ -401,7 +431,10 @@
           <option value="0">Not sure / exclude PF</option>
         </select>
 
-        <button type="button" onclick="calculateSalary()">
+        <button
+          type="button"
+          onclick="calculateSalary()"
+        >
           Show my salary reality
         </button>
       </div>
@@ -414,13 +447,20 @@
         </p>
 
         <div class="main-result">
-          <div class="result-label">Estimated monthly in-hand</div>
+          <div class="result-label">
+            Estimated monthly in-hand
+          </div>
 
-          <div class="result-number" id="monthlyInHand">
+          <div
+            class="result-number"
+            id="monthlyInHand"
+          >
             ₹—
           </div>
 
-          <div class="per-month">approximately per month</div>
+          <div class="per-month">
+            approximately per month
+          </div>
         </div>
 
         <div class="breakdown-row">
@@ -484,14 +524,35 @@
       estimated salary numbers.
     </p>
 
-    <p class="premium-price">₹199</p>
+    <div class="premium-payment-options">
 
-    <button
-      id="buySalaryReport"
-      type="button"
-    >
-      Get my Salary Report — ₹199
-    </button>
+      <div class="payment-option">
+        <p class="premium-price">
+          India · ₹199
+        </p>
+
+        <button
+          id="buySalaryReportIndia"
+          type="button"
+        >
+          Pay ₹199 with Razorpay
+        </button>
+      </div>
+
+      <div class="payment-option">
+        <p class="premium-price">
+          Outside India · $4 USD
+        </p>
+
+        <button
+          id="buySalaryReportInternational"
+          type="button"
+        >
+          Pay $4 with PayPal
+        </button>
+      </div>
+
+    </div>
 
     <pre id="paymentStatus"></pre>
   </section>
@@ -503,11 +564,14 @@
 
   <script>
     function formatINR(number) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0
-      }).format(number);
+      return new Intl.NumberFormat(
+        "en-IN",
+        {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0
+        }
+      ).format(number);
     }
 
     function estimateTax(taxableIncome) {
@@ -518,21 +582,50 @@
       }
 
       const slabs = [
-        { from: 400000, to: 800000, rate: 0.05 },
-        { from: 800000, to: 1200000, rate: 0.10 },
-        { from: 1200000, to: 1600000, rate: 0.15 },
-        { from: 1600000, to: 2000000, rate: 0.20 },
-        { from: 2000000, to: 2400000, rate: 0.25 },
-        { from: 2400000, to: Infinity, rate: 0.30 }
+        {
+          from: 400000,
+          to: 800000,
+          rate: 0.05
+        },
+        {
+          from: 800000,
+          to: 1200000,
+          rate: 0.10
+        },
+        {
+          from: 1200000,
+          to: 1600000,
+          rate: 0.15
+        },
+        {
+          from: 1600000,
+          to: 2000000,
+          rate: 0.20
+        },
+        {
+          from: 2000000,
+          to: 2400000,
+          rate: 0.25
+        },
+        {
+          from: 2400000,
+          to: Infinity,
+          rate: 0.30
+        }
       ];
 
       slabs.forEach(function (slab) {
         if (taxableIncome > slab.from) {
           const taxableAtRate =
-            Math.min(taxableIncome, slab.to) - slab.from;
+            Math.min(
+              taxableIncome,
+              slab.to
+            ) - slab.from;
 
           if (taxableAtRate > 0) {
-            tax += taxableAtRate * slab.rate;
+            tax +=
+              taxableAtRate *
+              slab.rate;
           }
         }
       });
@@ -542,16 +635,25 @@
 
     function calculateSalary() {
       const ctc =
-        Number(document.getElementById("ctc").value);
+        Number(
+          document.getElementById("ctc").value
+        );
 
       const bonus =
-        Number(document.getElementById("bonus").value) || 0;
+        Number(
+          document.getElementById("bonus").value
+        ) || 0;
 
       const monthlyPf =
-        Number(document.getElementById("pf").value) || 0;
+        Number(
+          document.getElementById("pf").value
+        ) || 0;
 
       if (!ctc || ctc <= 0) {
-        alert("Please enter your annual CTC.");
+        alert(
+          "Please enter your annual CTC."
+        );
+
         return;
       }
 
@@ -559,24 +661,34 @@
         alert(
           "Variable pay cannot be higher than your total CTC."
         );
+
         return;
       }
 
-      const fixedAnnual = ctc - bonus;
-      const annualPf = monthlyPf * 12;
+      const fixedAnnual =
+        ctc - bonus;
 
-      const estimatedTaxableIncome = Math.max(
-        fixedAnnual - 75000,
-        0
-      );
+      const annualPf =
+        monthlyPf * 12;
+
+      const estimatedTaxableIncome =
+        Math.max(
+          fixedAnnual - 75000,
+          0
+        );
 
       const annualTax =
-        estimateTax(estimatedTaxableIncome);
+        estimateTax(
+          estimatedTaxableIncome
+        );
 
-      const estimatedAnnualInHand = Math.max(
-        fixedAnnual - annualPf - annualTax,
-        0
-      );
+      const estimatedAnnualInHand =
+        Math.max(
+          fixedAnnual -
+          annualPf -
+          annualTax,
+          0
+        );
 
       const monthlyInHand =
         estimatedAnnualInHand / 12;
@@ -592,232 +704,306 @@
 
       document.getElementById(
         "monthlyInHand"
-      ).textContent = formatINR(monthlyInHand);
+      ).textContent =
+        formatINR(monthlyInHand);
 
       document.getElementById(
         "monthlyCtc"
-      ).textContent = formatINR(monthlyCtc);
+      ).textContent =
+        formatINR(monthlyCtc);
 
       document.getElementById(
         "variableRemoved"
-      ).textContent = formatINR(monthlyVariable);
+      ).textContent =
+        formatINR(monthlyVariable);
 
       document.getElementById(
         "pfAmount"
-      ).textContent = formatINR(monthlyPf);
+      ).textContent =
+        formatINR(monthlyPf);
 
       document.getElementById(
         "taxAmount"
-      ).textContent = formatINR(monthlyTax);
+      ).textContent =
+        formatINR(monthlyTax);
     }
   </script>
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
-    const buySalaryReportButton =
-      document.getElementById("buySalaryReport");
+    const indiaPaymentButton =
+      document.getElementById(
+        "buySalaryReportIndia"
+      );
+
+    const internationalPaymentButton =
+      document.getElementById(
+        "buySalaryReportInternational"
+      );
 
     const paymentStatus =
-      document.getElementById("paymentStatus");
+      document.getElementById(
+        "paymentStatus"
+      );
 
-    buySalaryReportButton.addEventListener(
+    const paypalReportDataKey =
+      "arthiva_ctc_paypal_report_data";
+
+    const paypalOrderIdKey =
+      "arthiva_ctc_paypal_order_id";
+
+    function getSalaryReportData() {
+      const ctc =
+        Number(
+          document.getElementById("ctc").value
+        ) || 0;
+
+      const bonus =
+        Number(
+          document.getElementById("bonus").value
+        ) || 0;
+
+      const monthlyPf =
+        Number(
+          document.getElementById("pf").value
+        ) || 0;
+
+      if (!ctc || ctc <= 0) {
+        alert(
+          "Please enter your annual CTC first."
+        );
+
+        return null;
+      }
+
+      if (bonus > ctc) {
+        alert(
+          "Variable pay cannot be higher than your total CTC."
+        );
+
+        return null;
+      }
+
+      return {
+        annualCtc: ctc,
+        bonus: bonus,
+        monthlyPf: monthlyPf
+      };
+    }
+
+    function setPaymentButtonsDisabled(
+      disabled
+    ) {
+      indiaPaymentButton.disabled =
+        disabled;
+
+      internationalPaymentButton.disabled =
+        disabled;
+    }
+
+    async function readJsonResponse(
+      response
+    ) {
+      try {
+        return await response.json();
+      } catch (error) {
+        throw new Error(
+          "Arthiva payment server returned an invalid response."
+        );
+      }
+    }
+
+    async function createPayment(
+      market
+    ) {
+      const response =
+        await fetch(
+          "/api/create-payment",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              product:
+                "ctc-reality",
+
+              offer:
+                "salary-report",
+
+              market:
+                market
+            })
+          }
+        );
+
+      const payment =
+        await readJsonResponse(
+          response
+        );
+
+      if (
+        !response.ok ||
+        !payment.success
+      ) {
+        throw new Error(
+          payment.error ||
+          "Could not create payment."
+        );
+      }
+
+      return payment;
+    }
+
+    indiaPaymentButton.addEventListener(
       "click",
       async function () {
+        const reportData =
+          getSalaryReportData();
+
+        if (!reportData) {
+          return;
+        }
+
+        setPaymentButtonsDisabled(true);
+
         try {
-          const ctc =
-            Number(
-              document.getElementById("ctc").value
-            ) || 0;
-
-          const bonus =
-            Number(
-              document.getElementById("bonus").value
-            ) || 0;
-
-          const monthlyPf =
-            Number(
-              document.getElementById("pf").value
-            ) || 0;
-
-          if (!ctc || ctc <= 0) {
-            alert(
-              "Please enter your annual CTC first."
-            );
-
-            return;
-          }
-
-          if (bonus > ctc) {
-            alert(
-              "Variable pay cannot be higher than your total CTC."
-            );
-
-            return;
-          }
-
           paymentStatus.textContent =
-            "Creating your secure payment...";
-
-          const orderResponse = await fetch(
-            "/api/create-payment",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type": "application/json"
-              },
-
-              body: JSON.stringify({
-                product: "ctc-reality",
-                offer: "salary-report",
-                market: "india"
-              })
-            }
-          );
+            "Creating your secure Razorpay payment...";
 
           const order =
-            await orderResponse.json();
-
-          if (!order.success) {
-            paymentStatus.textContent =
-              "Could not create payment.\n\n" +
-              JSON.stringify(
-                order,
-                null,
-                2
-              );
-
-            return;
-          }
+            await createPayment(
+              "india"
+            );
 
           const options = {
-            key: order.razorpayKeyId,
-            amount: order.amount,
-            currency: order.currency,
-            name: "Arthiva Labs",
-            description: order.offerName,
-            order_id: order.orderId,
+            key:
+              order.razorpayKeyId,
 
-            handler: async function (response) {
-              try {
-                paymentStatus.textContent =
-                  "Verifying your payment...";
+            amount:
+              order.amount,
 
-                const verifyResponse = await fetch(
-                  "/api/verify-payment",
-                  {
-                    method: "POST",
+            currency:
+              order.currency,
 
-                    headers: {
-                      "Content-Type": "application/json"
-                    },
+            name:
+              "Arthiva Labs",
 
-                    body: JSON.stringify({
-                      product: "ctc-reality",
-                      offer: "salary-report",
-                      market: "india",
+            description:
+              order.offerName,
 
-                      razorpay_order_id:
-                        response.razorpay_order_id,
+            order_id:
+              order.orderId,
 
-                      razorpay_payment_id:
-                        response.razorpay_payment_id,
-
-                      razorpay_signature:
-                        response.razorpay_signature,
-
-                      reportData: {
-                        annualCtc: ctc,
-                        bonus: bonus,
-                        monthlyPf: monthlyPf
-                      }
-                    })
-                  }
-                );
-
-                const verification =
-                  await verifyResponse.json();
-
-                if (!verification.success) {
+            handler:
+              async function (
+                response
+              ) {
+                try {
                   paymentStatus.textContent =
-                    "Payment verification failed.\n\n" +
-                    JSON.stringify(
-                      verification,
-                      null,
-                      2
+                    "Verifying your payment...";
+
+                  const verifyResponse =
+                    await fetch(
+                      "/api/verify-payment",
+                      {
+                        method: "POST",
+
+                        headers: {
+                          "Content-Type":
+                            "application/json"
+                        },
+
+                        body:
+                          JSON.stringify({
+                            product:
+                              "ctc-reality",
+
+                            offer:
+                              "salary-report",
+
+                            market:
+                              "india",
+
+                            razorpay_order_id:
+                              response
+                                .razorpay_order_id,
+
+                            razorpay_payment_id:
+                              response
+                                .razorpay_payment_id,
+
+                            razorpay_signature:
+                              response
+                                .razorpay_signature,
+
+                            reportData:
+                              reportData
+                          })
+                      }
                     );
 
-                  return;
+                  const verification =
+                    await readJsonResponse(
+                      verifyResponse
+                    );
+
+                  if (
+                    !verifyResponse.ok ||
+                    !verification.success
+                  ) {
+                    throw new Error(
+                      verification.error ||
+                      "Payment verification failed."
+                    );
+                  }
+
+                  const reportToken =
+                    verification.reportToken;
+
+                  if (!reportToken) {
+                    throw new Error(
+                      "Payment was verified, but the report access token is missing."
+                    );
+                  }
+
+                  paymentStatus.textContent =
+                    "PAYMENT VERIFIED ✅\n\n" +
+                    "Preparing your personalised Salary Report...";
+
+                  window.location.href =
+                    "./report.html?token=" +
+                    encodeURIComponent(
+                      reportToken
+                    );
+
+                } catch (
+                  verificationError
+                ) {
+                  paymentStatus.textContent =
+                    "Payment was completed, but report verification failed.\n\n" +
+                    verificationError.message;
+
+                  setPaymentButtonsDisabled(
+                    false
+                  );
                 }
+              },
 
-                paymentStatus.textContent =
-                  "PAYMENT VERIFIED ✅\n\n" +
-                  "Preparing your personalised Salary Report...";
+            modal: {
+              ondismiss:
+                function () {
+                  paymentStatus.textContent =
+                    "Razorpay Checkout was closed.";
 
-                const fixedAnnual =
-                  Math.max(
-                    ctc - bonus,
-                    0
+                  setPaymentButtonsDisabled(
+                    false
                   );
-
-                const annualPf =
-                  monthlyPf * 12;
-
-                const estimatedTaxableIncome =
-                  Math.max(
-                    fixedAnnual - 75000,
-                    0
-                  );
-
-                const annualTax =
-                  estimateTax(
-                    estimatedTaxableIncome
-                  );
-
-                const estimatedAnnualInHand =
-                  Math.max(
-                    fixedAnnual -
-                    annualPf -
-                    annualTax,
-                    0
-                  );
-
-                const monthlyInHand =
-                  estimatedAnnualInHand / 12;
-
-                const reportData = {
-                  paymentVerified: true,
-
-                  paymentId:
-                    verification.paymentId ||
-                    response.razorpay_payment_id,
-
-                  annualCtc: ctc,
-                  bonus: bonus,
-                  monthlyPf: monthlyPf,
-                  annualTax: annualTax,
-                  monthlyInHand: monthlyInHand
-                };
-
-            const reportToken = verification.reportToken;
-
-if (!reportToken) {
-  paymentStatus.textContent =
-    "Payment was verified, but the report access token is missing.";
-
-  return;
-}
-
-window.location.href =
-  "./report.html?token=" +
-  encodeURIComponent(reportToken);
-
-              } catch (error) {
-                paymentStatus.textContent =
-                  "Payment was completed, but report verification failed.\n\n" +
-                  error.message;
-              }
+                }
             },
 
             theme: {
@@ -838,6 +1024,10 @@ window.location.href =
                   null,
                   2
                 );
+
+              setPaymentButtonsDisabled(
+                false
+              );
             }
           );
 
@@ -847,9 +1037,231 @@ window.location.href =
           paymentStatus.textContent =
             "Something went wrong.\n\n" +
             error.message;
+
+          setPaymentButtonsDisabled(
+            false
+          );
         }
       }
     );
+
+    internationalPaymentButton
+      .addEventListener(
+        "click",
+        async function () {
+          const reportData =
+            getSalaryReportData();
+
+          if (!reportData) {
+            return;
+          }
+
+          setPaymentButtonsDisabled(
+            true
+          );
+
+          try {
+            paymentStatus.textContent =
+              "Creating your secure PayPal payment...";
+
+            sessionStorage.setItem(
+              paypalReportDataKey,
+              JSON.stringify(
+                reportData
+              )
+            );
+
+            const payment =
+              await createPayment(
+                "international"
+              );
+
+            if (
+              !payment.orderId ||
+              !payment.approveUrl
+            ) {
+              throw new Error(
+                "PayPal did not return a valid approval link."
+              );
+            }
+
+            sessionStorage.setItem(
+              paypalOrderIdKey,
+              payment.orderId
+            );
+
+            paymentStatus.textContent =
+              "Redirecting you to PayPal...";
+
+            window.location.href =
+              payment.approveUrl;
+
+          } catch (error) {
+            sessionStorage.removeItem(
+              paypalReportDataKey
+            );
+
+            sessionStorage.removeItem(
+              paypalOrderIdKey
+            );
+
+            paymentStatus.textContent =
+              "Something went wrong.\n\n" +
+              error.message;
+
+            setPaymentButtonsDisabled(
+              false
+            );
+          }
+        }
+      );
+
+    async function completeReturnedPayPalPayment() {
+      const url =
+        new URL(
+          window.location.href
+        );
+
+      const paypalToken =
+        url.searchParams.get(
+          "token"
+        );
+
+      if (!paypalToken) {
+        return;
+      }
+
+      const storedReportData =
+        sessionStorage.getItem(
+          paypalReportDataKey
+        );
+
+      const storedOrderId =
+        sessionStorage.getItem(
+          paypalOrderIdKey
+        );
+
+      if (
+        !storedReportData ||
+        !storedOrderId
+      ) {
+        paymentStatus.textContent =
+          "PayPal returned to Arthiva, but the salary report session could not be restored.";
+
+        return;
+      }
+
+      if (
+        paypalToken !== storedOrderId
+      ) {
+        paymentStatus.textContent =
+          "PayPal returned an unexpected payment order.";
+
+        return;
+      }
+
+      setPaymentButtonsDisabled(true);
+
+      try {
+        paymentStatus.textContent =
+          "PayPal returned to Arthiva.\n\n" +
+          "Verifying the live payment securely...";
+
+        const reportData =
+          JSON.parse(
+            storedReportData
+          );
+
+        const verifyResponse =
+          await fetch(
+            "/api/verify-payment",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                product:
+                  "ctc-reality",
+
+                offer:
+                  "salary-report",
+
+                market:
+                  "international",
+
+                paypalOrderId:
+                  storedOrderId,
+
+                reportData:
+                  reportData
+              })
+            }
+          );
+
+        const verification =
+          await readJsonResponse(
+            verifyResponse
+          );
+
+        if (
+          !verifyResponse.ok ||
+          !verification.success
+        ) {
+          throw new Error(
+            verification.error ||
+            "PayPal payment verification failed."
+          );
+        }
+
+        const reportToken =
+          verification.reportToken;
+
+        if (!reportToken) {
+          throw new Error(
+            "PayPal payment was verified, but the report access token is missing."
+          );
+        }
+
+        sessionStorage.removeItem(
+          paypalReportDataKey
+        );
+
+        sessionStorage.removeItem(
+          paypalOrderIdKey
+        );
+
+        paymentStatus.textContent =
+          "PAYPAL PAYMENT VERIFIED ✅\n\n" +
+          "Preparing your personalised Salary Report...";
+
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+
+        window.location.href =
+          "./report.html?token=" +
+          encodeURIComponent(
+            reportToken
+          );
+
+      } catch (error) {
+        paymentStatus.textContent =
+          "PayPal payment could not be verified.\n\n" +
+          error.message;
+
+        setPaymentButtonsDisabled(
+          false
+        );
+      }
+    }
+
+    completeReturnedPayPalPayment();
   </script>
 
 </body>
