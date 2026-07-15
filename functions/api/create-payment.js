@@ -71,6 +71,17 @@ function getProductReturnPath(product) {
   );
 }
 
+function getPaymentMarket(request) {
+  const country =
+    request.cf?.country || "";
+
+  if (country === "IN") {
+    return "india";
+  }
+
+  return "international";
+}
+
 export async function onRequestPost(context) {
   try {
     const body =
@@ -82,13 +93,9 @@ export async function onRequestPost(context) {
     const offer =
       body.offer;
 
-    const market =
-      body.market;
-
     if (
       !product ||
-      !offer ||
-      !market
+      !offer
     ) {
       return Response.json(
         {
@@ -102,21 +109,21 @@ export async function onRequestPost(context) {
       );
     }
 
-    if (
-      market !== "india" &&
-      market !== "international"
-    ) {
-      return Response.json(
-        {
-          success: false,
-          error:
-            "Invalid payment market."
-        },
-        {
-          status: 400
-        }
+    const market =
+      getPaymentMarket(
+        context.request
       );
-    }
+
+    console.log(
+      "Arthiva server payment market",
+      {
+        country:
+          context.request.cf?.country ||
+          "unknown",
+        market:
+          market
+      }
+    );
 
     const priceListUrl = new URL(
       "/payment-products.json",
