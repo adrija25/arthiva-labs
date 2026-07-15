@@ -1586,25 +1586,6 @@
       "arthivaExitDatePayPalReportData";
 
     function getPaymentMarket() {
-      const params = new URLSearchParams(
-        window.location.search
-      );
-
-      const marketOverride =
-        params.get("market");
-
-      if (
-        marketOverride === "india" ||
-        marketOverride === "international"
-      ) {
-        console.log(
-          "Arthiva payment market override:",
-          marketOverride
-        );
-
-        return marketOverride;
-      }
-
       const timeZone =
         Intl.DateTimeFormat()
           .resolvedOptions()
@@ -1854,9 +1835,24 @@
           );
         }
 
-        if (paymentMarket === "international") {
+        const serverMarket =
+          paymentData.market;
+
+        const paymentProvider =
+          paymentData.paymentProvider;
+
+        if (
+          serverMarket !== "india" &&
+          serverMarket !== "international"
+        ) {
+          throw new Error(
+            "The payment server returned an invalid market."
+          );
+        }
+
+        if (paymentProvider === "paypal") {
           if (
-            paymentData.paymentProvider !== "paypal" ||
+            serverMarket !== "international" ||
             !paymentData.orderId ||
             !paymentData.approveUrl
           ) {
@@ -1864,6 +1860,9 @@
               "PayPal checkout could not be prepared."
             );
           }
+
+          premiumPlanTag.textContent =
+            "Personalised transition plan · $4";
 
           sessionStorage.setItem(
             PAYPAL_REPORT_DATA_KEY,
@@ -1883,12 +1882,16 @@
         }
 
         if (
-          paymentData.paymentProvider !== "razorpay"
+          paymentProvider !== "razorpay" ||
+          serverMarket !== "india"
         ) {
           throw new Error(
-            "Razorpay checkout could not be prepared."
+            "The payment server returned an unsupported provider."
           );
         }
+
+        premiumPlanTag.textContent =
+          "Personalised transition plan · ₹199";
 
         if (typeof Razorpay === "undefined") {
           throw new Error(
