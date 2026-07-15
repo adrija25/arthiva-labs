@@ -1586,6 +1586,25 @@
       "arthivaExitDatePayPalReportData";
 
     function getPaymentMarket() {
+      const params = new URLSearchParams(
+        window.location.search
+      );
+
+      const marketOverride =
+        params.get("market");
+
+      if (
+        marketOverride === "india" ||
+        marketOverride === "international"
+      ) {
+        console.log(
+          "Arthiva payment market override:",
+          marketOverride
+        );
+
+        return marketOverride;
+      }
+
       const timeZone =
         Intl.DateTimeFormat()
           .resolvedOptions()
@@ -1606,6 +1625,11 @@
     }
 
     const paymentMarket = getPaymentMarket();
+
+    console.log(
+      "Arthiva payment market:",
+      paymentMarket
+    );
 
     function getPlanPriceLabel() {
       return paymentMarket === "india"
