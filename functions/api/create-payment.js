@@ -1,9 +1,14 @@
 async function getPayPalAccessToken(env) {
-  const clientId = env.PAYPAL_CLIENT_ID;
-  const clientSecret = env.PAYPAL_CLIENT_SECRET;
+  const clientId =
+    env.PAYPAL_CLIENT_ID;
+
+  const clientSecret =
+    env.PAYPAL_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    throw new Error("PayPal secrets are missing.");
+    throw new Error(
+      "PayPal secrets are missing."
+    );
   }
 
   const credentials = btoa(
@@ -15,40 +20,81 @@ async function getPayPalAccessToken(env) {
     {
       method: "POST",
       headers: {
-        "Authorization": "Basic " + credentials,
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Authorization":
+          "Basic " + credentials,
+        "Content-Type":
+          "application/x-www-form-urlencoded"
       },
-      body: "grant_type=client_credentials"
+      body:
+        "grant_type=client_credentials"
     }
   );
 
-  const tokenData = await tokenResponse.json();
+  const tokenData =
+    await tokenResponse.json();
 
-  if (!tokenResponse.ok || !tokenData.access_token) {
-    console.error("PayPal access token error", tokenData);
-    throw new Error("Unable to authenticate with PayPal.");
+  if (
+    !tokenResponse.ok ||
+    !tokenData.access_token
+  ) {
+    console.error(
+      "PayPal access token error",
+      tokenData
+    );
+
+    throw new Error(
+      "Unable to authenticate with PayPal."
+    );
   }
 
   return tokenData.access_token;
 }
 
 function formatPayPalAmount(amount) {
-  return (Number(amount) / 100).toFixed(2);
+  return (
+    Number(amount) / 100
+  ).toFixed(2);
+}
+
+function getProductReturnPath(product) {
+  const supportedReturnPaths = {
+    "ctc-reality":
+      "/products/ctc-reality/",
+
+    "exit-date":
+      "/products/exit-date/"
+  };
+
+  return (
+    supportedReturnPaths[product] ||
+    "/"
+  );
 }
 
 export async function onRequestPost(context) {
   try {
-    const body = await context.request.json();
+    const body =
+      await context.request.json();
 
-    const product = body.product;
-    const offer = body.offer;
-    const market = body.market;
+    const product =
+      body.product;
 
-    if (!product || !offer || !market) {
+    const offer =
+      body.offer;
+
+    const market =
+      body.market;
+
+    if (
+      !product ||
+      !offer ||
+      !market
+    ) {
       return Response.json(
         {
           success: false,
-          error: "Missing payment information."
+          error:
+            "Missing payment information."
         },
         {
           status: 400
@@ -56,11 +102,15 @@ export async function onRequestPost(context) {
       );
     }
 
-    if (market !== "india" && market !== "international") {
+    if (
+      market !== "india" &&
+      market !== "international"
+    ) {
       return Response.json(
         {
           success: false,
-          error: "Invalid payment market."
+          error:
+            "Invalid payment market."
         },
         {
           status: 400
@@ -73,25 +123,39 @@ export async function onRequestPost(context) {
       context.request.url
     );
 
-    const priceListResponse = await context.env.ASSETS.fetch(
-      priceListUrl
-    );
+    const priceListResponse =
+      await context.env.ASSETS.fetch(
+        priceListUrl
+      );
 
     if (!priceListResponse.ok) {
-      throw new Error("Unable to load Arthiva price list.");
+      throw new Error(
+        "Unable to load Arthiva price list."
+      );
     }
 
-    const priceList = await priceListResponse.json();
+    const priceList =
+      await priceListResponse.json();
 
-    const productDetails = priceList.products?.[product];
-    const offerDetails = productDetails?.offers?.[offer];
-    const priceDetails = offerDetails?.[market];
+    const productDetails =
+      priceList.products?.[product];
 
-    if (!productDetails || !offerDetails || !priceDetails) {
+    const offerDetails =
+      productDetails?.offers?.[offer];
+
+    const priceDetails =
+      offerDetails?.[market];
+
+    if (
+      !productDetails ||
+      !offerDetails ||
+      !priceDetails
+    ) {
       return Response.json(
         {
           success: false,
-          error: "Product or offer is not available."
+          error:
+            "Product or offer is not available."
         },
         {
           status: 404
@@ -100,53 +164,85 @@ export async function onRequestPost(context) {
     }
 
     if (market === "india") {
-      const razorpayKeyId = context.env.RAZORPAY_KEY_ID;
-      const razorpayKeySecret = context.env.RAZORPAY_KEY_SECRET;
+      const razorpayKeyId =
+        context.env.RAZORPAY_KEY_ID;
 
-      if (!razorpayKeyId || !razorpayKeySecret) {
-        throw new Error("Razorpay secrets are missing.");
+      const razorpayKeySecret =
+        context.env.RAZORPAY_KEY_SECRET;
+
+      if (
+        !razorpayKeyId ||
+        !razorpayKeySecret
+      ) {
+        throw new Error(
+          "Razorpay secrets are missing."
+        );
       }
 
       const credentials = btoa(
-        razorpayKeyId + ":" + razorpayKeySecret
+        razorpayKeyId +
+        ":" +
+        razorpayKeySecret
       );
 
       const receipt =
         "arthiva_" +
-        product.replace(/[^a-zA-Z0-9]/g, "_") +
+        product.replace(
+          /[^a-zA-Z0-9]/g,
+          "_"
+        ) +
         "_" +
         Date.now();
 
-      const razorpayResponse = await fetch(
-        "https://api.razorpay.com/v1/orders",
-        {
-          method: "POST",
-          headers: {
-            "Authorization": "Basic " + credentials,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            amount: priceDetails.amount,
-            currency: priceDetails.currency,
-            receipt: receipt,
-            notes: {
-              product: product,
-              offer: offer,
-              studio: "Arthiva Labs"
-            }
-          })
-        }
-      );
+      const razorpayResponse =
+        await fetch(
+          "https://api.razorpay.com/v1/orders",
+          {
+            method: "POST",
+            headers: {
+              "Authorization":
+                "Basic " + credentials,
+              "Content-Type":
+                "application/json"
+            },
+            body: JSON.stringify({
+              amount:
+                priceDetails.amount,
 
-      const razorpayOrder = await razorpayResponse.json();
+              currency:
+                priceDetails.currency,
+
+              receipt:
+                receipt,
+
+              notes: {
+                product:
+                  product,
+
+                offer:
+                  offer,
+
+                studio:
+                  "Arthiva Labs"
+              }
+            })
+          }
+        );
+
+      const razorpayOrder =
+        await razorpayResponse.json();
 
       if (!razorpayResponse.ok) {
-        console.error("Razorpay order error", razorpayOrder);
+        console.error(
+          "Razorpay order error",
+          razorpayOrder
+        );
 
         return Response.json(
           {
             success: false,
-            error: "Razorpay could not create the order."
+            error:
+              "Razorpay could not create the order."
           },
           {
             status: 502
@@ -156,77 +252,159 @@ export async function onRequestPost(context) {
 
       return Response.json({
         success: true,
-        product: product,
-        productName: productDetails.name,
-        offer: offer,
-        offerName: offerDetails.name,
-        market: market,
-        paymentProvider: "razorpay",
-        currency: priceDetails.currency,
-        amount: priceDetails.amount,
-        orderId: razorpayOrder.id,
-        razorpayKeyId: razorpayKeyId,
-        status: "razorpay-order-created"
+        product:
+          product,
+        productName:
+          productDetails.name,
+        offer:
+          offer,
+        offerName:
+          offerDetails.name,
+        market:
+          market,
+        paymentProvider:
+          "razorpay",
+        currency:
+          priceDetails.currency,
+        amount:
+          priceDetails.amount,
+        orderId:
+          razorpayOrder.id,
+        razorpayKeyId:
+          razorpayKeyId,
+        status:
+          "razorpay-order-created"
       });
     }
 
-    const paypalAccessToken = await getPayPalAccessToken(
-      context.env
-    );
+    const paypalAccessToken =
+      await getPayPalAccessToken(
+        context.env
+      );
 
     const paypalRequestId =
       "arthiva-" +
-      product.replace(/[^a-zA-Z0-9]/g, "-") +
+      product.replace(
+        /[^a-zA-Z0-9]/g,
+        "-"
+      ) +
       "-" +
-      offer.replace(/[^a-zA-Z0-9]/g, "-") +
+      offer.replace(
+        /[^a-zA-Z0-9]/g,
+        "-"
+      ) +
       "-" +
       crypto.randomUUID();
 
-    const paypalResponse = await fetch(
-      "https://api-m.paypal.com/v2/checkout/orders",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + paypalAccessToken,
-          "Content-Type": "application/json",
-          "PayPal-Request-Id": paypalRequestId
-        },
-        body: JSON.stringify({
-          intent: "CAPTURE",
-          purchase_units: [
-            {
-              reference_id: product + ":" + offer,
-              description:
-                productDetails.name + " — " + offerDetails.name,
-              custom_id: product + ":" + offer,
-              amount: {
-                currency_code: priceDetails.currency,
-                value: formatPayPalAmount(priceDetails.amount)
+    const requestUrl =
+      new URL(context.request.url);
+
+    const arthivaOrigin =
+      requestUrl.origin;
+
+    const productReturnPath =
+      getProductReturnPath(product);
+
+    const returnUrl =
+      arthivaOrigin +
+      productReturnPath;
+
+    const cancelUrl =
+      arthivaOrigin +
+      productReturnPath +
+      "?paypal=cancelled";
+
+    const paypalResponse =
+      await fetch(
+        "https://api-m.paypal.com/v2/checkout/orders",
+        {
+          method: "POST",
+          headers: {
+            "Authorization":
+              "Bearer " +
+              paypalAccessToken,
+
+            "Content-Type":
+              "application/json",
+
+            "PayPal-Request-Id":
+              paypalRequestId
+          },
+
+          body: JSON.stringify({
+            intent:
+              "CAPTURE",
+
+            purchase_units: [
+              {
+                reference_id:
+                  product +
+                  ":" +
+                  offer,
+
+                description:
+                  productDetails.name +
+                  " — " +
+                  offerDetails.name,
+
+                custom_id:
+                  product +
+                  ":" +
+                  offer,
+
+                amount: {
+                  currency_code:
+                    priceDetails.currency,
+
+                  value:
+                    formatPayPalAmount(
+                      priceDetails.amount
+                    )
+                }
+              }
+            ],
+
+            payment_source: {
+              paypal: {
+                experience_context: {
+                  brand_name:
+                    "Arthiva Labs",
+
+                  shipping_preference:
+                    "NO_SHIPPING",
+
+                  user_action:
+                    "PAY_NOW",
+
+                  return_url:
+                    returnUrl,
+
+                  cancel_url:
+                    cancelUrl
+                }
               }
             }
-          ],
-          payment_source: {
-            paypal: {
-              experience_context: {
-                brand_name: "Arthiva Labs",
-                shipping_preference: "NO_SHIPPING",
-                user_action: "PAY_NOW"
-              }
-            }
-          }
-        })
-      }
-    );
+          })
+        }
+      );
 
-    const paypalOrder = await paypalResponse.json();
+    const paypalOrder =
+      await paypalResponse.json();
 
-    if (!paypalResponse.ok || !paypalOrder.id) {
-      console.error("PayPal order error", paypalOrder);
+    if (
+      !paypalResponse.ok ||
+      !paypalOrder.id
+    ) {
+      console.error(
+        "PayPal order error",
+        paypalOrder
+      );
 
       return Response.json(
         {
           success: false,
-          error: "PayPal could not create the order."
+          error:
+            "PayPal could not create the order."
         },
         {
           status: 502
@@ -234,32 +412,70 @@ export async function onRequestPost(context) {
       );
     }
 
-    const approveLink = paypalOrder.links?.find(
-      (link) => link.rel === "payer-action" || link.rel === "approve"
-    )?.href;
+    const approveLink =
+      paypalOrder.links?.find(
+        (link) =>
+          link.rel ===
+            "payer-action" ||
+          link.rel ===
+            "approve"
+      )?.href;
+
+    if (!approveLink) {
+      console.error(
+        "PayPal approval link missing",
+        paypalOrder
+      );
+
+      return Response.json(
+        {
+          success: false,
+          error:
+            "PayPal did not return an approval link."
+        },
+        {
+          status: 502
+        }
+      );
+    }
 
     return Response.json({
       success: true,
-      product: product,
-      productName: productDetails.name,
-      offer: offer,
-      offerName: offerDetails.name,
-      market: market,
-      paymentProvider: "paypal",
-      currency: priceDetails.currency,
-      amount: priceDetails.amount,
-      orderId: paypalOrder.id,
-      approveUrl: approveLink || null,
-      status: "paypal-order-created"
+      product:
+        product,
+      productName:
+        productDetails.name,
+      offer:
+        offer,
+      offerName:
+        offerDetails.name,
+      market:
+        market,
+      paymentProvider:
+        "paypal",
+      currency:
+        priceDetails.currency,
+      amount:
+        priceDetails.amount,
+      orderId:
+        paypalOrder.id,
+      approveUrl:
+        approveLink,
+      status:
+        "paypal-order-created"
     });
 
   } catch (error) {
-    console.error("Arthiva payment error", error);
+    console.error(
+      "Arthiva payment error",
+      error
+    );
 
     return Response.json(
       {
         success: false,
-        error: "Unable to prepare payment."
+        error:
+          "Unable to prepare payment."
       },
       {
         status: 500
