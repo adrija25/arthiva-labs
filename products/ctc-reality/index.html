@@ -929,6 +929,9 @@
                             market:
                               "india",
 
+                            paymentProvider:
+                              "razorpay",
+
                             razorpay_order_id:
                               response
                                 .razorpay_order_id,
@@ -1122,6 +1125,32 @@
           window.location.href
         );
 
+      const paypalCancelled =
+        url.searchParams.get(
+          "paypal"
+        ) === "cancelled";
+
+      if (paypalCancelled) {
+        paymentStatus.textContent =
+          "PayPal checkout was cancelled. No report has been unlocked.";
+
+        sessionStorage.removeItem(
+          paypalReportDataKey
+        );
+
+        sessionStorage.removeItem(
+          paypalOrderIdKey
+        );
+
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+
+        return;
+      }
+
       const paypalToken =
         url.searchParams.get(
           "token"
@@ -1193,7 +1222,10 @@
                 market:
                   "international",
 
-                paypalOrderId:
+                paymentProvider:
+                  "paypal",
+
+                orderId:
                   storedOrderId,
 
                 reportData:
