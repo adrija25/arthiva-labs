@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Arthiva Shared Payment Test</title>
+  <title>Arthiva Shared Payment Diagnostic</title>
 
   <style>
     * {
@@ -66,8 +66,13 @@
     }
 
     button:disabled {
-      opacity: 0.6;
-      cursor: wait;
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .safety-button {
+      margin-top: 14px;
+      background: #7a2f24;
     }
 
     pre {
@@ -86,6 +91,22 @@
       padding: 18px 20px;
       background: #fff8df;
       border: 1px solid #e6d28a;
+      line-height: 1.6;
+    }
+
+    .live-warning {
+      margin-top: 18px;
+      padding: 18px 20px;
+      background: #fff0ed;
+      border: 2px solid #a74738;
+      color: #5f2118;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .small-note {
+      margin-top: 14px;
+      font-size: 14px;
       line-height: 1.6;
     }
 
@@ -109,17 +130,24 @@
 
   <main class="page">
 
-    <h1>Arthiva Shared Payment Test</h1>
+    <h1>Arthiva Shared Payment Diagnostic</h1>
 
     <p>
-      This page tests Arthiva Labs' shared payment-order creation
-      infrastructure for India and international markets.
+      This page checks Arthiva Labs' shared payment infrastructure
+      for India and international markets.
     </p>
 
+    <div class="live-warning">
+      LIVE PAYPAL ENVIRONMENT — REAL MONEY INFRASTRUCTURE.
+      Do not manually open a PayPal approval URL unless a real
+      payment is intentionally being completed.
+    </div>
+
     <div class="warning">
-      This diagnostic creates payment orders only.
-      It does not automatically open checkout, capture a PayPal payment,
-      verify a paid deliverable, or unlock a report.
+      Order-creation checks do not automatically open checkout.
+      The PayPal safety check below is designed to confirm that an
+      unapproved PayPal order is refused before capture and before
+      secure report access is created.
     </div>
 
     <div class="test-grid">
@@ -128,11 +156,11 @@
         <h2>India — Razorpay</h2>
 
         <p>
-          Tests the existing India payment-order creation route.
+          Checks the existing India payment-order creation route.
         </p>
 
         <button id="razorpayButton">
-          Test Razorpay Order Creation
+          Check Razorpay Order Creation
         </button>
       </section>
 
@@ -140,17 +168,30 @@
         <h2>International — PayPal</h2>
 
         <p>
-          Tests PayPal authentication and international order creation.
+          Creates a fresh live PayPal order without opening checkout.
         </p>
 
         <button id="paypalButton">
-          Test PayPal Order Creation
+          Create Fresh PayPal Order
         </button>
+
+        <button
+          id="paypalSafetyButton"
+          class="safety-button"
+          disabled
+        >
+          Check Unapproved PayPal Safety
+        </button>
+
+        <div class="small-note">
+          The safety button is enabled only after this page creates
+          a fresh PayPal order in the current browser session.
+        </div>
       </section>
 
     </div>
 
-    <pre id="result">Waiting for test...</pre>
+    <pre id="result">Waiting for diagnostic...</pre>
 
   </main>
 
@@ -161,8 +202,15 @@
     const paypalButton =
       document.getElementById("paypalButton");
 
+    const paypalSafetyButton =
+      document.getElementById(
+        "paypalSafetyButton"
+      );
+
     const result =
       document.getElementById("result");
+
+    let currentPayPalOrderId = null;
 
     razorpayButton.addEventListener(
       "click",
@@ -184,12 +232,28 @@
       }
     );
 
+    paypalSafetyButton.addEventListener(
+      "click",
+      testUnapprovedPayPalSafety
+    );
+
+    function setButtonsBusy(isBusy) {
+      razorpayButton.disabled = isBusy;
+      paypalButton.disabled = isBusy;
+
+      paypalSafetyButton.disabled =
+        isBusy || !currentPayPalOrderId;
+    }
+
     async function testOrderCreation(
       market,
       activeButton
     ) {
-      razorpayButton.disabled = true;
-      paypalButton.disabled = true;
+      if (market === "international") {
+        currentPayPalOrderId = null;
+      }
+
+      setButtonsBusy(true);
 
       const providerName =
         market === "india"
@@ -197,7 +261,7 @@
           : "PayPal";
 
       result.textContent =
-        "Testing " +
+        "Checking " +
         providerName +
         " order creation...\n\n" +
         "Market: " +
@@ -245,6 +309,14 @@
           return;
         }
 
+        if (
+          market === "international" &&
+          data.orderId
+        ) {
+          currentPayPalOrderId =
+            data.orderId;
+        }
+
         const lines = [
           providerName +
             " ORDER CREATED ✅",
@@ -256,7 +328,10 @@
           "Market: " +
             (data.market || "Not returned"),
           "Provider: " +
-            (data.paymentProvider || "Not returned"),
+            (
+              data.paymentProvider ||
+              "Not returned"
+            ),
           "Currency: " +
             (data.currency || "Not returned"),
           "Amount: " +
@@ -275,16 +350,19 @@
           lines.push(
             "",
             "PayPal approval URL returned: " +
-              (data.approveUrl ? "YES ✅" : "NO ❌")
+              (
+                data.approveUrl
+                  ? "YES ✅"
+                  : "NO ❌"
+              ),
+            "",
+            "CHECKOUT NOT OPENED.",
+            "PAYMENT NOT APPROVED BY THIS PAGE.",
+            "",
+            currentPayPalOrderId
+              ? "Unapproved PayPal safety check is now available."
+              : "Safety check unavailable because no order ID was returned."
           );
-
-          if (data.approveUrl) {
-            lines.push(
-              "",
-              "Approval URL:",
-              data.approveUrl
-            );
-          }
         }
 
         result.textContent =
@@ -293,11 +371,107 @@
       } catch (error) {
         result.textContent =
           providerName +
-          " TEST FAILED ❌\n\n" +
+          " DIAGNOSTIC FAILED ❌\n\n" +
           error.message;
       } finally {
-        razorpayButton.disabled = false;
-        paypalButton.disabled = false;
+        setButtonsBusy(false);
+      }
+    }
+
+    async function testUnapprovedPayPalSafety() {
+      if (!currentPayPalOrderId) {
+        result.textContent =
+          "SAFETY CHECK NOT AVAILABLE ❌\n\n" +
+          "Create a fresh PayPal order first.";
+
+        return;
+      }
+
+      setButtonsBusy(true);
+
+      result.textContent =
+        "CHECKING UNAPPROVED PAYPAL SAFETY...\n\n" +
+        "Order ID: " +
+        currentPayPalOrderId +
+        "\n\n" +
+        "The diagnostic is asking Arthiva to verify the " +
+        "unapproved order.\n\n" +
+        "Expected result: Arthiva must refuse it.";
+
+      try {
+        const response = await fetch(
+          "/api/verify-payment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              paymentProvider: "paypal",
+              orderId: currentPayPalOrderId,
+              product: "ctc-reality",
+              offer: "salary-report",
+              reportData: {
+                annualCtc: 1200000,
+                bonus: 100000,
+                monthlyPf: 1800
+              }
+            })
+          }
+        );
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          throw new Error(
+            "The verification API did not return valid JSON."
+          );
+        }
+
+        const refusedBecauseUnapproved =
+          response.status === 400 &&
+          data.success === false &&
+          data.verified === false &&
+          data.error ===
+            "PayPal payment has not been approved.";
+
+        if (refusedBecauseUnapproved) {
+          result.textContent =
+            "UNAPPROVED PAYPAL SAFETY CHECK PASSED ✅\n\n" +
+            "HTTP status: " +
+            response.status +
+            "\n\n" +
+            "Arthiva refused the unapproved PayPal order.\n\n" +
+            "Server response: " +
+            data.error +
+            "\n\n" +
+            "The order was not accepted as a completed payment.\n" +
+            "No report token was returned.";
+
+          return;
+        }
+
+        result.textContent =
+          "UNEXPECTED PAYPAL SAFETY RESULT ⚠️\n\n" +
+          "HTTP status: " +
+          response.status +
+          "\n\n" +
+          JSON.stringify(
+            data,
+            null,
+            2
+          ) +
+          "\n\n" +
+          "STOP. Do not approve or pay through PayPal.";
+
+      } catch (error) {
+        result.textContent =
+          "PAYPAL SAFETY CHECK FAILED TO RUN ❌\n\n" +
+          error.message;
+      } finally {
+        setButtonsBusy(false);
       }
     }
   </script>
