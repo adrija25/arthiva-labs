@@ -1,3 +1,41 @@
+async function getPayPalAccessToken(env) {
+  const clientId = env.PAYPAL_CLIENT_ID;
+  const clientSecret = env.PAYPAL_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("PayPal secrets are missing.");
+  }
+
+  const credentials = btoa(
+    clientId + ":" + clientSecret
+  );
+
+  const tokenResponse = await fetch(
+    "https://api-m.paypal.com/v1/oauth2/token",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": "Basic " + credentials,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "grant_type=client_credentials"
+    }
+  );
+
+  const tokenData = await tokenResponse.json();
+
+  if (!tokenResponse.ok || !tokenData.access_token) {
+    console.error("PayPal access token error", tokenData);
+    throw new Error("Unable to authenticate with PayPal.");
+  }
+
+  return tokenData.access_token;
+}
+
+function formatPayPalAmount(amount) {
+  return (Number(amount) / 100).toFixed(2);
+}
+
 export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
@@ -108,7 +146,7 @@ export async function onRequestPost(context) {
         return Response.json(
           {
             success: false,
-            error: "Razorpay could not create the test order."
+            error: "Razorpay could not create the order."
           },
           {
             status: 502
@@ -132,6 +170,74 @@ export async function onRequestPost(context) {
       });
     }
 
+    const paypalAccessToken = await getPayPalAccessToken(
+      context.env
+    );
+
+    const paypalRequestId =
+      "arthiva-" +
+      product.replace(/[^a-zA-Z0-9]/g, "-") +
+      "-" +
+      offer.replace(/[^a-zA-Z0-9]/g, "-") +
+      "-" +
+      crypto.randomUUID();
+
+    const paypalResponse = await fetch(
+      "https://api-m.paypal.com/v2/checkout/orders",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + paypalAccessToken,
+          "Content-Type": "application/json",
+          "PayPal-Request-Id": paypalRequestId
+        },
+        body: JSON.stringify({
+          intent: "CAPTURE",
+          purchase_units: [
+            {
+              reference_id: product + ":" + offer,
+              description:
+                productDetails.name + " — " + offerDetails.name,
+              custom_id: product + ":" + offer,
+              amount: {
+                currency_code: priceDetails.currency,
+                value: formatPayPalAmount(priceDetails.amount)
+              }
+            }
+          ],
+          payment_source: {
+            paypal: {
+              experience_context: {
+                brand_name: "Arthiva Labs",
+                shipping_preference: "NO_SHIPPING",
+                user_action: "PAY_NOW"
+              }
+            }
+          }
+        })
+      }
+    );
+
+    const paypalOrder = await paypalResponse.json();
+
+    if (!paypalResponse.ok || !paypalOrder.id) {
+      console.error("PayPal order error", paypalOrder);
+
+      return Response.json(
+        {
+          success: false,
+          error: "PayPal could not create the order."
+        },
+        {
+          status: 502
+        }
+      );
+    }
+
+    const approveLink = paypalOrder.links?.find(
+      (link) => link.rel === "payer-action" || link.rel === "approve"
+    )?.href;
+
     return Response.json({
       success: true,
       product: product,
@@ -142,7 +248,9 @@ export async function onRequestPost(context) {
       paymentProvider: "paypal",
       currency: priceDetails.currency,
       amount: priceDetails.amount,
-      status: "paypal-not-connected-yet"
+      orderId: paypalOrder.id,
+      approveUrl: approveLink || null,
+      status: "paypal-order-created"
     });
 
   } catch (error) {
