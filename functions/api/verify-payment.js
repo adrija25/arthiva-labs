@@ -34,30 +34,376 @@ function createAccessToken() {
   );
 }
 
+function formatPayPalAmount(amount) {
+  return (Number(amount) / 100).toFixed(2);
+}
+
+async function loadPaymentDetails(
+  context,
+  product,
+  offer,
+  market
+) {
+  const priceListUrl = new URL(
+    "/payment-products.json",
+    context.request.url
+  );
+
+  const priceListResponse =
+    await context.env.ASSETS.fetch(
+      priceListUrl
+    );
+
+  if (!priceListResponse.ok) {
+    throw new Error(
+      "Unable to load Arthiva price list."
+    );
+  }
+
+  const priceList =
+    await priceListResponse.json();
+
+  const productDetails =
+    priceList.products?.[product];
+
+  const offerDetails =
+    productDetails?.offers?.[offer];
+
+  const priceDetails =
+    offerDetails?.[market];
+
+  if (
+    !productDetails ||
+    !offerDetails ||
+    !priceDetails
+  ) {
+    return null;
+  }
+
+  return {
+    productDetails,
+    offerDetails,
+    priceDetails
+  };
+}
+
+async function getPayPalAccessToken(env) {
+  const clientId =
+    env.PAYPAL_CLIENT_ID;
+
+  const clientSecret =
+    env.PAYPAL_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error(
+      "PayPal secrets are missing."
+    );
+  }
+
+  const credentials = btoa(
+    clientId + ":" + clientSecret
+  );
+
+  const tokenResponse = await fetch(
+    "https://api-m.paypal.com/v1/oauth2/token",
+    {
+      method: "POST",
+      headers: {
+        "Authorization":
+          "Basic " + credentials,
+        "Content-Type":
+          "application/x-www-form-urlencoded"
+      },
+      body:
+        "grant_type=client_credentials"
+    }
+  );
+
+  const tokenData =
+    await tokenResponse.json();
+
+  if (
+    !tokenResponse.ok ||
+    !tokenData.access_token
+  ) {
+    console.error(
+      "PayPal access token error",
+      tokenData
+    );
+
+    throw new Error(
+      "Unable to authenticate with PayPal."
+    );
+  }
+
+  return tokenData.access_token;
+}
+
+async function verifyRazorpayPayment(
+  context,
+  body
+) {
+  const orderId =
+    body.razorpay_order_id ||
+    body.orderId;
+
+  const paymentId =
+    body.razorpay_payment_id ||
+    body.paymentId;
+
+  const signature =
+    body.razorpay_signature ||
+    body.signature;
+
+  if (
+    !orderId ||
+    !paymentId ||
+    !signature
+  ) {
+    return {
+      success: false,
+      error:
+        "Missing Razorpay verification information."
+    };
+  }
+
+  const razorpayKeySecret =
+    context.env.RAZORPAY_KEY_SECRET;
+
+  if (!razorpayKeySecret) {
+    throw new Error(
+      "Razorpay secret is missing."
+    );
+  }
+
+  const encoder =
+    new TextEncoder();
+
+  const cryptoKey =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(
+        razorpayKeySecret
+      ),
+      {
+        name: "HMAC",
+        hash: "SHA-256"
+      },
+      false,
+      ["sign"]
+    );
+
+  const verificationMessage =
+    orderId + "|" + paymentId;
+
+  const signatureBuffer =
+    await crypto.subtle.sign(
+      "HMAC",
+      cryptoKey,
+      encoder.encode(
+        verificationMessage
+      )
+    );
+
+  const expectedSignature =
+    bytesToHex(
+      new Uint8Array(
+        signatureBuffer
+      )
+    );
+
+  const verified = safeEqual(
+    expectedSignature,
+    String(signature).toLowerCase()
+  );
+
+  if (!verified) {
+    return {
+      success: false,
+      error:
+        "Payment verification failed."
+    };
+  }
+
+  return {
+    success: true,
+    paymentProvider: "razorpay",
+    paymentId
+  };
+}
+
+async function captureAndVerifyPayPalPayment(
+  context,
+  body,
+  paymentDetails
+) {
+  const orderId =
+    body.paypal_order_id ||
+    body.orderId;
+
+  if (!orderId) {
+    return {
+      success: false,
+      error:
+        "Missing PayPal order information."
+    };
+  }
+
+  const accessToken =
+    await getPayPalAccessToken(
+      context.env
+    );
+
+  const captureResponse = await fetch(
+    "https://api-m.paypal.com/v2/checkout/orders/" +
+      encodeURIComponent(orderId) +
+      "/capture",
+    {
+      method: "POST",
+      headers: {
+        "Authorization":
+          "Bearer " + accessToken,
+        "Content-Type":
+          "application/json",
+        "PayPal-Request-Id":
+          "arthiva-capture-" + orderId
+      },
+      body: "{}"
+    }
+  );
+
+  const captureData =
+    await captureResponse.json();
+
+  if (!captureResponse.ok) {
+    console.error(
+      "PayPal capture error",
+      captureData
+    );
+
+    return {
+      success: false,
+      error:
+        "PayPal payment could not be captured."
+    };
+  }
+
+  const purchaseUnit =
+    captureData.purchase_units?.[0];
+
+  const capture =
+    purchaseUnit
+      ?.payments
+      ?.captures?.[0];
+
+  if (
+    captureData.status !== "COMPLETED" ||
+    !capture ||
+    capture.status !== "COMPLETED"
+  ) {
+    console.error(
+      "PayPal incomplete capture",
+      captureData
+    );
+
+    return {
+      success: false,
+      error:
+        "PayPal payment is not completed."
+    };
+  }
+
+  const expectedReference =
+    body.product + ":" + body.offer;
+
+  if (
+    purchaseUnit.reference_id !==
+      expectedReference ||
+    purchaseUnit.custom_id !==
+      expectedReference
+  ) {
+    console.error(
+      "PayPal product reference mismatch",
+      captureData
+    );
+
+    return {
+      success: false,
+      error:
+        "PayPal payment does not match this Arthiva product."
+    };
+  }
+
+  const expectedCurrency =
+    String(
+      paymentDetails.priceDetails.currency
+    ).toUpperCase();
+
+  const expectedAmount =
+    formatPayPalAmount(
+      paymentDetails.priceDetails.amount
+    );
+
+  const capturedCurrency =
+    String(
+      capture.amount?.currency_code || ""
+    ).toUpperCase();
+
+  const capturedAmount =
+    String(
+      capture.amount?.value || ""
+    );
+
+  if (
+    capturedCurrency !== expectedCurrency ||
+    capturedAmount !== expectedAmount
+  ) {
+    console.error(
+      "PayPal amount mismatch",
+      {
+        expectedCurrency,
+        expectedAmount,
+        capturedCurrency,
+        capturedAmount
+      }
+    );
+
+    return {
+      success: false,
+      error:
+        "PayPal payment amount does not match the Arthiva offer."
+    };
+  }
+
+  return {
+    success: true,
+    paymentProvider: "paypal",
+    paymentId: capture.id
+  };
+}
+
 export async function onRequestPost(context) {
   try {
-    const body = await context.request.json();
+    const body =
+      await context.request.json();
 
-    const orderId =
-      body.razorpay_order_id ||
-      body.orderId;
+    const product =
+      body.product;
 
-    const paymentId =
-      body.razorpay_payment_id ||
-      body.paymentId;
+    const offer =
+      body.offer;
 
-    const signature =
-      body.razorpay_signature ||
-      body.signature;
+    const reportData =
+      body.reportData;
 
-    const product = body.product;
-    const offer = body.offer;
-    const reportData = body.reportData;
+    const paymentProvider =
+      String(
+        body.paymentProvider ||
+        body.provider ||
+        "razorpay"
+      ).toLowerCase();
 
     if (
-      !orderId ||
-      !paymentId ||
-      !signature ||
       !product ||
       !offer ||
       !reportData
@@ -67,7 +413,7 @@ export async function onRequestPost(context) {
           success: false,
           verified: false,
           error:
-            "Missing payment or report verification information."
+            "Missing product, offer, or report verification information."
         },
         {
           status: 400
@@ -94,66 +440,76 @@ export async function onRequestPost(context) {
       );
     }
 
-    const razorpayKeySecret =
-      context.env.RAZORPAY_KEY_SECRET;
-
-    if (!razorpayKeySecret) {
-      throw new Error(
-        "Razorpay secret is missing."
-      );
-    }
-
     if (!context.env.DB) {
       throw new Error(
         "Arthiva database binding is missing."
       );
     }
 
-    const encoder = new TextEncoder();
+    let paymentVerification;
 
-    const cryptoKey =
-      await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(razorpayKeySecret),
-        {
-          name: "HMAC",
-          hash: "SHA-256"
-        },
-        false,
-        ["sign"]
-      );
+    if (
+      paymentProvider === "razorpay"
+    ) {
+      paymentVerification =
+        await verifyRazorpayPayment(
+          context,
+          body
+        );
 
-    const verificationMessage =
-      orderId + "|" + paymentId;
+    } else if (
+      paymentProvider === "paypal"
+    ) {
+      const paymentDetails =
+        await loadPaymentDetails(
+          context,
+          product,
+          offer,
+          "international"
+        );
 
-    const signatureBuffer =
-      await crypto.subtle.sign(
-        "HMAC",
-        cryptoKey,
-        encoder.encode(
-          verificationMessage
-        )
-      );
+      if (!paymentDetails) {
+        return Response.json(
+          {
+            success: false,
+            verified: false,
+            error:
+              "International payment offer is not available."
+          },
+          {
+            status: 404
+          }
+        );
+      }
 
-    const expectedSignature =
-      bytesToHex(
-        new Uint8Array(
-          signatureBuffer
-        )
-      );
+      paymentVerification =
+        await captureAndVerifyPayPalPayment(
+          context,
+          body,
+          paymentDetails
+        );
 
-    const verified = safeEqual(
-      expectedSignature,
-      String(signature).toLowerCase()
-    );
-
-    if (!verified) {
+    } else {
       return Response.json(
         {
           success: false,
           verified: false,
           error:
-            "Payment verification failed."
+            "Unsupported payment provider."
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+    if (!paymentVerification.success) {
+      return Response.json(
+        {
+          success: false,
+          verified: false,
+          error:
+            paymentVerification.error
         },
         {
           status: 400
@@ -170,12 +526,14 @@ export async function onRequestPost(context) {
           offer,
           reportData
         );
+
     } catch (reportError) {
       return Response.json(
         {
           success: false,
           verified: true,
-          error: reportError.message
+          error:
+            reportError.message
         },
         {
           status: 400
@@ -218,7 +576,7 @@ export async function onRequestPost(context) {
           token,
           product,
           offer,
-          paymentId,
+          paymentVerification.paymentId,
           storedReportData,
           now,
           expiresAt
@@ -247,8 +605,12 @@ export async function onRequestPost(context) {
     return Response.json({
       success: true,
       verified: true,
-      status: "payment-verified",
-      paymentId: paymentId,
+      status:
+        "payment-verified",
+      paymentProvider:
+        paymentVerification.paymentProvider,
+      paymentId:
+        paymentVerification.paymentId,
       reportAccessCreated: true,
       reportToken: token,
       reportExpiresAt: expiresAt
