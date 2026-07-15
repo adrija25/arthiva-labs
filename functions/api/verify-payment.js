@@ -232,6 +232,162 @@ async function verifyRazorpayPayment(
   };
 }
 
+async function getPayPalOrder(
+  accessToken,
+  orderId
+) {
+  const orderResponse = await fetch(
+    "https://api-m.paypal.com/v2/checkout/orders/" +
+      encodeURIComponent(orderId),
+    {
+      method: "GET",
+      headers: {
+        "Authorization":
+          "Bearer " + accessToken,
+        "Content-Type":
+          "application/json"
+      }
+    }
+  );
+
+  const orderData =
+    await orderResponse.json();
+
+  if (!orderResponse.ok) {
+    console.error(
+      "PayPal order lookup error",
+      orderData
+    );
+
+    return null;
+  }
+
+  return orderData;
+}
+
+function validatePayPalOrder(
+  orderData,
+  body,
+  paymentDetails
+) {
+  const purchaseUnit =
+    orderData.purchase_units?.[0];
+
+  if (!purchaseUnit) {
+    return {
+      success: false,
+      error:
+        "PayPal order has no purchase information."
+    };
+  }
+
+  const expectedReference =
+    body.product + ":" + body.offer;
+
+  if (
+    purchaseUnit.reference_id !==
+      expectedReference ||
+    purchaseUnit.custom_id !==
+      expectedReference
+  ) {
+    return {
+      success: false,
+      error:
+        "PayPal payment does not match this Arthiva product."
+    };
+  }
+
+  const expectedCurrency =
+    String(
+      paymentDetails.priceDetails.currency
+    ).toUpperCase();
+
+  const expectedAmount =
+    formatPayPalAmount(
+      paymentDetails.priceDetails.amount
+    );
+
+  const orderCurrency =
+    String(
+      purchaseUnit.amount?.currency_code ||
+      ""
+    ).toUpperCase();
+
+  const orderAmount =
+    String(
+      purchaseUnit.amount?.value ||
+      ""
+    );
+
+  if (
+    orderCurrency !== expectedCurrency ||
+    orderAmount !== expectedAmount
+  ) {
+    return {
+      success: false,
+      error:
+        "PayPal order amount does not match the Arthiva offer."
+    };
+  }
+
+  return {
+    success: true
+  };
+}
+
+function findCompletedPayPalCapture(
+  orderData,
+  paymentDetails
+) {
+  const purchaseUnits =
+    orderData.purchase_units || [];
+
+  const expectedCurrency =
+    String(
+      paymentDetails.priceDetails.currency
+    ).toUpperCase();
+
+  const expectedAmount =
+    formatPayPalAmount(
+      paymentDetails.priceDetails.amount
+    );
+
+  for (
+    const purchaseUnit of purchaseUnits
+  ) {
+    const captures =
+      purchaseUnit
+        ?.payments
+        ?.captures || [];
+
+    for (const capture of captures) {
+      const captureCurrency =
+        String(
+          capture.amount?.currency_code ||
+          ""
+        ).toUpperCase();
+
+      const captureAmount =
+        String(
+          capture.amount?.value ||
+          ""
+        );
+
+      if (
+        capture.status === "COMPLETED" &&
+        captureCurrency ===
+          expectedCurrency &&
+        captureAmount ===
+          expectedAmount
+      ) {
+        return capture;
+      }
+    }
+  }
+
+  return null;
+}
+
 async function captureAndVerifyPayPalPayment(
   context,
   body,
@@ -253,6 +409,53 @@ async function captureAndVerifyPayPalPayment(
     await getPayPalAccessToken(
       context.env
     );
+
+  let orderData =
+    await getPayPalOrder(
+      accessToken,
+      orderId
+    );
+
+  if (!orderData) {
+    return {
+      success: false,
+      error:
+        "Unable to retrieve PayPal order."
+    };
+  }
+
+  const orderValidation =
+    validatePayPalOrder(
+      orderData,
+      body,
+      paymentDetails
+    );
+
+  if (!orderValidation.success) {
+    return orderValidation;
+  }
+
+  let completedCapture =
+    findCompletedPayPalCapture(
+      orderData,
+      paymentDetails
+    );
+
+  if (completedCapture) {
+    return {
+      success: true,
+      paymentProvider: "paypal",
+      paymentId: completedCapture.id
+    };
+  }
+
+  if (orderData.status !== "APPROVED") {
+    return {
+      success: false,
+      error:
+        "PayPal payment has not been approved."
+    };
+  }
 
   const captureResponse = await fetch(
     "https://api-m.paypal.com/v2/checkout/orders/" +
@@ -288,21 +491,28 @@ async function captureAndVerifyPayPalPayment(
     };
   }
 
-  const purchaseUnit =
-    captureData.purchase_units?.[0];
-
-  const capture =
-    purchaseUnit
-      ?.payments
-      ?.captures?.[0];
+  const captureOrderValidation =
+    validatePayPalOrder(
+      captureData,
+      body,
+      paymentDetails
+    );
 
   if (
-    captureData.status !== "COMPLETED" ||
-    !capture ||
-    capture.status !== "COMPLETED"
+    !captureOrderValidation.success
   ) {
+    return captureOrderValidation;
+  }
+
+  completedCapture =
+    findCompletedPayPalCapture(
+      captureData,
+      paymentDetails
+    );
+
+  if (!completedCapture) {
     console.error(
-      "PayPal incomplete capture",
+      "PayPal completed capture not found",
       captureData
     );
 
@@ -313,72 +523,10 @@ async function captureAndVerifyPayPalPayment(
     };
   }
 
-  const expectedReference =
-    body.product + ":" + body.offer;
-
-  if (
-    purchaseUnit.reference_id !==
-      expectedReference ||
-    purchaseUnit.custom_id !==
-      expectedReference
-  ) {
-    console.error(
-      "PayPal product reference mismatch",
-      captureData
-    );
-
-    return {
-      success: false,
-      error:
-        "PayPal payment does not match this Arthiva product."
-    };
-  }
-
-  const expectedCurrency =
-    String(
-      paymentDetails.priceDetails.currency
-    ).toUpperCase();
-
-  const expectedAmount =
-    formatPayPalAmount(
-      paymentDetails.priceDetails.amount
-    );
-
-  const capturedCurrency =
-    String(
-      capture.amount?.currency_code || ""
-    ).toUpperCase();
-
-  const capturedAmount =
-    String(
-      capture.amount?.value || ""
-    );
-
-  if (
-    capturedCurrency !== expectedCurrency ||
-    capturedAmount !== expectedAmount
-  ) {
-    console.error(
-      "PayPal amount mismatch",
-      {
-        expectedCurrency,
-        expectedAmount,
-        capturedCurrency,
-        capturedAmount
-      }
-    );
-
-    return {
-      success: false,
-      error:
-        "PayPal payment amount does not match the Arthiva offer."
-    };
-  }
-
   return {
     success: true,
     paymentProvider: "paypal",
-    paymentId: capture.id
+    paymentId: completedCapture.id
   };
 }
 
@@ -443,6 +591,30 @@ export async function onRequestPost(context) {
     if (!context.env.DB) {
       throw new Error(
         "Arthiva database binding is missing."
+      );
+    }
+
+    let normalisedReportData;
+
+    try {
+      normalisedReportData =
+        normaliseReportData(
+          product,
+          offer,
+          reportData
+        );
+
+    } catch (reportError) {
+      return Response.json(
+        {
+          success: false,
+          verified: false,
+          error:
+            reportError.message
+        },
+        {
+          status: 400
+        }
       );
     }
 
@@ -517,28 +689,51 @@ export async function onRequestPost(context) {
       );
     }
 
-    let normalisedReportData;
-
-    try {
-      normalisedReportData =
-        normaliseReportData(
+    const existingAccess =
+      await context.env.DB
+        .prepare(
+          `
+          SELECT
+            token,
+            expires_at
+          FROM report_access
+          WHERE
+            product = ?
+            AND offer = ?
+            AND payment_id = ?
+          ORDER BY created_at DESC
+          LIMIT 1
+          `
+        )
+        .bind(
           product,
           offer,
-          reportData
-        );
+          paymentVerification.paymentId
+        )
+        .first();
 
-    } catch (reportError) {
-      return Response.json(
-        {
-          success: false,
-          verified: true,
-          error:
-            reportError.message
-        },
-        {
-          status: 400
-        }
-      );
+    if (
+      existingAccess &&
+      Number(existingAccess.expires_at) >
+        Date.now()
+    ) {
+      return Response.json({
+        success: true,
+        verified: true,
+        status:
+          "payment-already-verified",
+        paymentProvider:
+          paymentVerification.paymentProvider,
+        paymentId:
+          paymentVerification.paymentId,
+        reportAccessCreated: false,
+        reportToken:
+          existingAccess.token,
+        reportExpiresAt:
+          Number(
+            existingAccess.expires_at
+          )
+      });
     }
 
     const token =
