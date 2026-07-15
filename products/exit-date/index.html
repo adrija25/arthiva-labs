@@ -1002,7 +1002,10 @@
 
             <div class="premium-card">
 
-              <span class="premium-tag">
+              <span
+                id="premiumPlanTag"
+                class="premium-tag"
+              >
                 Personalised transition plan · ₹199
               </span>
 
@@ -1575,6 +1578,186 @@
       "premiumPlanStatus"
     );
 
+    const premiumPlanTag = document.getElementById(
+      "premiumPlanTag"
+    );
+
+    const PAYPAL_REPORT_DATA_KEY =
+      "arthivaExitDatePayPalReportData";
+
+    function getPaymentMarket() {
+      const timeZone =
+        Intl.DateTimeFormat()
+          .resolvedOptions()
+          .timeZone || "";
+
+      const locale =
+        navigator.language || "";
+
+      if (
+        timeZone === "Asia/Kolkata" ||
+        timeZone === "Asia/Calcutta" ||
+        locale.toLowerCase().endsWith("-in")
+      ) {
+        return "india";
+      }
+
+      return "international";
+    }
+
+    const paymentMarket = getPaymentMarket();
+
+    function getPlanPriceLabel() {
+      return paymentMarket === "india"
+        ? "₹199"
+        : "$4";
+    }
+
+    function resetPremiumPlanButton() {
+      premiumPlanButton.disabled = false;
+      premiumPlanButton.textContent =
+        "Get My Personalised Plan · " +
+        getPlanPriceLabel();
+    }
+
+    function updatePlanPriceDisplay() {
+      const priceLabel = getPlanPriceLabel();
+
+      premiumPlanTag.textContent =
+        "Personalised transition plan · " +
+        priceLabel;
+
+      premiumPlanButton.textContent =
+        "Get My Personalised Plan · " +
+        priceLabel;
+    }
+
+    async function verifyPayPalReturn() {
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      if (params.get("paypal") === "cancelled") {
+        sessionStorage.removeItem(
+          PAYPAL_REPORT_DATA_KEY
+        );
+
+        premiumPlanStatus.textContent =
+          "PayPal payment was cancelled. You can try again when ready.";
+
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+
+        return;
+      }
+
+      const paypalOrderId =
+        params.get("token");
+
+      if (!paypalOrderId) {
+        return;
+      }
+
+      const storedReportData =
+        sessionStorage.getItem(
+          PAYPAL_REPORT_DATA_KEY
+        );
+
+      if (!storedReportData) {
+        premiumPlanStatus.textContent =
+          "Your PayPal return was received, but the personalised plan details are no longer available in this browser. Please contact Arthiva Labs support before trying to pay again.";
+
+        return;
+      }
+
+      let reportData;
+
+      try {
+        reportData =
+          JSON.parse(storedReportData);
+      } catch (storageError) {
+        sessionStorage.removeItem(
+          PAYPAL_REPORT_DATA_KEY
+        );
+
+        premiumPlanStatus.textContent =
+          "Your saved personalised plan details could not be read. Please contact Arthiva Labs support before trying to pay again.";
+
+        return;
+      }
+
+      premiumPlanButton.disabled = true;
+      premiumPlanButton.textContent =
+        "Verifying PayPal payment...";
+
+      premiumPlanStatus.textContent =
+        "PayPal approval received. Verifying payment and creating your secure personalised plan access.";
+
+      try {
+        const verificationResponse = await fetch(
+          "/api/verify-payment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              paymentProvider: "paypal",
+              paypal_order_id: paypalOrderId,
+              product: "exit-date",
+              offer: "transition-plan",
+              reportData: reportData
+            })
+          }
+        );
+
+        const verificationData =
+          await verificationResponse.json();
+
+        if (
+          !verificationResponse.ok ||
+          !verificationData.success ||
+          !verificationData.verified ||
+          !verificationData.reportToken
+        ) {
+          throw new Error(
+            verificationData.error ||
+            "PayPal payment verification failed."
+          );
+        }
+
+        sessionStorage.removeItem(
+          PAYPAL_REPORT_DATA_KEY
+        );
+
+        premiumPlanStatus.textContent =
+          "Payment verified. Loading your personalised transition plan.";
+
+        window.location.href =
+          "/products/exit-date/report.html?token=" +
+          encodeURIComponent(
+            verificationData.reportToken
+          );
+
+      } catch (verificationError) {
+        console.error(
+          "Exit Date PayPal verification error",
+          verificationError
+        );
+
+        premiumPlanStatus.textContent =
+          "Your PayPal payment may have completed, but the personalised plan could not be opened. Please contact Arthiva Labs support before trying to pay again.";
+
+        resetPremiumPlanButton();
+      }
+    }
+
+    updatePlanPriceDisplay();
+
     premiumPlanButton.addEventListener("click", async () => {
       if (!latestExitCalculationData) {
         premiumPlanStatus.textContent =
@@ -1629,21 +1812,57 @@
             body: JSON.stringify({
               product: "exit-date",
               offer: "transition-plan",
-              market: "india"
+              market: paymentMarket
             })
           }
         );
 
-        const paymentData = await paymentResponse.json();
+        const paymentData =
+          await paymentResponse.json();
 
         if (
           !paymentResponse.ok ||
-          !paymentData.success ||
-          paymentData.paymentProvider !== "razorpay"
+          !paymentData.success
         ) {
           throw new Error(
             paymentData.error ||
             "Unable to prepare payment."
+          );
+        }
+
+        if (paymentMarket === "international") {
+          if (
+            paymentData.paymentProvider !== "paypal" ||
+            !paymentData.orderId ||
+            !paymentData.approveUrl
+          ) {
+            throw new Error(
+              "PayPal checkout could not be prepared."
+            );
+          }
+
+          sessionStorage.setItem(
+            PAYPAL_REPORT_DATA_KEY,
+            JSON.stringify(reportData)
+          );
+
+          premiumPlanButton.textContent =
+            "Opening PayPal...";
+
+          premiumPlanStatus.textContent =
+            "Redirecting you to PayPal to complete your $4 payment.";
+
+          window.location.href =
+            paymentData.approveUrl;
+
+          return;
+        }
+
+        if (
+          paymentData.paymentProvider !== "razorpay"
+        ) {
+          throw new Error(
+            "Razorpay checkout could not be prepared."
           );
         }
 
@@ -1677,6 +1896,7 @@
                     "Content-Type": "application/json"
                   },
                   body: JSON.stringify({
+                    paymentProvider: "razorpay",
                     razorpay_order_id:
                       razorpayResponse.razorpay_order_id,
                     razorpay_payment_id:
@@ -1716,16 +1936,14 @@
 
             } catch (verificationError) {
               console.error(
-                "Exit Date payment verification error",
+                "Exit Date Razorpay verification error",
                 verificationError
               );
 
               premiumPlanStatus.textContent =
                 "Your payment may have completed, but the personalised plan could not be opened. Please contact Arthiva Labs support before trying to pay again.";
 
-              premiumPlanButton.disabled = false;
-              premiumPlanButton.textContent =
-                "Get My Personalised Plan · ₹199";
+              resetPremiumPlanButton();
             }
           },
 
@@ -1734,9 +1952,7 @@
               premiumPlanStatus.textContent =
                 "Payment was not completed. You can try again when ready.";
 
-              premiumPlanButton.disabled = false;
-              premiumPlanButton.textContent =
-                "Get My Personalised Plan · ₹199";
+              resetPremiumPlanButton();
             }
           },
 
@@ -1756,11 +1972,11 @@
         premiumPlanStatus.textContent =
           "Secure payment could not be prepared right now. Please try again.";
 
-        premiumPlanButton.disabled = false;
-        premiumPlanButton.textContent =
-          "Get My Personalised Plan · ₹199";
+        resetPremiumPlanButton();
       }
     });
+
+    verifyPayPalReturn();
   </script>
 
 </body>
