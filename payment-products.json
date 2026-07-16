@@ -32,6 +32,22 @@
           }
         }
       }
+    },
+    "brand-rate": {
+      "name": "Brand Rate",
+      "offers": {
+        "creator-report": {
+          "name": "Brand Rate Premium Creator Report",
+          "india": {
+            "currency": "INR",
+            "amount": 19900
+          },
+          "international": {
+            "currency": "USD",
+            "amount": 400
+          }
+        }
+      }
     }
   }
 }
