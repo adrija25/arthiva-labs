@@ -39,6 +39,19 @@
         "india": "razorpay",
         "international": "paypal"
       }
+    },
+    {
+      "id": 4,
+      "name": "Brand Rate",
+      "slug": "brand-rate",
+      "status": "live",
+      "category": "creator-economy",
+      "url": "/products/brand-rate/",
+      "monetisation": "free-calculator-and-paid-report",
+      "payments": {
+        "india": "razorpay",
+        "international": "paypal"
+      }
     }
   ]
 }
