@@ -6,14 +6,7 @@
 Brand Rate
 Arthiva Labs
 
-Version:
-1.0
-
-Product:
-#4
-
-Purpose:
-Estimate sponsorship pricing for creators.
+Product #4
 
 ========================================================
 */
@@ -27,38 +20,33 @@ DOM
 */
 
 const platform = $("platform");
-
 const followers = $("followers");
-
-const engagement = $("engagement");
-
+const engagementRate = $("engagementRate");
 const niche = $("niche");
+const contentType = $("contentType");
+const contentQuality = $("contentQuality");
+const brandUsage = $("brandUsage");
+const turnaround = $("turnaround");
 
-const deliverable = $("deliverable");
+const calculateBtn = $("calculateBtn");
+const buyReportBtn = $("buyReportBtn");
 
-const deliverables = $("deliverables");
-
-const usageRights = $("usageRights");
-
-const notes = $("notes");
-
-const calculateButton = $("calculateBrandRate");
-
-const unlockReportButton = $("unlockReport");
-
-const calculatorError = $("calculatorError");
-
-const results = $("results");
-
+const estimatedRate = $("estimatedRate");
 const minimumRate = $("minimumRate");
-
-const averageRate = $("averageRate");
-
+const recommendedRate = $("recommendedRate");
 const premiumRate = $("premiumRate");
 
-const recommendedRate = $("recommendedRate");
+const audienceStrength = $("audienceStrength");
+const engagementScore = $("engagementScore");
+const marketPosition = $("marketPosition");
 
-let latestBrandRateReport = null;
+/*
+========================================================
+State
+========================================================
+*/
+
+let latestCalculation = null;
 
 /*
 ========================================================
@@ -66,43 +54,39 @@ Helpers
 ========================================================
 */
 
-function showError(message){
+function indianUser(){
 
-    calculatorError.textContent = message;
+    return Intl.DateTimeFormat()
 
-    calculatorError.classList.add("visible");
+        .resolvedOptions()
 
-    results.classList.remove("visible");
+        .timeZone
 
-}
-
-function hideError(){
-
-    calculatorError.classList.remove("visible");
+        .includes("Kolkata");
 
 }
 
-function formatINR(value){
+function formatCurrency(value){
 
-    return new Intl.NumberFormat(
+    if(indianUser()){
 
-        "en-IN",
+        return new Intl.NumberFormat(
 
-        {
+            "en-IN",
 
-            style:"currency",
+            {
 
-            currency:"INR",
+                style:"currency",
 
-            maximumFractionDigits:0
+                currency:"INR",
 
-        }
+                maximumFractionDigits:0
 
-    ).format(value);
+            }
 
-}
+        ).format(value);
 
-function formatUSD(value){
+    }
 
     return new Intl.NumberFormat(
 
@@ -118,39 +102,52 @@ function formatUSD(value){
 
         }
 
-    ).format(value);
+    ).format(value/85);
 
 }
 
-/*
-========================================================
-Country Detection
-========================================================
-*/
+function safeNumber(value){
 
-function isIndianUser(){
+    const number = Number(value);
 
-    const timezone = Intl.DateTimeFormat()
+    if(Number.isNaN(number)){
 
-        .resolvedOptions()
-
-        .timeZone
-
-        .toLowerCase();
-
-    return timezone.includes("kolkata");
-
-}
-
-function formatCurrency(value){
-
-    if(isIndianUser()){
-
-        return formatINR(value);
+        return 0;
 
     }
 
-    return formatUSD(value / 85);
+    return number;
+
+}
+
+function updateDisplay(){
+
+    if(!latestCalculation){
+
+        return;
+
+    }
+
+    estimatedRate.textContent =
+        formatCurrency(latestCalculation.recommended);
+
+    minimumRate.textContent =
+        formatCurrency(latestCalculation.minimum);
+
+    recommendedRate.textContent =
+        formatCurrency(latestCalculation.recommended);
+
+    premiumRate.textContent =
+        formatCurrency(latestCalculation.premium);
+
+    audienceStrength.textContent =
+        latestCalculation.audience;
+
+    engagementScore.textContent =
+        latestCalculation.engagement;
+
+    marketPosition.textContent =
+        latestCalculation.position;
 
 }
 
@@ -160,19 +157,11 @@ Validation
 ========================================================
 */
 
-function validateInputs(){
+function validate(){
 
-    if(
+    if(platform.value===""){
 
-        followers.value.trim()===""
-
-    ){
-
-        showError(
-
-            "Please enter your follower count."
-
-        );
+        alert("Please select a platform.");
 
         return false;
 
@@ -180,15 +169,13 @@ function validateInputs(){
 
     if(
 
-        Number(followers.value)<=0
+        safeNumber(followers.value)<=0
 
     ){
 
-        showError(
+        alert("Enter your follower count.");
 
-            "Follower count must be greater than zero."
-
-        );
+        followers.focus();
 
         return false;
 
@@ -196,69 +183,57 @@ function validateInputs(){
 
     if(
 
-        engagement.value.trim()===""
+        safeNumber(engagementRate.value)<=0
 
     ){
 
-        showError(
+        alert("Enter your engagement rate.");
 
-            "Please enter your engagement rate."
-
-        );
+        engagementRate.focus();
 
         return false;
 
     }
 
-    if(
+    if(niche.value===""){
 
-        Number(engagement.value)<=0
-
-    ){
-
-        showError(
-
-            "Engagement rate must be greater than zero."
-
-        );
+        alert("Select your niche.");
 
         return false;
 
     }
 
-    if(
+    if(contentType.value===""){
 
-        deliverables.value.trim()===""
-
-    ){
-
-        showError(
-
-            "Please enter the number of deliverables."
-
-        );
+        alert("Select a deliverable.");
 
         return false;
 
     }
 
-    if(
+    if(contentQuality.value===""){
 
-        Number(deliverables.value)<=0
-
-    ){
-
-        showError(
-
-            "Deliverables must be at least 1."
-
-        );
+        alert("Select content quality.");
 
         return false;
 
     }
 
-    hideError();
+    if(brandUsage.value===""){
+
+        alert("Select usage rights.");
+
+        return false;
+
+    }
+
+    if(turnaround.value===""){
+
+        alert("Select delivery timeline.");
+
+        return false;
+
+    }
 
     return true;
 
@@ -266,259 +241,391 @@ function validateInputs(){
 
 /*
 ========================================================
-Multipliers
+Pricing Tables
 ========================================================
 */
 
-const PLATFORM_MULTIPLIER = {
+const PLATFORM = {
 
-    Instagram:1,
+    instagram:1,
 
-    YouTube:1.8,
+    youtube:1.8,
 
-    TikTok:0.9,
+    linkedin:1.6,
 
-    LinkedIn:1.6,
+    tiktok:1,
 
-    "X (Twitter)":0.75
+    x:.8
 
 };
 
-const NICHE_MULTIPLIER={
+const NICHE = {
 
     lifestyle:1,
 
-    fashion:1.1,
+    beauty:1.2,
 
-    beauty:1.15,
+    fashion:1.15,
 
-    travel:1.1,
+    finance:1.55,
 
-    food:0.95,
+    technology:1.45,
 
-    fitness:1.05,
+    business:1.5,
 
-    finance:1.5,
-
-    education:1.35,
-
-    business:1.45,
-
-    technology:1.4,
+    education:1.3,
 
     gaming:1.2,
 
-    parenting:1,
+    fitness:1.15,
 
-    other:1
+    travel:1.1,
+
+    food:1,
+
+    parenting:1
 
 };
 
-const DELIVERABLE_MULTIPLIER={
+const CONTENT = {
 
-    story:0.55,
+    story:.55,
 
-    post:0.9,
-
-    reel:1.25,
+    reel:1.35,
 
     carousel:1,
 
-    youtube:2.5,
+    feed:1,
 
-    shorts:1.15,
+    video:2.5,
 
-    ugc:1.6
+    package:3.5
+
+};
+const QUALITY = {
+
+    basic:.85,
+
+    good:1,
+
+    excellent:1.2,
+
+    premium:1.45
 
 };
 
-const USAGE_MULTIPLIER={
+const RIGHTS = {
 
-    none:1,
+    organic:1,
 
-    organic:1.15,
+    whitelisting:1.35,
 
-    paid:1.4,
-
-    full:1.8
+    full:1.75
 
 };
 
-function engagementMultiplier(rate){
+const TURNAROUND = {
 
-    if(rate>=10) return 1.5;
+    normal:1,
 
-    if(rate>=8) return 1.35;
+    fast:1.2,
 
-    if(rate>=6) return 1.2;
+    urgent:1.45
 
-    if(rate>=4) return 1;
+};
 
-    if(rate>=2) return 0.85;
-
-    return 0.7;
-
-}
-
-function followerBaseRate(followerCount){
-
-    if(followerCount<1000) return 2;
-
-    if(followerCount<5000) return 1.75;
-
-    if(followerCount<10000) return 1.55;
-
-    if(followerCount<25000) return 1.35;
-
-    if(followerCount<50000) return 1.2;
-
-    if(followerCount<100000) return 1.1;
-
-    if(followerCount<250000) return 1;
-
-    if(followerCount<500000) return 0.9;
-
-    if(followerCount<1000000) return 0.8;
-
-    return 0.7;
-
-}
 /*
 ========================================================
-Pricing Engine
+Audience Classification
+========================================================
+*/
+
+function audienceLevel(followersCount){
+
+    if(followersCount<10000){
+
+        return{
+
+            label:"Nano Creator",
+
+            multiplier:0.8
+
+        };
+
+    }
+
+    if(followersCount<50000){
+
+        return{
+
+            label:"Micro Creator",
+
+            multiplier:1
+
+        };
+
+    }
+
+    if(followersCount<100000){
+
+        return{
+
+            label:"Mid-tier Creator",
+
+            multiplier:1.2
+
+        };
+
+    }
+
+    if(followersCount<500000){
+
+        return{
+
+            label:"Macro Creator",
+
+            multiplier:1.5
+
+        };
+
+    }
+
+    return{
+
+        label:"Mega Creator",
+
+        multiplier:1.9
+
+    };
+
+}
+
+/*
+========================================================
+Engagement Rating
+========================================================
+*/
+
+function engagementLevel(rate){
+
+    if(rate>=8){
+
+        return{
+
+            label:"Excellent",
+
+            multiplier:1.45
+
+        };
+
+    }
+
+    if(rate>=6){
+
+        return{
+
+            label:"Very Good",
+
+            multiplier:1.25
+
+        };
+
+    }
+
+    if(rate>=4){
+
+        return{
+
+            label:"Good",
+
+            multiplier:1.05
+
+        };
+
+    }
+
+    if(rate>=2){
+
+        return{
+
+            label:"Average",
+
+            multiplier:.9
+
+        };
+
+    }
+
+    return{
+
+        label:"Low",
+
+        multiplier:.75
+
+    };
+
+}
+
+/*
+========================================================
+Market Position
+========================================================
+*/
+
+function creatorPosition(score){
+
+    if(score>=250000){
+
+        return"Premium";
+
+    }
+
+    if(score>=100000){
+
+        return"High";
+
+    }
+
+    if(score>=40000){
+
+        return"Growing";
+
+    }
+
+    return"Emerging";
+
+}
+
+/*
+========================================================
+Calculation Engine
 ========================================================
 */
 
 function calculateBrandRate(){
 
-    const followerCount = Number(followers.value);
+    const followerCount=
 
-    const engagementRate = Number(engagement.value);
+        safeNumber(followers.value);
 
-    const quantity = Number(deliverables.value);
+    const engagement=
 
-    const platformMultiplier =
-        PLATFORM_MULTIPLIER[platform.value] || 1;
+        safeNumber(engagementRate.value);
 
-    const nicheMultiplier =
-        NICHE_MULTIPLIER[niche.value] || 1;
+    const audience=
 
-    const deliverableMultiplier =
-        DELIVERABLE_MULTIPLIER[deliverable.value] || 1;
+        audienceLevel(followerCount);
 
-    const usageMultiplier =
-        USAGE_MULTIPLIER[usageRights.value] || 1;
+    const engagementData=
 
-    const engagementScore =
-        engagementMultiplier(engagementRate);
+        engagementLevel(engagement);
 
-    const baseRate =
-        followerCount *
-        followerBaseRate(followerCount);
+    const baseRate=
 
-    const estimatedRate =
+        followerCount*.18;
 
-        baseRate *
+    let estimate=
 
-        platformMultiplier *
+        baseRate;
 
-        nicheMultiplier *
+    estimate*=
 
-        deliverableMultiplier *
+        PLATFORM[platform.value]||1;
 
-        usageMultiplier *
+    estimate*=
 
-        engagementScore *
+        NICHE[niche.value]||1;
 
-        quantity;
+    estimate*=
 
-    const minimum =
-        Math.round(estimatedRate * 0.85);
+        CONTENT[contentType.value]||1;
 
-    const recommended =
-        Math.round(estimatedRate);
+    estimate*=
 
-    const premium =
-        Math.round(estimatedRate * 1.30);
+        QUALITY[contentQuality.value]||1;
 
-    latestBrandRateReport = {
+    estimate*=
 
-        generatedAt:
-            new Date().toISOString(),
+        RIGHTS[brandUsage.value]||1;
+
+    estimate*=
+
+        TURNAROUND[turnaround.value]||1;
+
+    estimate*=
+
+        audience.multiplier;
+
+    estimate*=
+
+        engagementData.multiplier;
+
+    const minimum=
+
+        Math.round(estimate*.85);
+    const recommended=
+
+        Math.round(estimate);
+
+    const premium=
+
+        Math.round(estimate*1.3);
+
+    latestCalculation={
 
         platform:
+
             platform.value,
 
         followers:
+
             followerCount,
 
-        engagement:
-            engagementRate,
+        engagementRate:
+
+            engagement,
 
         niche:
+
             niche.value,
 
-        deliverable:
-            deliverable.value,
+        contentType:
 
-        deliverables:
-            quantity,
+            contentType.value,
 
-        usageRights:
-            usageRights.value,
+        contentQuality:
 
-        notes:
-            notes.value,
+            contentQuality.value,
+
+        brandUsage:
+
+            brandUsage.value,
+
+        turnaround:
+
+            turnaround.value,
 
         minimum,
 
         recommended,
 
-        premium
+        premium,
+
+        audience:
+
+            audience.label,
+
+        engagement:
+
+            engagementData.label,
+
+        position:
+
+            creatorPosition(recommended)
 
     };
 
-    renderResults();
-
-}
-
-/*
-========================================================
-Results
-========================================================
-*/
-
-function renderResults(){
-
-    minimumRate.textContent =
-        formatCurrency(
-            latestBrandRateReport.minimum
-        );
-
-    averageRate.textContent =
-        formatCurrency(
-            latestBrandRateReport.recommended
-        );
-
-    premiumRate.textContent =
-        formatCurrency(
-            latestBrandRateReport.premium
-        );
-
-    recommendedRate.textContent =
-        formatCurrency(
-            latestBrandRateReport.recommended
-        );
-
-    results.classList.add("visible");
-
-    results.scrollIntoView({
-
-        behavior:"smooth",
-
-        block:"start"
-
-    });
+    updateDisplay();
 
 }
 
@@ -528,15 +635,15 @@ Events
 ========================================================
 */
 
-calculateButton.addEventListener(
+calculateBtn.addEventListener(
 
     "click",
 
-    () => {
+    ()=>{
 
         if(
 
-            !validateInputs()
+            !validate()
 
         ){
 
@@ -552,8 +659,7 @@ calculateButton.addEventListener(
 
 [
     followers,
-    engagement,
-    deliverables
+    engagementRate
 ].forEach(
 
     field=>{
@@ -572,7 +678,7 @@ calculateButton.addEventListener(
 
                     event.preventDefault();
 
-                    calculateButton.click();
+                    calculateBtn.click();
 
                 }
 
@@ -587,8 +693,10 @@ calculateButton.addEventListener(
 [
     platform,
     niche,
-    deliverable,
-    usageRights
+    contentType,
+    contentQuality,
+    brandUsage,
+    turnaround
 ].forEach(
 
     field=>{
@@ -599,7 +707,7 @@ calculateButton.addEventListener(
 
             ()=>{
 
-                results.classList.remove("visible");
+                latestCalculation=null;
 
             }
 
@@ -615,43 +723,30 @@ followers.addEventListener(
 
     ()=>{
 
-        results.classList.remove("visible");
+        latestCalculation=null;
 
     }
 
 );
 
-engagement.addEventListener(
+engagementRate.addEventListener(
 
     "input",
 
     ()=>{
 
-        results.classList.remove("visible");
+        latestCalculation=null;
 
     }
 
 );
-
-deliverables.addEventListener(
-
-    "input",
-
-    ()=>{
-
-        results.classList.remove("visible");
-
-    }
-
-);
-
 /*
 ========================================================
 Premium Report
 ========================================================
 */
 
-unlockReportButton.addEventListener(
+buyReportBtn.addEventListener(
 
     "click",
 
@@ -659,13 +754,13 @@ unlockReportButton.addEventListener(
 
         if(
 
-            latestBrandRateReport===null
+            latestCalculation===null
 
         ){
 
-            showError(
+            alert(
 
-                "Please calculate your sponsorship rate first."
+                "Please calculate your brand rate first."
 
             );
 
@@ -673,28 +768,74 @@ unlockReportButton.addEventListener(
 
         }
 
-        console.log(
+        /*
+        ========================================================
 
-            "Premium report ready.",
+        Existing Arthiva Shared Payment Flow
 
-            latestBrandRateReport
+        Replace this section by calling the
+        existing shared payment function already
+        used by other Arthiva products.
+
+        Example flow:
+
+        1.
+        create-payment
+
+        2.
+        Razorpay / PayPal
+
+        3.
+        verify-payment
+
+        4.
+        redirect
+
+        report.html
+
+        ========================================================
+        */
+
+        sessionStorage.setItem(
+
+            "brandRateReport",
+
+            JSON.stringify(
+
+                latestCalculation
+
+            )
 
         );
 
-        /*
-        Next version:
+        window.location.href=
 
-        create-payment
-
-        verify-payment
-
-        report token
-
-        redirect to
-
-        report.html?token=...
-        */
+            "./report.html";
 
     }
 
 );
+
+/*
+========================================================
+Current Year
+========================================================
+*/
+
+const year=
+
+    document.getElementById(
+
+        "currentYear"
+
+    );
+
+if(year){
+
+    year.textContent=
+
+        new Date()
+
+            .getFullYear();
+
+}
