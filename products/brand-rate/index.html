@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Brand Rate — Influencer Sponsorship Rate Calculator
+  </title>
+
+  <meta
+    name="description"
+    content="Estimate what to charge brands for Instagram, YouTube, TikTok and creator collaborations. Calculate sponsorship pricing, engagement-based rates and unlock a professional pricing report."
+  >
+
+  <link
+    rel="canonical"
+    href="https://arthiva-labs.pages.dev/products/brand-rate/"
+  >
+
+  <meta
+    property="og:title"
+    content="Brand Rate — Influencer Sponsorship Rate Calculator"
+  >
+
+  <meta
+    property="og:description"
+    content="Calculate your estimated sponsorship pricing and confidently quote brands."
+  >
+
+  <meta
+    property="og:url"
+    content="https://arthiva-labs.pages.dev/products/brand-rate/"
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <style>
+
+    :root {
+
+      --ink:#18231f;
+
+      --forest:#214d40;
+
+      --forest-dark:#173b31;
+
+      --sage:#708c7e;
+
+      --cream:#f6f1e7;
+
+      --paper:#fffdf8;
+
+      --gold:#c99635;
+
+      --gold-soft:#e8d4a6;
+
+      --line:#ddd5c7;
+
+      --muted:#62706a;
+
+      --soft:#efebe1;
+
+      --white:#ffffff;
+
+      --danger:#8a433b;
+
+      --shadow:0 18px 45px rgba(35,48,42,.08);
+
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+
+      margin:0;
+
+      background:var(--cream);
+
+      color:var(--ink);
+
+      font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+
+      line-height:1.6;
+
+    }
+
+    button,
+    input,
+    select{
+
+      font:inherit;
+
+    }
+
+    button{
+      cursor:pointer;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .site-header{
+
+      border-top:1px solid var(--ink);
+
+      padding:24px 0;
+
+    }
+
+    .header-inner,
+    .container{
+
+      width:min(1120px,calc(100% - 40px));
+
+      margin:0 auto;
+
+    }
+
+    .header-inner{
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:space-between;
+
+      gap:24px;
+
+    }
+
+    .brand{
+
+      display:flex;
+
+      align-items:center;
+
+      gap:14px;
+
+      font-weight:800;
+
+      font-size:20px;
+
+      color:var(--forest-dark);
+
+    }
+
+    .brand-icon{
+
+      width:44px;
+
+      height:44px;
+
+      border-radius:14px;
+
+      background:var(--forest-dark);
+
+      color:white;
+
+      display:grid;
+
+      place-items:center;
+
+      box-shadow:var(--shadow);
+
+    }
+
+    .arthiva-label{
+
+      color:var(--muted);
+
+      font-size:14px;
+
+      font-weight:700;
+
+    }
+
+    .hero{
+
+      text-align:center;
+
+      padding:72px 0 56px;
+
+    }
+
+    .eyebrow{
+
+      display:inline-block;
+
+      padding:8px 16px;
+
+      border-radius:999px;
+
+      border:1px solid var(--gold-soft);
+
+      color:var(--forest);
+
+      background:rgba(255,255,255,.55);
+
+      font-weight:800;
+
+      font-size:14px;
+
+      text-transform:uppercase;
+
+      letter-spacing:.04em;
+
+    }
+
+    .hero h1{
+
+      margin:18px auto;
+
+      max-width:920px;
+
+      color:var(--forest-dark);
+
+      font-size:clamp(46px,7vw,82px);
+
+      line-height:.98;
+
+      letter-spacing:-.05em;
+
+    }
+
+    .hero p{
+
+      max-width:760px;
+
+      margin:0 auto;
+
+      color:var(--muted);
+
+      font-size:clamp(18px,2vw,23px);
+
+    }
+
+    .tool-shell{
+
+      background:var(--paper);
+
+      border:1px solid var(--line);
+
+      border-radius:32px;
+
+      overflow:hidden;
+
+      box-shadow:var(--shadow);
+
+      margin-bottom:72px;
+
+    }
+
+    .tool-panel{
+
+      padding:56px;
+
+    }
+
+    .section-heading{
+
+      margin:0;
+
+      color:var(--forest-dark);
+
+      font-size:clamp(34px,5vw,52px);
+
+      line-height:1.05;
+
+      letter-spacing:-.04em;
+
+    }
+
+    .section-copy{
+
+      margin:16px 0 36px;
+
+      color:var(--muted);
+
+      font-size:18px;
+
+    }
+
+    .form-grid{
+
+      display:grid;
+
+      grid-template-columns:repeat(2,1fr);
+
+      gap:22px;
+
+    }
+
+    .field{
+
+      display:flex;
+
+      flex-direction:column;
+
+      gap:8px;
+
+    }
+
+    .field.full{
+
+      grid-column:1 / -1;
+
+    }
+
+    label{
+
+      font-weight:800;
+
+      color:var(--forest-dark);
+
+    }
+
+    input,
+    select{
+
+      width:100%;
+
+      padding:17px 18px;
+
+      border-radius:16px;
+
+      border:1px solid var(--line);
+
+      background:white;
+
+      outline:none;
+
+    }
+
+    input:focus,
+    select:focus{
+
+      border-color:var(--forest);
+
+      box-shadow:0 0 0 4px rgba(33,77,64,.08);
+
+    }
+
+    .primary-button{
+
+      width:100%;
+
+      margin-top:28px;
+
+      padding:18px 24px;
+
+      border:0;
+
+      border-radius:17px;
+
+      background:var(--gold);
+
+      color:var(--ink);
+
+      font-weight:900;
+
+      font-size:18px;
+
+      box-shadow:0 12px 30px rgba(201,150,53,.16);
+
+    }
+
+    .primary-button:hover{
+
+      transform:translateY(-1px);
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<header class="site-header">
+
+  <div class="header-inner">
+
+    <a
+      class="brand"
+      href="/products/brand-rate/"
+    >
+
+      <span class="brand-icon">
+        ★
+      </span>
+
+      <span>
+        Brand Rate
+      </span>
+
+    </a>
+
+    <a
+      class="arthiva-label"
+      href="/"
+    >
+      An Arthiva Labs utility
+    </a>
+
+  </div>
+
+</header>
+
+<main>
+
+<section class="hero">
+
+  <div class="container">
+
+    <span class="eyebrow">
+      Creator Pricing Utility
+    </span>
+
+    <h1>
+
+      Know what your content is worth.
+
+    </h1>
+
+    <p>
+
+      Estimate sponsorship pricing using audience size,
+      engagement, platform and deliverables.
+      Stop guessing what to charge brands.
+
+    </p>
+
+  </div>
+
+</section>
+
+<div class="container">
+
+<section class="tool-shell">
+
+<section class="tool-panel">
+
+<h2 class="section-heading">
+
+Estimate your sponsorship rate
+
+</h2>
+
+<p class="section-copy">
+
+Enter your creator details below to calculate
+an estimated collaboration pricing range.
+
+</p>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label for="platform">
+
+Platform
+
+</label>
+
+<select id="platform">
+
+<option>Instagram</option>
+
+<option>YouTube</option>
+
+<option>TikTok</option>
+
+<option>LinkedIn</option>
+
+<option>X (Twitter)</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label for="followers">
+
+Followers / Subscribers
+
+</label>
+
+<input
+id="followers"
+type="number"
+placeholder="25000"
+>
+
+</div>
+<div class="field">
+
+<label for="engagement">
+
+Average Engagement Rate (%)
+
+</label>
+
+<input
+id="engagement"
+type="number"
+step="0.1"
+min="0"
+placeholder="4.8"
+>
+
+</div>
+
+<div class="field">
+
+<label for="niche">
+
+Primary Niche
+
+</label>
+
+<select id="niche">
+
+<option value="lifestyle">Lifestyle</option>
+
+<option value="fashion">Fashion</option>
+
+<option value="beauty">Beauty</option>
+
+<option value="travel">Travel</option>
+
+<option value="food">Food</option>
+
+<option value="fitness">Fitness</option>
+
+<option value="finance">Finance</option>
+
+<option value="education">Education</option>
+
+<option value="business">Business</option>
+
+<option value="technology">Technology</option>
+
+<option value="gaming">Gaming</option>
+
+<option value="parenting">Parenting</option>
+
+<option value="other">Other</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label for="deliverable">
+
+Primary Deliverable
+
+</label>
+
+<select id="deliverable">
+
+<option value="story">Instagram Story</option>
+
+<option value="post">Feed Post</option>
+
+<option value="reel" selected>Reel / Short Video</option>
+
+<option value="carousel">Carousel</option>
+
+<option value="youtube">YouTube Video</option>
+
+<option value="shorts">YouTube Shorts</option>
+
+<option value="ugc">UGC Content</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label for="deliverables">
+
+Number of Deliverables
+
+</label>
+
+<input
+id="deliverables"
+type="number"
+min="1"
+value="1"
+>
+
+</div>
+
+<div class="field full">
+
+<label for="usageRights">
+
+Brand Usage Rights
+
+</label>
+
+<select id="usageRights">
+
+<option value="none">
+No additional usage rights
+</option>
+
+<option value="organic">
+Organic reposting
+</option>
+
+<option value="paid">
+Paid advertising usage
+</option>
+
+<option value="full">
+Full commercial usage
+</option>
+
+</select>
+
+</div>
+
+<div class="field full">
+
+<label for="notes">
+
+Anything else?
+
+(Optional)
+
+</label>
+
+<input
+id="notes"
+type="text"
+placeholder="Exclusivity, travel, editing, licensing etc."
+>
+
+</div>
+
+</div>
+
+<button
+id="calculateBrandRate"
+class="primary-button"
+type="button"
+>
+
+Calculate My Brand Rate
+
+</button>
+
+<p
+id="calculatorError"
+class="error-message"
+>
+
+Please complete all required fields.
+
+</p>
+
+<div
+id="results"
+class="result"
+>
+
+<span class="result-label">
+
+Estimated Sponsorship Pricing
+
+</span>
+
+<div class="result-hero">
+
+<small>
+
+Recommended collaboration price
+
+</small>
+
+<strong id="recommendedRate">
+
+₹0
+
+</strong>
+
+</div>
+
+<div class="result-grid">
+
+<div class="result-card">
+
+<span>
+
+Suggested Minimum
+
+</span>
+
+<strong id="minimumRate">
+
+₹0
+
+</strong>
+
+</div>
+
+<div class="result-card">
+
+<span>
+
+Suggested Average
+
+</span>
+
+<strong id="averageRate">
+
+₹0
+
+</strong>
+
+</div>
+
+<div class="result-card">
+
+<span>
+
+Suggested Premium
+
+</span>
+
+<strong id="premiumRate">
+
+₹0
+
+</strong>
+
+</div>
+
+</div>
+
+<div class="note">
+
+This estimate is an educational guideline based on common creator pricing
+factors. Actual sponsorship rates vary depending on audience quality,
+conversion performance, brand objectives, exclusivity, licensing,
+production effort, campaign scope and negotiation.
+
+</div>
+
+<button
+id="unlockReport"
+class="primary-button"
+type="button"
+>
+
+Unlock Detailed Pricing Report
+
+</button>
+
+</div>
+
+</section>
+
+</section>
+
+<section class="content-section">
+
+<span class="eyebrow">
+
+Pricing with confidence
+
+</span>
+
+<h2>
+
+Stop guessing what to charge brands.
+
+</h2>
+
+<div class="content-grid">
+
+<article class="content-card">
+
+<h3>
+
+Audience isn't everything
+
+</h3>
+
+<p>
+
+Brands increasingly care about engagement,
+audience quality, niche authority and
+content performance rather than follower
+count alone.
+
+</p>
+
+</article>
+
+<article class="content-card">
+
+<h3>
+
+Negotiate professionally
+
+</h3>
+
+<p>
+
+A pricing range gives you confidence
+during sponsorship discussions instead
+of accepting the first offer.
+
+</p>
+
+</article>
+
+<article class="content-card">
+
+<h3>
+
+Build a sustainable creator business
+
+</h3>
+
+<p>
+
+Pricing fairly helps creators avoid
+burnout, undercharging and inconsistent
+brand partnerships.
+
+</p>
+
+</article>
+
+</div>
+
+</section>
+<section class="content-section">
+
+  <span class="eyebrow">
+    Premium Creator Toolkit
+  </span>
+
+  <h2>
+    Turn one estimate into a professional pricing strategy.
+  </h2>
+
+  <div class="premium-card">
+
+    <span
+      id="premiumReportTag"
+      class="premium-tag"
+    >
+      Personalised Creator Report · ₹199
+    </span>
+
+    <h3>
+
+      Brand Rate Pro Report
+
+    </h3>
+
+    <p>
+
+      Your free estimate gives you a pricing range.
+      The premium report explains <strong>why</strong> that range fits
+      your creator profile and helps you negotiate confidently.
+
+    </p>
+
+    <ul class="premium-list">
+
+      <li>Personalised sponsorship pricing</li>
+
+      <li>Rate card recommendations</li>
+
+      <li>Platform-specific pricing</li>
+
+      <li>Negotiation guidance</li>
+
+      <li>Deliverable pricing breakdown</li>
+
+      <li>Commercial usage recommendations</li>
+
+      <li>Audience value analysis</li>
+
+      <li>Professional creator pricing summary</li>
+
+    </ul>
+
+    <button
+      id="premiumReportButton"
+      class="premium-button"
+      type="button"
+    >
+
+      Unlock My Report · ₹199
+
+    </button>
+
+    <p
+      id="premiumStatus"
+      class="premium-note"
+    >
+
+      Secure checkout through Arthiva Labs.
+      Your personalised report becomes available
+      immediately after successful payment.
+
+    </p>
+
+  </div>
+
+</section>
+
+<section class="content-section">
+
+  <span class="eyebrow">
+
+    Frequently Asked Questions
+
+  </span>
+
+  <h2>
+
+    Creator pricing isn't fixed.
+
+  </h2>
+
+  <div class="content-grid">
+
+    <article class="content-card">
+
+      <h3>
+
+        Why is this a price range?
+
+      </h3>
+
+      <p>
+
+        Every collaboration differs.
+        Audience quality, campaign goals,
+        exclusivity, production effort,
+        licensing and negotiation all affect
+        final pricing.
+
+      </p>
+
+    </article>
+
+    <article class="content-card">
+
+      <h3>
+
+        Does follower count matter most?
+
+      </h3>
+
+      <p>
+
+        No.
+
+        Engagement, trust,
+        niche authority,
+        conversions and content quality
+        often matter more than raw audience size.
+
+      </p>
+
+    </article>
+
+    <article class="content-card">
+
+      <h3>
+
+        Is this legal or financial advice?
+
+      </h3>
+
+      <p>
+
+        No.
+
+        This calculator provides educational
+        pricing guidance only and should not
+        be considered professional financial,
+        legal or tax advice.
+
+      </p>
+
+    </article>
+
+  </div>
+
+</section>
+
+</div>
+
+</main>
+
+<footer>
+
+<div class="container footer-inner">
+
+<div>
+
+<strong>
+
+Brand Rate
+
+</strong>
+
+<p>
+
+Brand Rate is an independent creator utility
+developed by Arthiva Labs.
+
+<br>
+
+© 2026 Arthiva Labs.
+All rights reserved.
+
+</p>
+
+</div>
+
+<div class="footer-links">
+
+<a href="/">
+
+Explore Arthiva Labs
+
+</a>
+
+<a href="/#privacy">
+
+Privacy
+
+</a>
+
+<a href="/#terms">
+
+Terms
+
+</a>
+
+<a href="/#refunds">
+
+Refunds
+
+</a>
+
+<a href="/#contact">
+
+Contact
+
+</a>
+
+</div>
+
+</div>
+
+</footer>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script src="./script.js"></script>
+
+</body>
+
+</html>
