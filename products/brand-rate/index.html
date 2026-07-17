@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Brand Rate — Influencer Sponsorship Rate Calculator India
+  </title>
+
+  <meta
+    name="description"
+    content="Calculate what brands should realistically pay you for Instagram, YouTube, LinkedIn, X, Threads and other creator collaborations. Built by Arthiva Labs."
+  >
+
+  <meta
+    name="keywords"
+    content="brand rate calculator,influencer calculator,instagram rate calculator,youtube sponsorship calculator,ugc pricing,creator pricing,brand collaboration calculator"
+  >
+
+  <meta
+    name="robots"
+    content="index,follow"
+  >
+
+  <meta
+    property="og:title"
+    content="Brand Rate Calculator"
+  >
+
+  <meta
+    property="og:description"
+    content="Estimate fair sponsorship pricing using audience size, engagement and content quality."
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    :root{
+
+      --ink:#17231c;
+
+      --green:#173f2a;
+
+      --light-green:#e5eee8;
+
+      --cream:#f7f4ec;
+
+      --white:#ffffff;
+
+      --muted:#68716b;
+
+      --line:#d8ddd9;
+
+      --gold:#b88937;
+
+    }
+
+    body{
+
+      font-family:Arial,Helvetica,sans-serif;
+
+      background:var(--cream);
+
+      color:var(--ink);
+
+      line-height:1.5;
+
+    }
+
+    nav{
+
+      width:100%;
+
+      padding:22px 7%;
+
+      border-bottom:1px solid var(--line);
+
+      display:flex;
+
+      justify-content:space-between;
+
+      align-items:center;
+
+      background:rgba(247,244,236,.95);
+
+    }
+
+    .brand{
+
+      font-weight:800;
+
+      font-size:21px;
+
+      letter-spacing:-0.5px;
+
+    }
+
+    .labs{
+
+      font-size:13px;
+
+      color:var(--muted);
+
+    }
+
+    .hero{
+
+      padding:70px 7% 45px;
+
+      max-width:1200px;
+
+      margin:auto;
+
+    }
+
+    .eyebrow{
+
+      color:var(--green);
+
+      font-size:13px;
+
+      font-weight:700;
+
+      letter-spacing:2px;
+
+      text-transform:uppercase;
+
+      margin-bottom:20px;
+
+    }
+
+    h1{
+
+      font-size:clamp(45px,7vw,84px);
+
+      line-height:.98;
+
+      letter-spacing:-4px;
+
+      max-width:950px;
+
+    }
+        .hero-copy{
+
+      margin-top:28px;
+
+      max-width:680px;
+
+      font-size:20px;
+
+      color:var(--muted);
+
+    }
+
+    .calculator-section{
+
+      padding:30px 7% 80px;
+
+    }
+
+    .calculator{
+
+      max-width:1200px;
+
+      margin:auto;
+
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      border:1px solid var(--line);
+
+      background:var(--white);
+
+    }
+
+    .input-panel,
+    .result-panel{
+
+      padding:50px;
+
+    }
+
+    .result-panel{
+
+      background:var(--green);
+
+      color:var(--white);
+
+    }
+
+    h2{
+
+      font-size:28px;
+
+      letter-spacing:-1px;
+
+      margin-bottom:10px;
+
+    }
+
+    .panel-copy{
+
+      color:var(--muted);
+
+      margin-bottom:35px;
+
+      max-width:520px;
+
+    }
+
+    .result-panel .panel-copy{
+
+      color:#c6d4ca;
+
+    }
+
+    label{
+
+      display:block;
+
+      font-size:14px;
+
+      font-weight:700;
+
+      margin-bottom:10px;
+
+    }
+
+    .input-wrap{
+
+      display:flex;
+
+      align-items:center;
+
+      border:1px solid var(--line);
+
+      background:var(--white);
+
+      margin-bottom:25px;
+
+    }
+
+    input,
+    select{
+
+      width:100%;
+
+      padding:18px;
+
+      border:0;
+
+      outline:none;
+
+      background:transparent;
+
+      color:var(--ink);
+
+      font-size:17px;
+
+    }
+
+    select{
+
+      border:1px solid var(--line);
+
+      background:var(--white);
+
+      margin-bottom:25px;
+
+    }
+
+    button{
+
+      width:100%;
+
+      padding:18px;
+
+      border:0;
+
+      background:var(--green);
+
+      color:var(--white);
+
+      font-size:16px;
+
+      font-weight:700;
+
+      cursor:pointer;
+
+      transition:.2s ease;
+
+    }
+
+    button:hover{
+
+      opacity:.92;
+
+    }
+
+    button:disabled{
+
+      opacity:.6;
+
+      cursor:wait;
+
+    }
+
+    .main-result{
+            padding:30px 0;
+
+      border-top:1px solid rgba(255,255,255,.20);
+
+      border-bottom:1px solid rgba(255,255,255,.20);
+
+      margin:25px 0 30px;
+
+    }
+
+    .result-label{
+
+      font-size:13px;
+
+      color:#c6d4ca;
+
+      text-transform:uppercase;
+
+      letter-spacing:1.5px;
+
+    }
+
+    .result-number{
+
+      font-size:clamp(40px,5vw,62px);
+
+      font-weight:800;
+
+      letter-spacing:-3px;
+
+      margin-top:8px;
+
+    }
+
+    .per-post{
+
+      color:#c6d4ca;
+
+      margin-top:5px;
+
+    }
+
+    .breakdown-row{
+
+      display:flex;
+
+      justify-content:space-between;
+
+      gap:20px;
+
+      padding:14px 0;
+
+      border-bottom:1px solid rgba(255,255,255,.15);
+
+    }
+
+    .breakdown-row span:first-child{
+
+      color:#c6d4ca;
+
+    }
+
+    .note{
+
+      margin-top:25px;
+
+      font-size:12px;
+
+      color:#aebfb3;
+
+      line-height:1.7;
+
+    }
+
+    .info-section{
+
+      max-width:1100px;
+
+      margin:auto;
+
+      padding:80px 7%;
+
+    }
+
+    .info-section h2{
+
+      font-size:38px;
+
+      margin-bottom:25px;
+
+    }
+
+    .info-section p{
+
+      font-size:18px;
+
+      color:var(--muted);
+
+      margin-bottom:18px;
+
+      max-width:820px;
+
+    }
+
+    .cards{
+
+      display:grid;
+
+      grid-template-columns:repeat(3,1fr);
+
+      gap:24px;
+
+      margin-top:45px;
+
+    }
+
+    .card{
+
+      background:var(--white);
+
+      border:1px solid var(--line);
+
+      padding:28px;
+
+    }
+
+    .card h3{
+
+      font-size:22px;
+
+      margin-bottom:14px;
+
+      letter-spacing:-.5px;
+
+    }
+
+    .card p{
+
+      font-size:16px;
+
+      color:var(--muted);
+
+      margin:0;
+
+    }
+
+    .premium-tool{
+
+      max-width:1100px;
+
+      margin:60px auto;
+
+      padding:40px;
+
+      background:var(--white);
+
+      border:1px solid var(--line);
+
+    }
+
+    .premium-label{
+
+      text-transform:uppercase;
+
+      letter-spacing:2px;
+
+      font-size:13px;
+
+      color:var(--muted);
+
+    }
+        .premium-label{
+
+      margin-bottom:14px;
+
+    }
+
+    .premium-tool h2{
+
+      font-size:38px;
+
+      letter-spacing:-1px;
+
+      margin-bottom:18px;
+
+    }
+
+    .premium-tool p{
+
+      font-size:18px;
+
+      color:var(--muted);
+
+      max-width:760px;
+
+      margin-bottom:30px;
+
+    }
+
+    .premium-features{
+
+      list-style:none;
+
+      margin:30px 0;
+
+      display:grid;
+
+      gap:16px;
+
+    }
+
+    .premium-features li{
+
+      display:flex;
+
+      align-items:flex-start;
+
+      gap:12px;
+
+      color:var(--ink);
+
+    }
+
+    .premium-price{
+
+      display:flex;
+
+      align-items:center;
+
+      gap:18px;
+
+      margin:35px 0;
+
+    }
+
+    .premium-price strong{
+
+      font-size:44px;
+
+      letter-spacing:-2px;
+
+      color:var(--green);
+
+    }
+
+    .premium-price span{
+
+      color:var(--muted);
+
+      font-size:15px;
+
+    }
+
+    .buy-report{
+
+      max-width:320px;
+
+    }
+
+    .loading{
+
+      display:none;
+
+      margin-top:18px;
+
+      color:var(--muted);
+
+      font-size:14px;
+
+    }
+
+    .footer{
+
+      border-top:1px solid var(--line);
+
+      padding:40px 7%;
+
+      text-align:center;
+
+      color:var(--muted);
+
+      font-size:14px;
+
+    }
+
+    .footer a{
+
+      color:var(--green);
+
+      text-decoration:none;
+
+      font-weight:700;
+
+    }
+
+    @media(max-width:980px){
+
+      .calculator{
+
+        grid-template-columns:1fr;
+
+      }
+
+      .cards{
+
+        grid-template-columns:1fr;
+
+      }
+
+      .input-panel,
+
+      .result-panel{
+
+        padding:36px;
+
+      }
+
+      .premium-tool{
+
+        padding:32px;
+
+      }
+
+    }
+
+    @media(max-width:640px){
+
+      nav{
+
+        padding:20px;
+
+      }
+
+      .hero,
+
+      .calculator-section,
+
+      .info-section{
+
+        padding-left:20px;
+
+        padding-right:20px;
+
+      }
+
+      h1{
+
+        letter-spacing:-2px;
+
+      }
+
+      .result-number{
+
+        font-size:44px;
+
+      }
+
+      .premium-tool{
+
+        margin:40px 20px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <nav>
+
+    <div>
+
+      <div class="brand">
+
+        Arthiva Labs
+
+      </div>
+
+      <div class="labs">
+
+        Daily Problem Solving Tools
+
+      </div>
+
+    </div>
+
+  </nav>
+
+  <section class="hero">
+
+    <div class="eyebrow">
+
+      FREE CREATOR TOOL
+
+    </div>
+
+    <h1>
+
+      Brand Rate Calculator
+
+    </h1>
+
+    <p class="hero-copy">
+
+      Find out how much brands should realistically pay you for sponsored posts, reels, stories, videos and creator collaborations using audience quality, engagement, niche and platform data.
+
+    </p>
+
+  </section>
+    <section class="calculator-section">
+
+    <div class="calculator">
+
+      <div class="input-panel">
+
+        <h2>
+
+          Calculate Your Brand Rate
+
+        </h2>
+
+        <p class="panel-copy">
+
+          Enter your creator details below to estimate a realistic sponsorship price based on audience quality, engagement and commercial value.
+
+        </p>
+
+        <label for="platform">
+
+          Platform
+
+        </label>
+
+        <select id="platform">
+
+          <option value="instagram">
+
+            Instagram
+
+          </option>
+
+          <option value="youtube">
+
+            YouTube
+
+          </option>
+
+          <option value="linkedin">
+
+            LinkedIn
+
+          </option>
+
+          <option value="threads">
+
+            Threads
+
+          </option>
+
+          <option value="x">
+
+            X (Twitter)
+
+          </option>
+
+          <option value="facebook">
+
+            Facebook
+
+          </option>
+
+          <option value="other">
+
+            Other
+
+          </option>
+
+        </select>
+
+        <label for="followers">
+
+          Followers / Subscribers
+
+        </label>
+
+        <div class="input-wrap">
+
+          <input
+
+            id="followers"
+
+            type="number"
+
+            placeholder="50000"
+
+          >
+
+        </div>
+
+        <label for="engagement">
+
+          Engagement Rate (%)
+
+        </label>
+
+        <div class="input-wrap">
+
+          <input
+
+            id="engagement"
+
+            type="number"
+
+            step="0.1"
+
+            placeholder="4.8"
+
+          >
+
+        </div>
+
+        <label for="niche">
+
+          Creator Niche
+
+        </label>
+
+        <select id="niche">
+
+          <option value="general">
+
+            General Lifestyle
+
+          </option>
+
+          <option value="finance">
+
+            Finance
+
+          </option>
+
+          <option value="business">
+
+            Business
+
+          </option>
+
+          <option value="technology">
+
+            Technology
+
+          </option>
+
+          <option value="fashion">
+
+            Fashion
+
+          </option>
+
+          <option value="beauty">
+
+            Beauty
+
+          </option>
+
+          <option value="fitness">
+
+            Fitness
+
+          </option>
+
+          <option value="travel">
+
+            Travel
+
+          </option>
+
+          <option value="food">
+
+            Food
+
+          </option>
+
+          <option value="education">
+
+            Education
+
+          </option>
+
+          <option value="gaming">
+
+            Gaming
+
+          </option>
+
+          <option value="parenting">
+
+            Parenting
+
+          </option>
+
+        </select>
+
+        <label for="contentQuality">
+
+          Content Quality
+
+        </label>
+
+        <select id="contentQuality">
+
+          <option value="1">
+
+            Beginner
+
+          </option>
+
+          <option value="1.15">
+
+            Good
+
+          </option>
+
+          <option value="1.3">
+
+            Excellent
+
+          </option>
+
+          <option value="1.45">
+
+            Premium
+
+          </option>
+
+        </select>
+                <label for="audienceLocation">
+
+          Primary Audience
+
+        </label>
+
+        <select id="audienceLocation">
+
+          <option value="india">
+
+            India
+
+          </option>
+
+          <option value="mixed">
+
+            India + International
+
+          </option>
+
+          <option value="international">
+
+            Mostly International
+
+          </option>
+
+        </select>
+
+        <label for="postingFrequency">
+
+          Sponsored Posts Per Month
+
+        </label>
+
+        <div class="input-wrap">
+
+          <input
+
+            id="postingFrequency"
+
+            type="number"
+
+            placeholder="4"
+
+          >
+
+        </div>
+
+        <label for="deliverable">
+
+          Deliverable
+
+        </label>
+
+        <select id="deliverable">
+
+          <option value="reel">
+
+            Instagram Reel
+
+          </option>
+
+          <option value="post">
+
+            Feed Post
+
+          </option>
+
+          <option value="story">
+
+            Story Set
+
+          </option>
+
+          <option value="carousel">
+
+            Carousel
+
+          </option>
+
+          <option value="youtubeShort">
+
+            YouTube Short
+
+          </option>
+
+          <option value="youtubeVideo">
+
+            YouTube Video
+
+          </option>
+
+          <option value="linkedinPost">
+
+            LinkedIn Post
+
+          </option>
+
+        </select>
+
+        <button
+
+          id="calculateBtn"
+
+          type="button"
+
+        >
+
+          Calculate Brand Rate
+
+        </button>
+
+      </div>
+
+      <div class="result-panel">
+
+        <h2>
+
+          Estimated Sponsorship Price
+
+        </h2>
+
+        <p class="panel-copy">
+
+          This estimate combines audience size, engagement, niche demand and content quality to suggest a fair commercial rate.
+
+        </p>
+
+        <div class="main-result">
+
+          <div class="result-label">
+
+            Suggested Price Per Collaboration
+
+          </div>
+
+          <div
+
+            class="result-number"
+
+            id="estimatedRate"
+
+          >
+
+            ₹0
+
+          </div>
+
+          <div class="per-post">
+
+            Estimated value for one deliverable
+
+          </div>
+
+        </div>
+
+        <div class="breakdown-row">
+
+          <span>
+
+            Minimum Recommended
+
+          </span>
+
+          <strong id="minimumRate">
+
+            ₹0
+
+          </strong>
+
+        </div>
+
+        <div class="breakdown-row">
+
+          <span>
+
+            Ideal Quote
+
+          </span>
+
+          <strong id="idealRate">
+
+            ₹0
+
+          </strong>
+
+        </div>
+
+        <div class="breakdown-row">
+
+          <span>
+
+            Premium Negotiation Rate
+
+          </span>
+
+          <strong id="premiumRate">
+
+            ₹0
+
+          </strong>
+
+        </div>
+
+        <p class="note">
+
+          Estimates are indicative only. Final pricing depends on campaign scope, usage rights, exclusivity, revisions, licensing, production effort and negotiation.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+    <section class="info-section">
+
+    <h2>
+
+      How is your brand rate calculated?
+
+    </h2>
+
+    <p>
+
+      The calculator looks beyond follower count. Brands increasingly care about engagement, audience quality and how likely your content is to drive awareness, clicks and sales.
+
+    </p>
+
+    <p>
+
+      While no calculator can replace a real negotiation, this estimate provides a practical benchmark so creators avoid undercharging or dramatically overpricing themselves.
+
+    </p>
+
+    <div class="cards">
+
+      <div class="card">
+
+        <h3>
+
+          Audience Size
+
+        </h3>
+
+        <p>
+
+          Larger audiences generally command higher rates, but growth alone is no longer enough without strong engagement.
+
+        </p>
+
+      </div>
+
+      <div class="card">
+
+        <h3>
+
+          Engagement
+
+        </h3>
+
+        <p>
+
+          Comments, saves, shares and meaningful interactions usually increase your commercial value more than vanity metrics.
+
+        </p>
+
+      </div>
+
+      <div class="card">
+
+        <h3>
+
+          Niche Value
+
+        </h3>
+
+        <p>
+
+          Industries like finance, technology and business often receive higher sponsorship budgets than broad lifestyle categories.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="premium-tool">
+
+    <div class="premium-label">
+
+      PREMIUM REPORT
+
+    </div>
+
+    <h2>
+
+      Unlock Your Complete Sponsorship Pricing Report
+
+    </h2>
+
+    <p>
+
+      Receive a detailed downloadable report with pricing recommendations for reels, stories, carousels, YouTube videos, licensing guidance, negotiation ranges, bundle pricing and creator growth insights.
+
+    </p>
+
+    <ul class="premium-features">
+
+      <li>
+
+        ✓ Recommended rates for every deliverable
+
+      </li>
+
+      <li>
+
+        ✓ Story, Reel and Video bundle pricing
+
+      </li>
+
+      <li>
+
+        ✓ Negotiation strategy suggestions
+
+      </li>
+
+      <li>
+
+        ✓ Usage rights and licensing guidance
+
+      </li>
+
+      <li>
+
+        ✓ Commercial creator score
+
+      </li>
+
+      <li>
+
+        ✓ Downloadable premium report
+
+      </li>
+
+    </ul>
+
+    <div class="premium-price">
+
+      <strong>
+
+        ₹199
+
+      </strong>
+
+      <span>
+
+        One-time purchase • Instant access
+
+      </span>
+
+    </div>
+
+    <button
+
+      id="buyPremiumBtn"
+
+      class="buy-report"
+
+      type="button"
+
+    >
+
+      Unlock Premium Report
+
+    </button>
+
+    <div
+
+      class="loading"
+
+      id="paymentStatus"
+
+    >
+
+      Preparing secure checkout...
+
+    </div>
+
+  </section>
+
+  <footer class="footer">
+
+    Built with ❤️ by
+
+    <a
+
+      href="/"
+
+    >
+
+      Arthiva Labs
+
+    </a>
+
+    · Helping creators price with confidence.
+
+  </footer>
+
+  <script>
+
+    const calculateBtn = document.getElementById("calculateBtn");
+
+    const buyPremiumBtn = document.getElementById("buyPremiumBtn");
+
+    const estimatedRate = document.getElementById("estimatedRate");
+
+    const minimumRate = document.getElementById("minimumRate");
+
+    const idealRate = document.getElementById("idealRate");
+
+    const premiumRate = document.getElementById("premiumRate");
+
+    const paymentStatus = document.getElementById("paymentStatus");
+        const currency = new Intl.NumberFormat("en-IN", {
+
+      style: "currency",
+
+      currency: "INR",
+
+      maximumFractionDigits: 0
+
+    });
+
+    const nicheMultiplier = {
+
+      general:1,
+
+      fashion:1.05,
+
+      beauty:1.08,
+
+      fitness:1.10,
+
+      travel:1.10,
+
+      food:1.08,
+
+      education:1.12,
+
+      gaming:1.15,
+
+      technology:1.25,
+
+      business:1.28,
+
+      finance:1.35,
+
+      parenting:1.08
+
+    };
+
+    const audienceMultiplier = {
+
+      india:1,
+
+      mixed:1.18,
+
+      international:1.45
+
+    };
+
+    const deliverableMultiplier = {
+
+      reel:1,
+
+      post:0.85,
+
+      story:0.45,
+
+      carousel:0.95,
+
+      youtubeShort:1.35,
+
+      youtubeVideo:2.8,
+
+      linkedinPost:1.25
+
+    };
+
+    function safeNumber(value){
+
+      const n = Number(value);
+
+      return Number.isFinite(n) ? n : 0;
+
+    }
+
+    function formatMoney(value){
+
+      return currency.format(Math.round(value));
+
+    }
+
+    function calculateRate(){
+
+      const followers = safeNumber(
+
+        document.getElementById("followers").value
+
+      );
+
+      const engagement = safeNumber(
+
+        document.getElementById("engagement").value
+
+      );
+
+      const niche =
+
+        document.getElementById("niche").value;
+
+      const quality = safeNumber(
+
+        document.getElementById("contentQuality").value
+
+      );
+
+      const audience =
+
+        document.getElementById("audienceLocation").value;
+
+      const deliverable =
+
+        document.getElementById("deliverable").value;
+
+      if(
+
+        followers<=0 ||
+
+        engagement<=0
+
+      ){
+
+        alert(
+
+          "Please enter your followers and engagement rate."
+
+        );
+
+        return;
+
+      }
+
+      let baseCPM = 180;
+
+      if(followers<5000){
+
+        baseCPM=140;
+
+      }
+
+      else if(followers<20000){
+
+        baseCPM=165;
+
+      }
+
+      else if(followers<100000){
+
+        baseCPM=190;
+
+      }
+
+      else if(followers<500000){
+
+        baseCPM=220;
+
+      }
+
+      else{
+
+        baseCPM=260;
+
+      }
+
+      const engagementFactor =
+
+        Math.max(
+
+          0.75,
+
+          Math.min(
+
+            engagement/4,
+
+            2.2
+
+          )
+
+        );
+
+      const estimated =
+
+        (followers/1000)
+
+        *
+
+        baseCPM
+
+        *
+
+        engagementFactor
+
+        *
+
+        nicheMultiplier[niche]
+
+        *
+
+        quality
+
+        *
+
+        audienceMultiplier[audience]
+
+        *
+
+        deliverableMultiplier[deliverable];
+            const minimum = estimated * 0.85;
+
+      const ideal = estimated;
+
+      const premium = estimated * 1.25;
+
+      estimatedRate.textContent =
+
+        formatMoney(ideal);
+
+      minimumRate.textContent =
+
+        formatMoney(minimum);
+
+      idealRate.textContent =
+
+        formatMoney(ideal);
+
+      premiumRate.textContent =
+
+        formatMoney(premium);
+
+      window.brandRateData = {
+
+        platform:
+
+          document.getElementById("platform").value,
+
+        followers,
+
+        engagement,
+
+        niche,
+
+        quality,
+
+        audience,
+
+        deliverable,
+
+        postingFrequency:safeNumber(
+
+          document.getElementById("postingFrequency").value
+
+        ),
+
+        minimum,
+
+        ideal,
+
+        premium
+
+      };
+
+    }
+
+    calculateBtn.addEventListener(
+
+      "click",
+
+      calculateRate
+
+    );
+
+    async function createPremiumOrder(){
+
+      if(!window.brandRateData){
+
+        calculateRate();
+
+      }
+
+      if(!window.brandRateData){
+
+        return;
+
+      }
+
+      paymentStatus.style.display="block";
+
+      buyPremiumBtn.disabled=true;
+
+      try{
+
+        const response = await fetch(
+
+          "/api/create-payment",
+
+          {
+
+            method:"POST",
+
+            headers:{
+
+              "Content-Type":"application/json"
+
+            },
+
+            body:JSON.stringify({
+
+              productId:"brand-rate-premium",
+
+              calculator:"brand-rate",
+
+              input:window.brandRateData
+
+            })
+
+          }
+
+        );
+
+        if(!response.ok){
+
+          throw new Error(
+
+            "Unable to create payment."
+
+          );
+
+        }
+
+        const payment = await response.json();
+
+        if(payment.provider==="razorpay"){
+
+          const razorpay = new Razorpay({
+
+            key:payment.key,
+
+            amount:payment.amount,
+
+            currency:payment.currency,
+
+            order_id:payment.orderId,
+
+            name:"Arthiva Labs",
+
+            description:"Brand Rate Premium Report",
+
+            handler:function(success){
+
+              verifyPayment(
+
+                "razorpay",
+
+                success
+
+              );
+
+            }
+
+          });
+
+          razorpay.open();
+
+          return;
+
+        }
+
+        if(payment.provider==="paypal"){
+
+          window.location.href=
+
+            payment.approvalUrl;
+
+          return;
+
+        }
+
+        throw new Error(
+
+          "Unsupported payment provider."
+
+        );
+
+      }
+
+      catch(error){
+
+        alert(error.message);
+
+      }
+
+      finally{
+
+        paymentStatus.style.display="none";
+
+        buyPremiumBtn.disabled=false;
+
+      }
+
+    }
+
+    async function verifyPayment(
+
+      provider,
+
+      payload
+
+    ){
+
+      const response = await fetch(
+
+        "/api/verify-payment",
+
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":"application/json"
+
+          },
+
+          body:JSON.stringify({
+
+            provider,
+
+            payload,
+
+            productId:"brand-rate-premium",
+
+            input:window.brandRateData
+
+          })
+
+        }
+
+      );
+
+      const result = await response.json();
+
+      if(result.success){
+
+        window.location.href=result.reportUrl;
+
+      }
+
+      else{
+
+        alert(
+
+          result.message ||
+
+          "Payment verification failed."
+
+        );
+
+      }
+
+    }
+
+    buyPremiumBtn.addEventListener(
+
+      "click",
+
+      createPremiumOrder
+
+    );
+
+  </script>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</body>
+
+</html>
