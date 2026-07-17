@@ -2,109 +2,117 @@
 
 /*
 ========================================================
-
 Brand Rate
 Arthiva Labs
 
 Product #4
 
+Production Script
+Version 1.0
 ========================================================
 */
+
+/* ======================================================
+   DOM Helper
+====================================================== */
 
 const $ = (id) => document.getElementById(id);
 
-/*
-========================================================
-DOM
-========================================================
-*/
+/* ======================================================
+   Storage
+====================================================== */
 
-const platform = $("platform");
-const followers = $("followers");
-const engagementRate = $("engagementRate");
-const niche = $("niche");
-const contentType = $("contentType");
-const contentQuality = $("contentQuality");
-const brandUsage = $("brandUsage");
-const turnaround = $("turnaround");
+const STORAGE_KEY = "brandRateReport";
 
-const calculateBtn = $("calculateBtn");
-const buyReportBtn = $("buyReportBtn");
+/* ======================================================
+   DOM Cache
+====================================================== */
 
-const estimatedRate = $("estimatedRate");
-const minimumRate = $("minimumRate");
-const recommendedRate = $("recommendedRate");
-const premiumRate = $("premiumRate");
+const elements = {
 
-const audienceStrength = $("audienceStrength");
-const engagementScore = $("engagementScore");
-const marketPosition = $("marketPosition");
+    /* Calculator */
 
-/*
-========================================================
-State
-========================================================
-*/
+    platform: $("platform"),
+    followers: $("followers"),
+    engagementRate: $("engagementRate"),
+    niche: $("niche"),
+    contentType: $("contentType"),
+    contentQuality: $("contentQuality"),
+    brandUsage: $("brandUsage"),
+    turnaround: $("turnaround"),
+
+    /* Buttons */
+
+    calculateBtn: $("calculateBtn"),
+    buyReportBtn: $("buyReportBtn"),
+
+    /* Results */
+
+    estimatedRate: $("estimatedRate"),
+    minimumRate: $("minimumRate"),
+    recommendedRate: $("recommendedRate"),
+    premiumRate: $("premiumRate"),
+
+    audienceStrength: $("audienceStrength"),
+    engagementScore: $("engagementScore"),
+    marketPosition: $("marketPosition"),
+
+    /* Footer */
+
+    currentYear: $("currentYear")
+
+};
+
+/* ======================================================
+   State
+====================================================== */
 
 let latestCalculation = null;
 
-/*
-========================================================
-Helpers
-========================================================
-*/
+/* ======================================================
+   Currency Helpers
+====================================================== */
 
-function indianUser(){
-
-    return Intl.DateTimeFormat()
-
-        .resolvedOptions()
-
-        .timeZone
-
-        .includes("Kolkata");
-
-}
+const currencyFormatter = new Intl.NumberFormat(
+    "en-IN",
+    {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+    }
+);
 
 function formatCurrency(value){
 
-    if(indianUser()){
+    return currencyFormatter.format(
 
-        return new Intl.NumberFormat(
+        Math.round(
 
-            "en-IN",
+            Number(value) || 0
 
-            {
+        )
 
-                style:"currency",
+    );
 
-                currency:"INR",
+}
 
-                maximumFractionDigits:0
-
-            }
-
-        ).format(value);
-
-    }
+function formatNumber(value){
 
     return new Intl.NumberFormat(
 
-        "en-US",
+        "en-IN"
 
-        {
+    ).format(
 
-            style:"currency",
+        Number(value) || 0
 
-            currency:"USD",
-
-            maximumFractionDigits:0
-
-        }
-
-    ).format(value/85);
+    );
 
 }
+
+/* ======================================================
+   Utility Helpers
+====================================================== */
 
 function safeNumber(value){
 
@@ -120,46 +128,46 @@ function safeNumber(value){
 
 }
 
-function updateDisplay(){
+function clamp(value,min,max){
 
-    if(!latestCalculation){
+    return Math.min(
 
-        return;
+        Math.max(value,min),
 
-    }
+        max
 
-    estimatedRate.textContent =
-        formatCurrency(latestCalculation.recommended);
-
-    minimumRate.textContent =
-        formatCurrency(latestCalculation.minimum);
-
-    recommendedRate.textContent =
-        formatCurrency(latestCalculation.recommended);
-
-    premiumRate.textContent =
-        formatCurrency(latestCalculation.premium);
-
-    audienceStrength.textContent =
-        latestCalculation.audience;
-
-    engagementScore.textContent =
-        latestCalculation.engagement;
-
-    marketPosition.textContent =
-        latestCalculation.position;
+    );
 
 }
 
-/*
-========================================================
-Validation
-========================================================
-*/
+function resetCalculation(){
 
-function validate(){
+    latestCalculation = null;
 
-    if(platform.value===""){
+}
+
+function clearResults(){
+
+    resetCalculation();
+
+    elements.estimatedRate.textContent="--";
+    elements.minimumRate.textContent="--";
+    elements.recommendedRate.textContent="--";
+    elements.premiumRate.textContent="--";
+
+    elements.audienceStrength.textContent="--";
+    elements.engagementScore.textContent="--";
+    elements.marketPosition.textContent="--";
+
+}
+
+/* ======================================================
+   Validation
+====================================================== */
+
+function validateInputs(){
+
+    if(!elements.platform.value){
 
         alert("Please select a platform.");
 
@@ -167,69 +175,105 @@ function validate(){
 
     }
 
-    if(
+    const followers = safeNumber(
 
-        safeNumber(followers.value)<=0
+        elements.followers.value
 
-    ){
+    );
 
-        alert("Enter your follower count.");
+    if(followers < 1){
 
-        followers.focus();
+        alert(
 
-        return false;
+            "Please enter your follower count."
 
-    }
+        );
 
-    if(
-
-        safeNumber(engagementRate.value)<=0
-
-    ){
-
-        alert("Enter your engagement rate.");
-
-        engagementRate.focus();
+        elements.followers.focus();
 
         return false;
 
     }
 
-    if(niche.value===""){
+    if(followers > 500000000){
 
-        alert("Select your niche.");
+        alert(
 
-        return false;
+            "Follower count looks invalid."
 
-    }
-
-    if(contentType.value===""){
-
-        alert("Select a deliverable.");
+        );
 
         return false;
 
     }
 
-    if(contentQuality.value===""){
+    const engagement = safeNumber(
 
-        alert("Select content quality.");
+        elements.engagementRate.value
+
+    );
+
+    if(engagement <= 0){
+
+        alert(
+
+            "Please enter your engagement rate."
+
+        );
+
+        elements.engagementRate.focus();
 
         return false;
 
     }
 
-    if(brandUsage.value===""){
+    if(engagement > 100){
 
-        alert("Select usage rights.");
+        alert(
+
+            "Engagement cannot exceed 100%."
+
+        );
 
         return false;
 
     }
 
-    if(turnaround.value===""){
+    if(!elements.niche.value){
 
-        alert("Select delivery timeline.");
+        alert("Please select a niche.");
+
+        return false;
+
+    }
+
+    if(!elements.contentType.value){
+
+        alert("Please select a deliverable.");
+
+        return false;
+
+    }
+
+    if(!elements.contentQuality.value){
+
+        alert("Please select content quality.");
+
+        return false;
+
+    }
+
+    if(!elements.brandUsage.value){
+
+        alert("Please select usage rights.");
+
+        return false;
+
+    }
+
+    if(!elements.turnaround.value){
+
+        alert("Please select turnaround.");
 
         return false;
 
@@ -238,153 +282,118 @@ function validate(){
     return true;
 
 }
-
-/*
-========================================================
-Pricing Tables
-========================================================
-*/
+/* ======================================================
+   Pricing Multipliers
+====================================================== */
 
 const PLATFORM = {
 
-    instagram:1,
-
-    youtube:1.8,
-
-    linkedin:1.6,
-
-    tiktok:1,
-
-    x:.8
+    instagram: 1.00,
+    youtube: 1.80,
+    linkedin: 1.60,
+    tiktok: 1.00,
+    x: 0.80
 
 };
 
 const NICHE = {
 
-    lifestyle:1,
-
-    beauty:1.2,
-
-    fashion:1.15,
-
-    finance:1.55,
-
-    technology:1.45,
-
-    business:1.5,
-
-    education:1.3,
-
-    gaming:1.2,
-
-    fitness:1.15,
-
-    travel:1.1,
-
-    food:1,
-
-    parenting:1
+    lifestyle: 1.00,
+    beauty: 1.20,
+    fashion: 1.15,
+    finance: 1.55,
+    technology: 1.45,
+    business: 1.50,
+    education: 1.30,
+    gaming: 1.20,
+    fitness: 1.15,
+    travel: 1.10,
+    food: 1.00,
+    parenting: 1.00
 
 };
 
 const CONTENT = {
 
-    story:.55,
-
-    reel:1.35,
-
-    carousel:1,
-
-    feed:1,
-
-    video:2.5,
-
-    package:3.5
+    story: 0.55,
+    reel: 1.35,
+    carousel: 1.00,
+    feed: 1.00,
+    video: 2.50,
+    package: 3.50
 
 };
+
 const QUALITY = {
 
-    basic:.85,
-
-    good:1,
-
-    excellent:1.2,
-
-    premium:1.45
+    basic: 0.85,
+    good: 1.00,
+    excellent: 1.20,
+    premium: 1.45
 
 };
 
 const RIGHTS = {
 
-    organic:1,
-
-    whitelisting:1.35,
-
-    full:1.75
+    organic: 1.00,
+    whitelisting: 1.35,
+    full: 1.75
 
 };
 
 const TURNAROUND = {
 
-    normal:1,
-
-    fast:1.2,
-
-    urgent:1.45
+    normal: 1.00,
+    fast: 1.20,
+    urgent: 1.45
 
 };
 
-/*
-========================================================
-Audience Classification
-========================================================
-*/
+/* ======================================================
+   Audience Classification
+====================================================== */
 
-function audienceLevel(followersCount){
+function audienceLevel(followers){
 
-    if(followersCount<10000){
+    if(followers < 10000){
 
         return{
 
             label:"Nano Creator",
-
-            multiplier:0.8
+            multiplier:0.80
 
         };
 
     }
 
-    if(followersCount<50000){
+    if(followers < 50000){
 
         return{
 
             label:"Micro Creator",
-
-            multiplier:1
+            multiplier:1.00
 
         };
 
     }
 
-    if(followersCount<100000){
+    if(followers < 100000){
 
         return{
 
             label:"Mid-tier Creator",
-
-            multiplier:1.2
+            multiplier:1.20
 
         };
 
     }
 
-    if(followersCount<500000){
+    if(followers < 500000){
 
         return{
 
             label:"Macro Creator",
-
-            multiplier:1.5
+            multiplier:1.50
 
         };
 
@@ -393,64 +402,57 @@ function audienceLevel(followersCount){
     return{
 
         label:"Mega Creator",
-
-        multiplier:1.9
+        multiplier:1.90
 
     };
 
 }
 
-/*
-========================================================
-Engagement Rating
-========================================================
-*/
+/* ======================================================
+   Engagement Classification
+====================================================== */
 
 function engagementLevel(rate){
 
-    if(rate>=8){
+    if(rate >= 8){
 
         return{
 
             label:"Excellent",
-
             multiplier:1.45
 
         };
 
     }
 
-    if(rate>=6){
+    if(rate >= 6){
 
         return{
 
             label:"Very Good",
-
             multiplier:1.25
 
         };
 
     }
 
-    if(rate>=4){
+    if(rate >= 4){
 
         return{
 
             label:"Good",
-
             multiplier:1.05
 
         };
 
     }
 
-    if(rate>=2){
+    if(rate >= 2){
 
         return{
 
             label:"Average",
-
-            multiplier:.9
+            multiplier:0.90
 
         };
 
@@ -459,308 +461,581 @@ function engagementLevel(rate){
     return{
 
         label:"Low",
-
-        multiplier:.75
+        multiplier:0.75
 
     };
 
 }
 
-/*
-========================================================
-Market Position
-========================================================
-*/
+/* ======================================================
+   Market Position
+====================================================== */
 
-function creatorPosition(score){
+function creatorPosition(recommended){
 
-    if(score>=250000){
+    if(recommended >= 250000){
 
-        return"Premium";
+        return "Premium";
 
     }
 
-    if(score>=100000){
+    if(recommended >= 100000){
 
-        return"High";
-
-    }
-
-    if(score>=40000){
-
-        return"Growing";
+        return "High";
 
     }
 
-    return"Emerging";
+    if(recommended >= 40000){
+
+        return "Growing";
+
+    }
+
+    return "Emerging";
 
 }
 
-/*
-========================================================
-Calculation Engine
-========================================================
-*/
+/* ======================================================
+   Brand Rate Calculation
+====================================================== */
 
 function calculateBrandRate(){
 
-    const followerCount=
+    const platform = elements.platform.value;
 
-        safeNumber(followers.value);
+    const followers = safeNumber(
 
-    const engagement=
+        elements.followers.value
 
-        safeNumber(engagementRate.value);
+    );
 
-    const audience=
+    const engagementRate = safeNumber(
 
-        audienceLevel(followerCount);
+        elements.engagementRate.value
 
-    const engagementData=
+    );
 
-        engagementLevel(engagement);
+    const niche = elements.niche.value;
 
-    const baseRate=
+    const contentType = elements.contentType.value;
 
-        followerCount*.18;
+    const contentQuality =
 
-    let estimate=
+        elements.contentQuality.value;
 
-        baseRate;
+    const brandUsage =
 
-    estimate*=
+        elements.brandUsage.value;
 
-        PLATFORM[platform.value]||1;
+    const turnaround =
 
-    estimate*=
+        elements.turnaround.value;
 
-        NICHE[niche.value]||1;
+    const audience =
 
-    estimate*=
+        audienceLevel(followers);
 
-        CONTENT[contentType.value]||1;
+    const engagement =
 
-    estimate*=
+        engagementLevel(engagementRate);
 
-        QUALITY[contentQuality.value]||1;
+    let estimate =
 
-    estimate*=
+        followers * 0.18;
 
-        RIGHTS[brandUsage.value]||1;
+    estimate *= PLATFORM[platform] || 1;
+    estimate *= NICHE[niche] || 1;
+    estimate *= CONTENT[contentType] || 1;
+    estimate *= QUALITY[contentQuality] || 1;
+    estimate *= RIGHTS[brandUsage] || 1;
+    estimate *= TURNAROUND[turnaround] || 1;
 
-    estimate*=
+    estimate *= audience.multiplier;
+    estimate *= engagement.multiplier;
 
-        TURNAROUND[turnaround.value]||1;
+    estimate = Math.round(estimate);
 
-    estimate*=
+    const minimum =
 
-        audience.multiplier;
+        Math.round(estimate * 0.85);
 
-    estimate*=
+    const recommended =
 
-        engagementData.multiplier;
+        estimate;
 
-    const minimum=
+    const premium =
 
-        Math.round(estimate*.85);
-    const recommended=
+        Math.round(estimate * 1.30);
 
-        Math.round(estimate);
+    latestCalculation = {
 
-    const premium=
-
-        Math.round(estimate*1.3);
-
-    latestCalculation={
-
-        platform:
-
-            platform.value,
-
-        followers:
-
-            followerCount,
-
-        engagementRate:
-
-            engagement,
-
-        niche:
-
-            niche.value,
-
-        contentType:
-
-            contentType.value,
-
-        contentQuality:
-
-            contentQuality.value,
-
-        brandUsage:
-
-            brandUsage.value,
-
-        turnaround:
-
-            turnaround.value,
+        platform,
+        followers,
+        engagementRate,
+        niche,
+        contentType,
+        contentQuality,
+        brandUsage,
+        turnaround,
 
         minimum,
-
         recommended,
-
         premium,
 
-        audience:
-
-            audience.label,
-
-        engagement:
-
-            engagementData.label,
-
-        position:
-
-            creatorPosition(recommended)
+        audience: audience.label,
+        engagement: engagement.label,
+        position: creatorPosition(recommended)
 
     };
 
-    updateDisplay();
+    return latestCalculation;
+
+}
+/* ======================================================
+   Update Calculator Results
+====================================================== */
+
+function updateDisplay() {
+
+    if (!latestCalculation) {
+
+        clearResults();
+        return;
+
+    }
+
+    elements.estimatedRate.textContent =
+        formatCurrency(latestCalculation.recommended);
+
+    elements.minimumRate.textContent =
+        formatCurrency(latestCalculation.minimum);
+
+    elements.recommendedRate.textContent =
+        formatCurrency(latestCalculation.recommended);
+
+    elements.premiumRate.textContent =
+        formatCurrency(latestCalculation.premium);
+
+    elements.audienceStrength.textContent =
+        latestCalculation.audience;
+
+    elements.engagementScore.textContent =
+        latestCalculation.engagement;
+
+    elements.marketPosition.textContent =
+        latestCalculation.position;
 
 }
 
-/*
-========================================================
-Events
-========================================================
-*/
+/* ======================================================
+   Premium Report Data Contract
+====================================================== */
 
-calculateBtn.addEventListener(
+function buildReportData() {
+
+    if (!latestCalculation) {
+
+        return null;
+
+    }
+
+    return {
+
+        /* User Inputs */
+
+        platform:
+            latestCalculation.platform,
+
+        followers:
+            latestCalculation.followers,
+
+        engagementRate:
+            latestCalculation.engagementRate,
+
+        niche:
+            latestCalculation.niche,
+
+        contentType:
+            latestCalculation.contentType,
+
+        contentQuality:
+            latestCalculation.contentQuality,
+
+        brandUsage:
+            latestCalculation.brandUsage,
+
+        turnaround:
+            latestCalculation.turnaround,
+
+        /* Pricing */
+
+        minimum:
+            latestCalculation.minimum,
+
+        recommended:
+            latestCalculation.recommended,
+
+        premium:
+            latestCalculation.premium,
+
+        /* Classifications */
+
+        audience:
+            latestCalculation.audience,
+
+        engagement:
+            latestCalculation.engagement,
+
+        position:
+            latestCalculation.position
+
+    };
+
+}
+
+/* ======================================================
+   Save Report
+====================================================== */
+
+function saveReportData() {
+
+    const report = buildReportData();
+
+    if (!report) {
+
+        return false;
+
+    }
+
+    sessionStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(report)
+
+    );
+
+    return true;
+
+}
+
+/* ======================================================
+   Clear Saved Report
+====================================================== */
+
+function clearSavedReport() {
+
+    sessionStorage.removeItem(
+
+        STORAGE_KEY
+
+    );
+
+}
+
+/* ======================================================
+   Calculate Flow
+====================================================== */
+
+function performCalculation() {
+
+    if (!validateInputs()) {
+
+        return;
+
+    }
+
+    calculateBrandRate();
+
+    updateDisplay();
+
+    clearSavedReport();
+
+}
+
+/* ======================================================
+   Reset Calculator
+====================================================== */
+
+function invalidateCalculation() {
+
+    latestCalculation = null;
+
+    clearSavedReport();
+
+    clearResults();
+
+}
+/* ======================================================
+   Update Calculator Results
+====================================================== */
+
+function updateDisplay() {
+
+    if (!latestCalculation) {
+
+        clearResults();
+        return;
+
+    }
+
+    elements.estimatedRate.textContent =
+        formatCurrency(latestCalculation.recommended);
+
+    elements.minimumRate.textContent =
+        formatCurrency(latestCalculation.minimum);
+
+    elements.recommendedRate.textContent =
+        formatCurrency(latestCalculation.recommended);
+
+    elements.premiumRate.textContent =
+        formatCurrency(latestCalculation.premium);
+
+    elements.audienceStrength.textContent =
+        latestCalculation.audience;
+
+    elements.engagementScore.textContent =
+        latestCalculation.engagement;
+
+    elements.marketPosition.textContent =
+        latestCalculation.position;
+
+}
+
+/* ======================================================
+   Premium Report Data Contract
+====================================================== */
+
+function buildReportData() {
+
+    if (!latestCalculation) {
+
+        return null;
+
+    }
+
+    return {
+
+        /* User Inputs */
+
+        platform:
+            latestCalculation.platform,
+
+        followers:
+            latestCalculation.followers,
+
+        engagementRate:
+            latestCalculation.engagementRate,
+
+        niche:
+            latestCalculation.niche,
+
+        contentType:
+            latestCalculation.contentType,
+
+        contentQuality:
+            latestCalculation.contentQuality,
+
+        brandUsage:
+            latestCalculation.brandUsage,
+
+        turnaround:
+            latestCalculation.turnaround,
+
+        /* Pricing */
+
+        minimum:
+            latestCalculation.minimum,
+
+        recommended:
+            latestCalculation.recommended,
+
+        premium:
+            latestCalculation.premium,
+
+        /* Classifications */
+
+        audience:
+            latestCalculation.audience,
+
+        engagement:
+            latestCalculation.engagement,
+
+        position:
+            latestCalculation.position
+
+    };
+
+}
+
+/* ======================================================
+   Save Report
+====================================================== */
+
+function saveReportData() {
+
+    const report = buildReportData();
+
+    if (!report) {
+
+        return false;
+
+    }
+
+    sessionStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(report)
+
+    );
+
+    return true;
+
+}
+
+/* ======================================================
+   Clear Saved Report
+====================================================== */
+
+function clearSavedReport() {
+
+    sessionStorage.removeItem(
+
+        STORAGE_KEY
+
+    );
+
+}
+
+/* ======================================================
+   Calculate Flow
+====================================================== */
+
+function performCalculation() {
+
+    if (!validateInputs()) {
+
+        return;
+
+    }
+
+    calculateBrandRate();
+
+    updateDisplay();
+
+    clearSavedReport();
+
+}
+
+/* ======================================================
+   Reset Calculator
+====================================================== */
+
+function invalidateCalculation() {
+
+    latestCalculation = null;
+
+    clearSavedReport();
+
+    clearResults();
+
+}
+/* ======================================================
+   Calculate Button
+====================================================== */
+
+elements.calculateBtn.addEventListener(
 
     "click",
 
-    ()=>{
+    () => {
 
-        if(
+        performCalculation();
 
-            !validate()
+    }
 
-        ){
+);
 
-            return;
+/* ======================================================
+   Enter Key Support
+====================================================== */
+
+[
+    elements.followers,
+    elements.engagementRate
+
+].forEach(field => {
+
+    field.addEventListener(
+
+        "keypress",
+
+        (event) => {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                performCalculation();
+
+            }
 
         }
 
-        calculateBrandRate();
+    );
 
-    }
+});
 
-);
-
-[
-    followers,
-    engagementRate
-].forEach(
-
-    field=>{
-
-        field.addEventListener(
-
-            "keypress",
-
-            event=>{
-
-                if(
-
-                    event.key==="Enter"
-
-                ){
-
-                    event.preventDefault();
-
-                    calculateBtn.click();
-
-                }
-
-            }
-
-        );
-
-    }
-
-);
+/* ======================================================
+   Reset When Inputs Change
+====================================================== */
 
 [
-    platform,
-    niche,
-    contentType,
-    contentQuality,
-    brandUsage,
-    turnaround
-].forEach(
+    elements.platform,
+    elements.followers,
+    elements.engagementRate,
+    elements.niche,
+    elements.contentType,
+    elements.contentQuality,
+    elements.brandUsage,
+    elements.turnaround
 
-    field=>{
+].forEach(field => {
 
-        field.addEventListener(
+    field.addEventListener(
 
-            "change",
+        "input",
 
-            ()=>{
+        invalidateCalculation
 
-                latestCalculation=null;
+    );
 
-            }
+    field.addEventListener(
 
-        );
+        "change",
 
-    }
+        invalidateCalculation
 
-);
+    );
 
-followers.addEventListener(
+});
 
-    "input",
+/* ======================================================
+   Premium Report
+====================================================== */
 
-    ()=>{
-
-        latestCalculation=null;
-
-    }
-
-);
-
-engagementRate.addEventListener(
-
-    "input",
-
-    ()=>{
-
-        latestCalculation=null;
-
-    }
-
-);
-/*
-========================================================
-Premium Report
-========================================================
-*/
-
-buyReportBtn.addEventListener(
+elements.buyReportBtn.addEventListener(
 
     "click",
 
-    ()=>{
+    async () => {
 
-        if(
-
-            latestCalculation===null
-
-        ){
+        if (!latestCalculation) {
 
             alert(
 
-                "Please calculate your brand rate first."
+                "Please calculate your Brand Rate first."
 
             );
 
@@ -769,73 +1044,64 @@ buyReportBtn.addEventListener(
         }
 
         /*
-        ========================================================
+        ==================================================
 
-        Existing Arthiva Shared Payment Flow
+        PAYMENT INTEGRATION
 
-        Replace this section by calling the
-        existing shared payment function already
-        used by other Arthiva products.
+        Replace ONLY this block with the shared Arthiva
+        payment flow used across all premium products.
 
-        Example flow:
+        Required flow:
 
-        1.
-        create-payment
+        1. Create Order
+        2. Razorpay / PayPal Checkout
+        3. Verify Payment
+        4. saveReportData()
+        5. Redirect to report.html
 
-        2.
-        Razorpay / PayPal
-
-        3.
-        verify-payment
-
-        4.
-        redirect
-
-        report.html
-
-        ========================================================
+        ==================================================
         */
 
-        sessionStorage.setItem(
+        const saved = saveReportData();
 
-            "brandRateReport",
+        if (!saved) {
 
-            JSON.stringify(
+            alert(
 
-                latestCalculation
+                "Unable to prepare your report."
 
-            )
+            );
 
-        );
+            return;
 
-        window.location.href=
+        }
 
-            "./report.html";
+        window.location.href = "./report.html";
 
     }
 
 );
 
-/*
-========================================================
-Current Year
-========================================================
-*/
+/* ======================================================
+   Footer
+====================================================== */
 
-const year=
+if (elements.currentYear) {
 
-    document.getElementById(
+    elements.currentYear.textContent =
 
-        "currentYear"
-
-    );
-
-if(year){
-
-    year.textContent=
-
-        new Date()
-
-            .getFullYear();
+        new Date().getFullYear();
 
 }
+
+/* ======================================================
+   Initialise
+====================================================== */
+
+clearResults();
+
+console.log(
+
+    "Brand Rate loaded successfully."
+
+);
