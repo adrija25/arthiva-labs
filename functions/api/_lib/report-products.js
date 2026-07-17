@@ -88,6 +88,113 @@ const REPORT_PRODUCTS = {
         };
       }
     }
+  },
+
+  "brand-rate": {
+    "premium-report": {
+      normaliseReportData(reportData) {
+
+        const platform = String(
+          reportData?.platform || ""
+        ).trim();
+
+        const followers = Number(
+          reportData?.followers
+        );
+
+        const engagementRate = Number(
+          reportData?.engagementRate
+        );
+
+        const niche = String(
+          reportData?.niche || ""
+        ).trim();
+
+        const contentType = String(
+          reportData?.contentType || ""
+        ).trim();
+
+        const contentQuality = String(
+          reportData?.contentQuality || ""
+        ).trim();
+
+        const brandUsage = String(
+          reportData?.brandUsage || ""
+        ).trim();
+
+        const turnaround = String(
+          reportData?.turnaround || ""
+        ).trim();
+
+        const minimum = Number(
+          reportData?.minimum
+        );
+
+        const recommended = Number(
+          reportData?.recommended
+        );
+
+        const premium = Number(
+          reportData?.premium
+        );
+
+        const audience = String(
+          reportData?.audience || ""
+        ).trim();
+
+        const engagement = String(
+          reportData?.engagement || ""
+        ).trim();
+
+        const position = String(
+          reportData?.position || ""
+        ).trim();
+
+        if (
+          !platform ||
+          !Number.isFinite(followers) ||
+          followers < 1 ||
+          !Number.isFinite(engagementRate) ||
+          engagementRate < 0 ||
+          engagementRate > 100 ||
+          !niche ||
+          !contentType ||
+          !contentQuality ||
+          !brandUsage ||
+          !turnaround ||
+          !Number.isFinite(minimum) ||
+          minimum < 0 ||
+          !Number.isFinite(recommended) ||
+          recommended < minimum ||
+          !Number.isFinite(premium) ||
+          premium < recommended ||
+          !audience ||
+          !engagement ||
+          !position
+        ) {
+          throw new Error(
+            "Invalid Brand Rate report information."
+          );
+        }
+
+        return {
+          platform,
+          followers,
+          engagementRate,
+          niche,
+          contentType,
+          contentQuality,
+          brandUsage,
+          turnaround,
+          minimum,
+          recommended,
+          premium,
+          audience,
+          engagement,
+          position
+        };
+      }
+    }
   }
 };
 
