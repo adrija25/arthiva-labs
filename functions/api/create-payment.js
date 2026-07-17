@@ -62,7 +62,10 @@ function getProductReturnPath(product) {
       "/products/ctc-reality/",
 
     "exit-date":
-      "/products/exit-date/"
+      "/products/exit-date/",
+
+    "brand-rate":
+      "/products/brand-rate/"
   };
 
   return (
