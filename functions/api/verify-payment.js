@@ -3,6 +3,32 @@ import {
   normaliseReportData
 } from "./_lib/report-products.js";
 
+
+/*
+  ============================================================
+  ARTHIVA LABS PAYMENT VERIFICATION
+  ============================================================
+
+  Supports:
+
+  REPORT PRODUCTS
+  - CTC Reality
+  - Exit Date
+  - Brand Rate
+
+  EXTENSION PRODUCTS
+  - Scam Shield Pro
+
+  Payment providers:
+  - Razorpay for India
+  - PayPal for international payments
+
+  IMPORTANT:
+  PayPal uses LIVE production endpoints.
+  ============================================================
+*/
+
+
 function bytesToHex(bytes) {
   return Array.from(bytes)
     .map((byte) =>
@@ -10,6 +36,7 @@ function bytesToHex(bytes) {
     )
     .join("");
 }
+
 
 function safeEqual(first, second) {
   if (first.length !== second.length) {
@@ -27,6 +54,7 @@ function safeEqual(first, second) {
   return difference === 0;
 }
 
+
 function createAccessToken() {
   return (
     crypto.randomUUID().replaceAll("-", "") +
@@ -34,9 +62,49 @@ function createAccessToken() {
   );
 }
 
+
 function formatPayPalAmount(amount) {
-  return (Number(amount) / 100).toFixed(2);
+  return (
+    Number(amount) / 100
+  ).toFixed(2);
 }
+
+
+/*
+  ============================================================
+  PRODUCT TYPE HELPERS
+  ============================================================
+*/
+
+
+function isScamShieldPro(
+  product,
+  offer
+) {
+  return (
+    product === "scam-shield" &&
+    offer === "pro"
+  );
+}
+
+
+function isExtensionProduct(
+  product,
+  offer
+) {
+  return isScamShieldPro(
+    product,
+    offer
+  );
+}
+
+
+/*
+  ============================================================
+  LOAD PAYMENT PRODUCT DETAILS
+  ============================================================
+*/
+
 
 async function loadPaymentDetails(
   context,
@@ -87,6 +155,15 @@ async function loadPaymentDetails(
   };
 }
 
+
+/*
+  ============================================================
+  PAYPAL AUTHENTICATION
+  LIVE PAYPAL ENDPOINT
+  ============================================================
+*/
+
+
 async function getPayPalAccessToken(env) {
   const clientId =
     env.PAYPAL_CLIENT_ID;
@@ -111,9 +188,11 @@ async function getPayPalAccessToken(env) {
       headers: {
         "Authorization":
           "Basic " + credentials,
+
         "Content-Type":
           "application/x-www-form-urlencoded"
       },
+
       body:
         "grant_type=client_credentials"
     }
@@ -139,6 +218,14 @@ async function getPayPalAccessToken(env) {
   return tokenData.access_token;
 }
 
+
+/*
+  ============================================================
+  RAZORPAY VERIFICATION
+  ============================================================
+*/
+
+
 async function verifyRazorpayPayment(
   context,
   body
@@ -162,6 +249,7 @@ async function verifyRazorpayPayment(
   ) {
     return {
       success: false,
+
       error:
         "Missing Razorpay verification information."
     };
@@ -182,14 +270,18 @@ async function verifyRazorpayPayment(
   const cryptoKey =
     await crypto.subtle.importKey(
       "raw",
+
       encoder.encode(
         razorpayKeySecret
       ),
+
       {
         name: "HMAC",
         hash: "SHA-256"
       },
+
       false,
+
       ["sign"]
     );
 
@@ -199,7 +291,9 @@ async function verifyRazorpayPayment(
   const signatureBuffer =
     await crypto.subtle.sign(
       "HMAC",
+
       cryptoKey,
+
       encoder.encode(
         verificationMessage
       )
@@ -212,14 +306,19 @@ async function verifyRazorpayPayment(
       )
     );
 
-  const verified = safeEqual(
-    expectedSignature,
-    String(signature).toLowerCase()
-  );
+  const verified =
+    safeEqual(
+      expectedSignature,
+
+      String(
+        signature
+      ).toLowerCase()
+    );
 
   if (!verified) {
     return {
       success: false,
+
       error:
         "Payment verification failed."
     };
@@ -227,28 +326,47 @@ async function verifyRazorpayPayment(
 
   return {
     success: true,
-    paymentProvider: "razorpay",
-    paymentId
+
+    paymentProvider:
+      "razorpay",
+
+    paymentId:
+      paymentId
   };
 }
+
+
+/*
+  ============================================================
+  PAYPAL ORDER LOOKUP
+  ============================================================
+*/
+
 
 async function getPayPalOrder(
   accessToken,
   orderId
 ) {
-  const orderResponse = await fetch(
-    "https://api-m.paypal.com/v2/checkout/orders/" +
-      encodeURIComponent(orderId),
-    {
-      method: "GET",
-      headers: {
-        "Authorization":
-          "Bearer " + accessToken,
-        "Content-Type":
-          "application/json"
+  const orderResponse =
+    await fetch(
+      "https://api-m.paypal.com/v2/checkout/orders/" +
+        encodeURIComponent(
+          orderId
+        ),
+
+      {
+        method: "GET",
+
+        headers: {
+          "Authorization":
+            "Bearer " +
+            accessToken,
+
+          "Content-Type":
+            "application/json"
+        }
       }
-    }
-  );
+    );
 
   const orderData =
     await orderResponse.json();
@@ -265,6 +383,14 @@ async function getPayPalOrder(
   return orderData;
 }
 
+
+/*
+  ============================================================
+  VALIDATE PAYPAL ORDER
+  ============================================================
+*/
+
+
 function validatePayPalOrder(
   orderData,
   body,
@@ -276,22 +402,27 @@ function validatePayPalOrder(
   if (!purchaseUnit) {
     return {
       success: false,
+
       error:
         "PayPal order has no purchase information."
     };
   }
 
   const expectedReference =
-    body.product + ":" + body.offer;
+    body.product +
+    ":" +
+    body.offer;
 
   if (
     purchaseUnit.reference_id !==
       expectedReference ||
+
     purchaseUnit.custom_id !==
       expectedReference
   ) {
     return {
       success: false,
+
       error:
         "PayPal payment does not match this Arthiva product."
     };
@@ -299,32 +430,44 @@ function validatePayPalOrder(
 
   const expectedCurrency =
     String(
-      paymentDetails.priceDetails.currency
+      paymentDetails
+        .priceDetails
+        .currency
     ).toUpperCase();
 
   const expectedAmount =
     formatPayPalAmount(
-      paymentDetails.priceDetails.amount
+      paymentDetails
+        .priceDetails
+        .amount
     );
 
   const orderCurrency =
     String(
-      purchaseUnit.amount?.currency_code ||
+      purchaseUnit
+        .amount
+        ?.currency_code ||
       ""
     ).toUpperCase();
 
   const orderAmount =
     String(
-      purchaseUnit.amount?.value ||
+      purchaseUnit
+        .amount
+        ?.value ||
       ""
     );
 
   if (
-    orderCurrency !== expectedCurrency ||
-    orderAmount !== expectedAmount
+    orderCurrency !==
+      expectedCurrency ||
+
+    orderAmount !==
+      expectedAmount
   ) {
     return {
       success: false,
+
       error:
         "PayPal order amount does not match the Arthiva offer."
     };
@@ -335,48 +478,73 @@ function validatePayPalOrder(
   };
 }
 
+
+/*
+  ============================================================
+  FIND COMPLETED PAYPAL CAPTURE
+  ============================================================
+*/
+
+
 function findCompletedPayPalCapture(
   orderData,
   paymentDetails
 ) {
   const purchaseUnits =
-    orderData.purchase_units || [];
+    orderData.purchase_units ||
+    [];
 
   const expectedCurrency =
     String(
-      paymentDetails.priceDetails.currency
+      paymentDetails
+        .priceDetails
+        .currency
     ).toUpperCase();
 
   const expectedAmount =
     formatPayPalAmount(
-      paymentDetails.priceDetails.amount
+      paymentDetails
+        .priceDetails
+        .amount
     );
 
   for (
-    const purchaseUnit of purchaseUnits
+    const purchaseUnit
+    of purchaseUnits
   ) {
     const captures =
       purchaseUnit
         ?.payments
-        ?.captures || [];
+        ?.captures ||
+      [];
 
-    for (const capture of captures) {
+    for (
+      const capture
+      of captures
+    ) {
       const captureCurrency =
         String(
-          capture.amount?.currency_code ||
+          capture
+            .amount
+            ?.currency_code ||
           ""
         ).toUpperCase();
 
       const captureAmount =
         String(
-          capture.amount?.value ||
+          capture
+            .amount
+            ?.value ||
           ""
         );
 
       if (
-        capture.status === "COMPLETED" &&
+        capture.status ===
+          "COMPLETED" &&
+
         captureCurrency ===
           expectedCurrency &&
+
         captureAmount ===
           expectedAmount
       ) {
@@ -387,6 +555,14 @@ function findCompletedPayPalCapture(
 
   return null;
 }
+
+
+/*
+  ============================================================
+  CAPTURE AND VERIFY PAYPAL PAYMENT
+  ============================================================
+*/
+
 
 async function captureAndVerifyPayPalPayment(
   context,
@@ -400,6 +576,7 @@ async function captureAndVerifyPayPalPayment(
   if (!orderId) {
     return {
       success: false,
+
       error:
         "Missing PayPal order information."
     };
@@ -419,6 +596,7 @@ async function captureAndVerifyPayPalPayment(
   if (!orderData) {
     return {
       success: false,
+
       error:
         "Unable to retrieve PayPal order."
     };
@@ -431,7 +609,9 @@ async function captureAndVerifyPayPalPayment(
       paymentDetails
     );
 
-  if (!orderValidation.success) {
+  if (
+    !orderValidation.success
+  ) {
     return orderValidation;
   }
 
@@ -444,36 +624,55 @@ async function captureAndVerifyPayPalPayment(
   if (completedCapture) {
     return {
       success: true,
-      paymentProvider: "paypal",
-      paymentId: completedCapture.id
+
+      paymentProvider:
+        "paypal",
+
+      paymentId:
+        completedCapture.id
     };
   }
 
-  if (orderData.status !== "APPROVED") {
+  if (
+    orderData.status !==
+    "APPROVED"
+  ) {
     return {
       success: false,
+
       error:
         "PayPal payment has not been approved."
     };
   }
 
-  const captureResponse = await fetch(
-    "https://api-m.paypal.com/v2/checkout/orders/" +
-      encodeURIComponent(orderId) +
-      "/capture",
-    {
-      method: "POST",
-      headers: {
-        "Authorization":
-          "Bearer " + accessToken,
-        "Content-Type":
-          "application/json",
-        "PayPal-Request-Id":
-          "arthiva-capture-" + orderId
-      },
-      body: "{}"
-    }
-  );
+  const captureResponse =
+    await fetch(
+      "https://api-m.paypal.com/v2/checkout/orders/" +
+        encodeURIComponent(
+          orderId
+        ) +
+        "/capture",
+
+      {
+        method: "POST",
+
+        headers: {
+          "Authorization":
+            "Bearer " +
+            accessToken,
+
+          "Content-Type":
+            "application/json",
+
+          "PayPal-Request-Id":
+            "arthiva-capture-" +
+            orderId
+        },
+
+        body:
+          "{}"
+      }
+    );
 
   const captureData =
     await captureResponse.json();
@@ -486,6 +685,7 @@ async function captureAndVerifyPayPalPayment(
 
     return {
       success: false,
+
       error:
         "PayPal payment could not be captured."
     };
@@ -518,6 +718,7 @@ async function captureAndVerifyPayPalPayment(
 
     return {
       success: false,
+
       error:
         "PayPal payment is not completed."
     };
@@ -525,12 +726,26 @@ async function captureAndVerifyPayPalPayment(
 
   return {
     success: true,
-    paymentProvider: "paypal",
-    paymentId: completedCapture.id
+
+    paymentProvider:
+      "paypal",
+
+    paymentId:
+      completedCapture.id
   };
 }
 
-export async function onRequestPost(context) {
+
+/*
+  ============================================================
+  MAIN PAYMENT VERIFICATION ENDPOINT
+  ============================================================
+*/
+
+
+export async function onRequestPost(
+  context
+) {
   try {
     const body =
       await context.request.json();
@@ -551,42 +766,112 @@ export async function onRequestPost(context) {
         "razorpay"
       ).toLowerCase();
 
+
+    /*
+      ----------------------------------------------------------
+      BASIC PAYMENT INFORMATION
+      ----------------------------------------------------------
+    */
+
+
     if (
       !product ||
-      !offer ||
-      !reportData
+      !offer
     ) {
       return Response.json(
         {
           success: false,
+
           verified: false,
+
           error:
-            "Missing product, offer, or report verification information."
+            "Missing product or offer information."
         },
+
         {
           status: 400
         }
       );
     }
 
-    if (
-      !isSupportedReportProduct(
+
+    /*
+      ----------------------------------------------------------
+      DETERMINE PRODUCT TYPE
+      ----------------------------------------------------------
+    */
+
+
+    const extensionProduct =
+      isExtensionProduct(
         product,
         offer
-      )
+      );
+
+    const reportProduct =
+      isSupportedReportProduct(
+        product,
+        offer
+      );
+
+
+    if (
+      !extensionProduct &&
+      !reportProduct
     ) {
       return Response.json(
         {
           success: false,
+
           verified: false,
+
           error:
             "Invalid product or offer."
         },
+
         {
           status: 400
         }
       );
     }
+
+
+    /*
+      ----------------------------------------------------------
+      REPORT PRODUCTS REQUIRE REPORT DATA
+
+      Scam Shield Pro does NOT require reportData.
+      ----------------------------------------------------------
+    */
+
+
+    if (
+      reportProduct &&
+      !reportData
+    ) {
+      return Response.json(
+        {
+          success: false,
+
+          verified: false,
+
+          error:
+            "Missing report verification information."
+        },
+
+        {
+          status: 400
+        }
+      );
+    }
+
+
+    /*
+      ----------------------------------------------------------
+      CHECK DATABASE BINDING
+      ----------------------------------------------------------
+    */
+
 
     if (!context.env.DB) {
       throw new Error(
@@ -594,34 +879,65 @@ export async function onRequestPost(context) {
       );
     }
 
-    let normalisedReportData;
 
-    try {
-      normalisedReportData =
-        normaliseReportData(
-          product,
-          offer,
-          reportData
+    /*
+      ----------------------------------------------------------
+      NORMALISE REPORT DATA
+
+      Only runs for report products.
+
+      Scam Shield skips this completely.
+      ----------------------------------------------------------
+    */
+
+
+    let normalisedReportData =
+      null;
+
+
+    if (reportProduct) {
+      try {
+        normalisedReportData =
+          normaliseReportData(
+            product,
+            offer,
+            reportData
+          );
+
+      } catch (
+        reportError
+      ) {
+        return Response.json(
+          {
+            success: false,
+
+            verified: false,
+
+            error:
+              reportError.message
+          },
+
+          {
+            status: 400
+          }
         );
-
-    } catch (reportError) {
-      return Response.json(
-        {
-          success: false,
-          verified: false,
-          error:
-            reportError.message
-        },
-        {
-          status: 400
-        }
-      );
+      }
     }
+
+
+    /*
+      ----------------------------------------------------------
+      VERIFY PAYMENT
+      ----------------------------------------------------------
+    */
+
 
     let paymentVerification;
 
+
     if (
-      paymentProvider === "razorpay"
+      paymentProvider ===
+      "razorpay"
     ) {
       paymentVerification =
         await verifyRazorpayPayment(
@@ -629,9 +945,12 @@ export async function onRequestPost(context) {
           body
         );
 
+
     } else if (
-      paymentProvider === "paypal"
+      paymentProvider ===
+      "paypal"
     ) {
+
       const paymentDetails =
         await loadPaymentDetails(
           context,
@@ -640,19 +959,24 @@ export async function onRequestPost(context) {
           "international"
         );
 
+
       if (!paymentDetails) {
         return Response.json(
           {
             success: false,
+
             verified: false,
+
             error:
               "International payment offer is not available."
           },
+
           {
             status: 404
           }
         );
       }
+
 
       paymentVerification =
         await captureAndVerifyPayPalPayment(
@@ -661,33 +985,296 @@ export async function onRequestPost(context) {
           paymentDetails
         );
 
+
     } else {
+
       return Response.json(
         {
           success: false,
+
           verified: false,
+
           error:
             "Unsupported payment provider."
         },
+
         {
           status: 400
         }
       );
     }
 
-    if (!paymentVerification.success) {
+
+    if (
+      !paymentVerification.success
+    ) {
       return Response.json(
         {
           success: false,
+
           verified: false,
+
           error:
             paymentVerification.error
         },
+
         {
           status: 400
         }
       );
     }
+
+
+    /*
+      ==========================================================
+      SCAM SHIELD PRO
+      ==========================================================
+
+      Scam Shield is a one-time purchase.
+
+      It does not generate a report.
+
+      The access token is stored in the existing
+      report_access table.
+
+      The report_data column stores entitlement metadata.
+
+      expires_at is set to 31 December 9999,
+      effectively representing permanent access.
+
+      used_at remains NULL because extension access
+      must not be consumed after one use.
+      ==========================================================
+    */
+
+
+    if (extensionProduct) {
+
+      const existingAccess =
+        await context.env.DB
+          .prepare(
+            `
+            SELECT
+              token,
+              expires_at
+            FROM report_access
+            WHERE
+              product = ?
+              AND offer = ?
+              AND payment_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            `
+          )
+          .bind(
+            product,
+            offer,
+            paymentVerification
+              .paymentId
+          )
+          .first();
+
+
+      if (existingAccess) {
+
+        return Response.json({
+          success: true,
+
+          verified: true,
+
+          status:
+            "payment-already-verified",
+
+          paymentProvider:
+            paymentVerification
+              .paymentProvider,
+
+          paymentId:
+            paymentVerification
+              .paymentId,
+
+          accessType:
+            "extension-pro",
+
+          product:
+            product,
+
+          offer:
+            offer,
+
+          proAccessCreated:
+            false,
+
+          proAccessToken:
+            existingAccess.token,
+
+          proAccessExpiresAt:
+            Number(
+              existingAccess
+                .expires_at
+            )
+        });
+      }
+
+
+      const token =
+        createAccessToken();
+
+
+      const now =
+        Date.now();
+
+
+      /*
+        31 December 9999 UTC.
+
+        This represents effectively permanent
+        one-time-purchase access.
+      */
+
+
+      const expiresAt =
+        253402300799000;
+
+
+      const entitlementData =
+        JSON.stringify({
+          type:
+            "extension-entitlement",
+
+          product:
+            product,
+
+          offer:
+            offer,
+
+          plan:
+            "pro",
+
+          access:
+            "unlimited-scans",
+
+          studio:
+            "Arthiva Labs",
+
+          createdAt:
+            now
+        });
+
+
+      try {
+
+        await context.env.DB
+          .prepare(
+            `
+            INSERT INTO report_access (
+              token,
+              product,
+              offer,
+              payment_id,
+              report_data,
+              created_at,
+              expires_at,
+              used_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, NULL)
+            `
+          )
+          .bind(
+            token,
+            product,
+            offer,
+
+            paymentVerification
+              .paymentId,
+
+            entitlementData,
+
+            now,
+
+            expiresAt
+          )
+          .run();
+
+
+      } catch (
+        databaseError
+      ) {
+
+        console.error(
+          "Arthiva extension access insert error",
+          databaseError
+        );
+
+
+        return Response.json(
+          {
+            success: false,
+
+            verified: true,
+
+            error:
+              "Payment was verified, but Scam Shield Pro access could not be created."
+          },
+
+          {
+            status: 500
+          }
+        );
+      }
+
+
+      return Response.json({
+        success: true,
+
+        verified: true,
+
+        status:
+          "payment-verified",
+
+        paymentProvider:
+          paymentVerification
+            .paymentProvider,
+
+        paymentId:
+          paymentVerification
+            .paymentId,
+
+        accessType:
+          "extension-pro",
+
+        product:
+          product,
+
+        offer:
+          offer,
+
+        proAccessCreated:
+          true,
+
+        proAccessToken:
+          token,
+
+        proAccessExpiresAt:
+          expiresAt
+      });
+    }
+
+
+    /*
+      ==========================================================
+      EXISTING REPORT PRODUCT FLOW
+      ==========================================================
+
+      CTC Reality
+      Exit Date
+      Brand Rate
+
+      These continue using temporary 30-minute
+      report access tokens.
+      ==========================================================
+    */
+
 
     const existingAccess =
       await context.env.DB
@@ -708,49 +1295,84 @@ export async function onRequestPost(context) {
         .bind(
           product,
           offer,
-          paymentVerification.paymentId
+
+          paymentVerification
+            .paymentId
         )
         .first();
 
+
     if (
       existingAccess &&
-      Number(existingAccess.expires_at) >
+
+      Number(
+        existingAccess
+          .expires_at
+      ) >
         Date.now()
     ) {
+
       return Response.json({
         success: true,
+
         verified: true,
+
         status:
           "payment-already-verified",
+
         paymentProvider:
-          paymentVerification.paymentProvider,
+          paymentVerification
+            .paymentProvider,
+
         paymentId:
-          paymentVerification.paymentId,
-        reportAccessCreated: false,
+          paymentVerification
+            .paymentId,
+
+        reportAccessCreated:
+          false,
+
         reportToken:
           existingAccess.token,
+
         reportExpiresAt:
           Number(
-            existingAccess.expires_at
+            existingAccess
+              .expires_at
           )
       });
     }
 
+
+    /*
+      ----------------------------------------------------------
+      CREATE REPORT ACCESS TOKEN
+      ----------------------------------------------------------
+    */
+
+
     const token =
       createAccessToken();
+
 
     const now =
       Date.now();
 
+
     const expiresAt =
-      now + 30 * 60 * 1000;
+      now +
+      30 *
+      60 *
+      1000;
+
 
     const storedReportData =
       JSON.stringify(
         normalisedReportData
       );
 
+
     try {
+
       await context.env.DB
         .prepare(
           `
@@ -771,59 +1393,98 @@ export async function onRequestPost(context) {
           token,
           product,
           offer,
-          paymentVerification.paymentId,
+
+          paymentVerification
+            .paymentId,
+
           storedReportData,
+
           now,
+
           expiresAt
         )
         .run();
 
-    } catch (databaseError) {
+
+    } catch (
+      databaseError
+    ) {
+
       console.error(
         "Arthiva report access insert error",
         databaseError
       );
 
+
       return Response.json(
         {
           success: false,
+
           verified: true,
+
           error:
             "Payment was verified, but report access could not be created."
         },
+
         {
           status: 500
         }
       );
     }
 
+
+    /*
+      ----------------------------------------------------------
+      REPORT PAYMENT SUCCESS
+      ----------------------------------------------------------
+    */
+
+
     return Response.json({
       success: true,
+
       verified: true,
+
       status:
         "payment-verified",
+
       paymentProvider:
-        paymentVerification.paymentProvider,
+        paymentVerification
+          .paymentProvider,
+
       paymentId:
-        paymentVerification.paymentId,
-      reportAccessCreated: true,
-      reportToken: token,
-      reportExpiresAt: expiresAt
+        paymentVerification
+          .paymentId,
+
+      reportAccessCreated:
+        true,
+
+      reportToken:
+        token,
+
+      reportExpiresAt:
+        expiresAt
     });
 
+
   } catch (error) {
+
     console.error(
       "Arthiva payment verification error",
       error
     );
 
+
     return Response.json(
       {
         success: false,
+
         verified: false,
+
         error:
           "Unable to verify payment."
       },
+
       {
         status: 500
       }
