@@ -50,11 +50,84 @@ async function getPayPalAccessToken(env) {
   return tokenData.access_token;
 }
 
+
+/*
+============================================================
+CORS
+============================================================
+*/
+
+const ALLOWED_ORIGINS = [
+  "https://scam-shield-2sn.pages.dev"
+];
+
+
+function getCorsHeaders(request) {
+  const origin =
+    request.headers.get("Origin") || "";
+
+  const headers = {
+    "Access-Control-Allow-Methods":
+      "POST, OPTIONS",
+
+    "Access-Control-Allow-Headers":
+      "Content-Type",
+
+    "Access-Control-Max-Age":
+      "86400",
+
+    "Vary":
+      "Origin"
+  };
+
+  if (
+    ALLOWED_ORIGINS.includes(origin)
+  ) {
+    headers[
+      "Access-Control-Allow-Origin"
+    ] = origin;
+  }
+
+  return headers;
+}
+
+
+function jsonResponse(
+  request,
+  data,
+  status = 200
+) {
+  return Response.json(
+    data,
+    {
+      status:
+        status,
+
+      headers:
+        getCorsHeaders(request)
+    }
+  );
+}
+
+
+/*
+============================================================
+PAYPAL AMOUNT
+============================================================
+*/
+
 function formatPayPalAmount(amount) {
   return (
     Number(amount) / 100
   ).toFixed(2);
 }
+
+
+/*
+============================================================
+PRODUCT RETURN URL
+============================================================
+*/
 
 function getProductReturnUrl(
   product,
@@ -83,6 +156,13 @@ function getProductReturnUrl(
   );
 }
 
+
+/*
+============================================================
+PAYMENT MARKET
+============================================================
+*/
+
 function getPaymentMarket(request) {
   const country =
     request.cf?.country || "";
@@ -93,6 +173,52 @@ function getPaymentMarket(request) {
 
   return "international";
 }
+
+
+/*
+============================================================
+OPTIONS / CORS PREFLIGHT
+============================================================
+*/
+
+export async function onRequestOptions(
+  context
+) {
+  const origin =
+    context.request.headers.get(
+      "Origin"
+    ) || "";
+
+  if (
+    origin &&
+    !ALLOWED_ORIGINS.includes(origin)
+  ) {
+    return new Response(
+      null,
+      {
+        status: 403
+      }
+    );
+  }
+
+  return new Response(
+    null,
+    {
+      status: 204,
+      headers:
+        getCorsHeaders(
+          context.request
+        )
+    }
+  );
+}
+
+
+/*
+============================================================
+CREATE PAYMENT
+============================================================
+*/
 
 export async function onRequestPost(context) {
   try {
@@ -109,22 +235,23 @@ export async function onRequestPost(context) {
       !product ||
       !offer
     ) {
-      return Response.json(
+      return jsonResponse(
+        context.request,
         {
           success: false,
           error:
             "Missing payment information."
         },
-        {
-          status: 400
-        }
+        400
       );
     }
+
 
     const market =
       getPaymentMarket(
         context.request
       );
+
 
     console.log(
       "Arthiva server payment market",
@@ -132,15 +259,24 @@ export async function onRequestPost(context) {
         country:
           context.request.cf?.country ||
           "unknown",
+
         market:
           market
       }
     );
 
-    const priceListUrl = new URL(
-      "/payment-products.json",
-      context.request.url
-    );
+
+    /*
+    ========================================================
+    LOAD SERVER PRICE LIST
+    ========================================================
+    */
+
+    const priceListUrl =
+      new URL(
+        "/payment-products.json",
+        context.request.url
+      );
 
     const priceListResponse =
       await context.env.ASSETS.fetch(
@@ -153,8 +289,10 @@ export async function onRequestPost(context) {
       );
     }
 
+
     const priceList =
       await priceListResponse.json();
+
 
     const productDetails =
       priceList.products?.[product];
@@ -165,22 +303,29 @@ export async function onRequestPost(context) {
     const priceDetails =
       offerDetails?.[market];
 
+
     if (
       !productDetails ||
       !offerDetails ||
       !priceDetails
     ) {
-      return Response.json(
+      return jsonResponse(
+        context.request,
         {
           success: false,
           error:
             "Product or offer is not available."
         },
-        {
-          status: 404
-        }
+        404
       );
     }
+
+
+    /*
+    ========================================================
+    INDIA — RAZORPAY
+    ========================================================
+    */
 
     if (market === "india") {
       const razorpayKeyId =
@@ -188,6 +333,7 @@ export async function onRequestPost(context) {
 
       const razorpayKeySecret =
         context.env.RAZORPAY_KEY_SECRET;
+
 
       if (
         !razorpayKeyId ||
@@ -198,11 +344,14 @@ export async function onRequestPost(context) {
         );
       }
 
-      const credentials = btoa(
-        razorpayKeyId +
-        ":" +
-        razorpayKeySecret
-      );
+
+      const credentials =
+        btoa(
+          razorpayKeyId +
+          ":" +
+          razorpayKeySecret
+        );
+
 
       const receipt =
         "arthiva_" +
@@ -213,43 +362,52 @@ export async function onRequestPost(context) {
         "_" +
         Date.now();
 
+
       const razorpayResponse =
         await fetch(
           "https://api.razorpay.com/v1/orders",
           {
-            method: "POST",
+            method:
+              "POST",
+
             headers: {
               "Authorization":
-                "Basic " + credentials,
+                "Basic " +
+                credentials,
+
               "Content-Type":
                 "application/json"
             },
-            body: JSON.stringify({
-              amount:
-                priceDetails.amount,
 
-              currency:
-                priceDetails.currency,
+            body:
+              JSON.stringify({
+                amount:
+                  priceDetails.amount,
 
-              receipt:
-                receipt,
+                currency:
+                  priceDetails.currency,
 
-              notes: {
-                product:
-                  product,
+                receipt:
+                  receipt,
 
-                offer:
-                  offer,
+                notes: {
+                  product:
+                    product,
 
-                studio:
-                  "Arthiva Labs"
-              }
-            })
+                  offer:
+                    offer,
+
+                  studio:
+                    "Arthiva Labs"
+                }
+              })
           }
         );
 
+
       const razorpayOrder =
         await razorpayResponse.json();
+
 
       if (!razorpayResponse.ok) {
         console.error(
@@ -257,49 +415,72 @@ export async function onRequestPost(context) {
           razorpayOrder
         );
 
-        return Response.json(
+        return jsonResponse(
+          context.request,
           {
             success: false,
             error:
               "Razorpay could not create the order."
           },
-          {
-            status: 502
-          }
+          502
         );
       }
 
-      return Response.json({
-        success: true,
-        product:
-          product,
-        productName:
-          productDetails.name,
-        offer:
-          offer,
-        offerName:
-          offerDetails.name,
-        market:
-          market,
-        paymentProvider:
-          "razorpay",
-        currency:
-          priceDetails.currency,
-        amount:
-          priceDetails.amount,
-        orderId:
-          razorpayOrder.id,
-        razorpayKeyId:
-          razorpayKeyId,
-        status:
-          "razorpay-order-created"
-      });
+
+      return jsonResponse(
+        context.request,
+        {
+          success:
+            true,
+
+          product:
+            product,
+
+          productName:
+            productDetails.name,
+
+          offer:
+            offer,
+
+          offerName:
+            offerDetails.name,
+
+          market:
+            market,
+
+          paymentProvider:
+            "razorpay",
+
+          currency:
+            priceDetails.currency,
+
+          amount:
+            priceDetails.amount,
+
+          orderId:
+            razorpayOrder.id,
+
+          razorpayKeyId:
+            razorpayKeyId,
+
+          status:
+            "razorpay-order-created"
+        }
+      );
     }
+
+
+    /*
+    ========================================================
+    INTERNATIONAL — PAYPAL
+    ========================================================
+    */
 
     const paypalAccessToken =
       await getPayPalAccessToken(
         context.env
       );
+
 
     const paypalRequestId =
       "arthiva-" +
@@ -315,17 +496,23 @@ export async function onRequestPost(context) {
       "-" +
       crypto.randomUUID();
 
+
     const requestUrl =
-      new URL(context.request.url);
+      new URL(
+        context.request.url
+      );
+
 
     const arthivaOrigin =
       requestUrl.origin;
+
 
     const returnUrl =
       getProductReturnUrl(
         product,
         arthivaOrigin
       );
+
 
     const cancelUrl =
       returnUrl +
@@ -336,11 +523,14 @@ export async function onRequestPost(context) {
       ) +
       "paypal=cancelled";
 
+
     const paypalResponse =
       await fetch(
         "https://api-m.paypal.com/v2/checkout/orders",
         {
-          method: "POST",
+          method:
+            "POST",
+
           headers: {
             "Authorization":
               "Bearer " +
@@ -353,65 +543,68 @@ export async function onRequestPost(context) {
               paypalRequestId
           },
 
-          body: JSON.stringify({
-            intent:
-              "CAPTURE",
+          body:
+            JSON.stringify({
+              intent:
+                "CAPTURE",
 
-            purchase_units: [
-              {
-                reference_id:
-                  product +
-                  ":" +
-                  offer,
+              purchase_units: [
+                {
+                  reference_id:
+                    product +
+                    ":" +
+                    offer,
 
-                description:
-                  productDetails.name +
-                  " — " +
-                  offerDetails.name,
+                  description:
+                    productDetails.name +
+                    " — " +
+                    offerDetails.name,
 
-                custom_id:
-                  product +
-                  ":" +
-                  offer,
+                  custom_id:
+                    product +
+                    ":" +
+                    offer,
 
-                amount: {
-                  currency_code:
-                    priceDetails.currency,
+                  amount: {
+                    currency_code:
+                      priceDetails.currency,
 
-                  value:
-                    formatPayPalAmount(
-                      priceDetails.amount
-                    )
+                    value:
+                      formatPayPalAmount(
+                        priceDetails.amount
+                      )
+                  }
+                }
+              ],
+
+              payment_source: {
+                paypal: {
+                  experience_context: {
+                    brand_name:
+                      "Arthiva Labs",
+
+                    shipping_preference:
+                      "NO_SHIPPING",
+
+                    user_action:
+                      "PAY_NOW",
+
+                    return_url:
+                      returnUrl,
+
+                    cancel_url:
+                      cancelUrl
+                  }
                 }
               }
-            ],
-
-            payment_source: {
-              paypal: {
-                experience_context: {
-                  brand_name:
-                    "Arthiva Labs",
-
-                  shipping_preference:
-                    "NO_SHIPPING",
-
-                  user_action:
-                    "PAY_NOW",
-
-                  return_url:
-                    returnUrl,
-
-                  cancel_url:
-                    cancelUrl
-                }
-              }
-            }
-          })
+            })
         }
       );
 
+
     const paypalOrder =
       await paypalResponse.json();
+
 
     if (
       !paypalResponse.ok ||
@@ -422,17 +615,17 @@ export async function onRequestPost(context) {
         paypalOrder
       );
 
-      return Response.json(
+      return jsonResponse(
+        context.request,
         {
           success: false,
           error:
             "PayPal could not create the order."
         },
-        {
-          status: 502
-        }
+        502
       );
     }
+
 
     const approveLink =
       paypalOrder.links?.find(
@@ -443,49 +636,66 @@ export async function onRequestPost(context) {
             "approve"
       )?.href;
 
+
     if (!approveLink) {
       console.error(
         "PayPal approval link missing",
         paypalOrder
       );
 
-      return Response.json(
+      return jsonResponse(
+        context.request,
         {
           success: false,
           error:
             "PayPal did not return an approval link."
         },
-        {
-          status: 502
-        }
+        502
       );
     }
 
-    return Response.json({
-      success: true,
-      product:
-        product,
-      productName:
-        productDetails.name,
-      offer:
-        offer,
-      offerName:
-        offerDetails.name,
-      market:
-        market,
-      paymentProvider:
-        "paypal",
-      currency:
-        priceDetails.currency,
-      amount:
-        priceDetails.amount,
-      orderId:
-        paypalOrder.id,
-      approveUrl:
-        approveLink,
-      status:
-        "paypal-order-created"
-    });
+
+    return jsonResponse(
+      context.request,
+      {
+        success:
+          true,
+
+        product:
+          product,
+
+        productName:
+          productDetails.name,
+
+        offer:
+          offer,
+
+        offerName:
+          offerDetails.name,
+
+        market:
+          market,
+
+        paymentProvider:
+          "paypal",
+
+        currency:
+          priceDetails.currency,
+
+        amount:
+          priceDetails.amount,
+
+        orderId:
+          paypalOrder.id,
+
+        approveUrl:
+          approveLink,
+
+        status:
+          "paypal-order-created"
+      }
+    );
+
 
   } catch (error) {
     console.error(
@@ -493,15 +703,15 @@ export async function onRequestPost(context) {
       error
     );
 
-    return Response.json(
+
+    return jsonResponse(
+      context.request,
       {
         success: false,
         error:
           "Unable to prepare payment."
       },
-      {
-        status: 500
-      }
+      500
     );
   }
 }
