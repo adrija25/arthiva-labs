@@ -56,21 +56,30 @@ function formatPayPalAmount(amount) {
   ).toFixed(2);
 }
 
-function getProductReturnPath(product) {
-  const supportedReturnPaths = {
+function getProductReturnUrl(
+  product,
+  arthivaOrigin
+) {
+  const supportedReturnUrls = {
     "ctc-reality":
+      arthivaOrigin +
       "/products/ctc-reality/",
 
     "exit-date":
+      arthivaOrigin +
       "/products/exit-date/",
 
     "brand-rate":
-      "/products/brand-rate/"
+      arthivaOrigin +
+      "/products/brand-rate/",
+
+    "scam-shield":
+      "https://scam-shield-2sn.pages.dev/"
   };
 
   return (
-    supportedReturnPaths[product] ||
-    "/"
+    supportedReturnUrls[product] ||
+    arthivaOrigin + "/"
   );
 }
 
@@ -312,17 +321,20 @@ export async function onRequestPost(context) {
     const arthivaOrigin =
       requestUrl.origin;
 
-    const productReturnPath =
-      getProductReturnPath(product);
-
     const returnUrl =
-      arthivaOrigin +
-      productReturnPath;
+      getProductReturnUrl(
+        product,
+        arthivaOrigin
+      );
 
     const cancelUrl =
-      arthivaOrigin +
-      productReturnPath +
-      "?paypal=cancelled";
+      returnUrl +
+      (
+        returnUrl.includes("?")
+          ? "&"
+          : "?"
+      ) +
+      "paypal=cancelled";
 
     const paypalResponse =
       await fetch(
