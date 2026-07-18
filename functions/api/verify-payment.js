@@ -29,6 +29,114 @@ import {
 */
 
 
+/*
+  ============================================================
+  CORS
+  ============================================================
+*/
+
+
+const ALLOWED_ORIGINS = [
+  "https://scam-shield-2sn.pages.dev"
+];
+
+
+function getCorsHeaders(request) {
+  const origin =
+    request.headers.get("Origin") || "";
+
+  const headers = {
+    "Access-Control-Allow-Methods":
+      "POST, OPTIONS",
+
+    "Access-Control-Allow-Headers":
+      "Content-Type",
+
+    "Access-Control-Max-Age":
+      "86400",
+
+    "Vary":
+      "Origin"
+  };
+
+  if (
+    ALLOWED_ORIGINS.includes(origin)
+  ) {
+    headers[
+      "Access-Control-Allow-Origin"
+    ] = origin;
+  }
+
+  return headers;
+}
+
+
+function jsonResponse(
+  request,
+  data,
+  status = 200
+) {
+  return Response.json(
+    data,
+    {
+      status:
+        status,
+
+      headers:
+        getCorsHeaders(request)
+    }
+  );
+}
+
+
+/*
+  ============================================================
+  CORS PREFLIGHT
+  ============================================================
+*/
+
+
+export async function onRequestOptions(
+  context
+) {
+  const origin =
+    context.request.headers.get(
+      "Origin"
+    ) || "";
+
+  if (
+    origin &&
+    !ALLOWED_ORIGINS.includes(origin)
+  ) {
+    return new Response(
+      null,
+      {
+        status: 403
+      }
+    );
+  }
+
+  return new Response(
+    null,
+    {
+      status: 204,
+
+      headers:
+        getCorsHeaders(
+          context.request
+        )
+    }
+  );
+}
+
+
+/*
+  ============================================================
+  GENERAL HELPERS
+  ============================================================
+*/
+
+
 function bytesToHex(bytes) {
   return Array.from(bytes)
     .map((byte) =>
@@ -185,6 +293,7 @@ async function getPayPalAccessToken(env) {
     "https://api-m.paypal.com/v1/oauth2/token",
     {
       method: "POST",
+
       headers: {
         "Authorization":
           "Basic " + credentials,
@@ -778,7 +887,9 @@ export async function onRequestPost(
       !product ||
       !offer
     ) {
-      return Response.json(
+      return jsonResponse(
+        context.request,
+
         {
           success: false,
 
@@ -788,9 +899,7 @@ export async function onRequestPost(
             "Missing product or offer information."
         },
 
-        {
-          status: 400
-        }
+        400
       );
     }
 
@@ -819,7 +928,9 @@ export async function onRequestPost(
       !extensionProduct &&
       !reportProduct
     ) {
-      return Response.json(
+      return jsonResponse(
+        context.request,
+
         {
           success: false,
 
@@ -829,9 +940,7 @@ export async function onRequestPost(
             "Invalid product or offer."
         },
 
-        {
-          status: 400
-        }
+        400
       );
     }
 
@@ -849,7 +958,9 @@ export async function onRequestPost(
       reportProduct &&
       !reportData
     ) {
-      return Response.json(
+      return jsonResponse(
+        context.request,
+
         {
           success: false,
 
@@ -859,9 +970,7 @@ export async function onRequestPost(
             "Missing report verification information."
         },
 
-        {
-          status: 400
-        }
+        400
       );
     }
 
@@ -883,10 +992,6 @@ export async function onRequestPost(
     /*
       ----------------------------------------------------------
       NORMALISE REPORT DATA
-
-      Only runs for report products.
-
-      Scam Shield skips this completely.
       ----------------------------------------------------------
     */
 
@@ -907,7 +1012,9 @@ export async function onRequestPost(
       } catch (
         reportError
       ) {
-        return Response.json(
+        return jsonResponse(
+          context.request,
+
           {
             success: false,
 
@@ -917,9 +1024,7 @@ export async function onRequestPost(
               reportError.message
           },
 
-          {
-            status: 400
-          }
+          400
         );
       }
     }
@@ -961,7 +1066,9 @@ export async function onRequestPost(
 
 
       if (!paymentDetails) {
-        return Response.json(
+        return jsonResponse(
+          context.request,
+
           {
             success: false,
 
@@ -971,9 +1078,7 @@ export async function onRequestPost(
               "International payment offer is not available."
           },
 
-          {
-            status: 404
-          }
+          404
         );
       }
 
@@ -988,7 +1093,9 @@ export async function onRequestPost(
 
     } else {
 
-      return Response.json(
+      return jsonResponse(
+        context.request,
+
         {
           success: false,
 
@@ -998,9 +1105,7 @@ export async function onRequestPost(
             "Unsupported payment provider."
         },
 
-        {
-          status: 400
-        }
+        400
       );
     }
 
@@ -1008,7 +1113,9 @@ export async function onRequestPost(
     if (
       !paymentVerification.success
     ) {
-      return Response.json(
+      return jsonResponse(
+        context.request,
+
         {
           success: false,
 
@@ -1018,9 +1125,7 @@ export async function onRequestPost(
             paymentVerification.error
         },
 
-        {
-          status: 400
-        }
+        400
       );
     }
 
@@ -1028,22 +1133,6 @@ export async function onRequestPost(
     /*
       ==========================================================
       SCAM SHIELD PRO
-      ==========================================================
-
-      Scam Shield is a one-time purchase.
-
-      It does not generate a report.
-
-      The access token is stored in the existing
-      report_access table.
-
-      The report_data column stores entitlement metadata.
-
-      expires_at is set to 31 December 9999,
-      effectively representing permanent access.
-
-      used_at remains NULL because extension access
-      must not be consumed after one use.
       ==========================================================
     */
 
@@ -1069,6 +1158,7 @@ export async function onRequestPost(
           .bind(
             product,
             offer,
+
             paymentVerification
               .paymentId
           )
@@ -1077,43 +1167,47 @@ export async function onRequestPost(
 
       if (existingAccess) {
 
-        return Response.json({
-          success: true,
+        return jsonResponse(
+          context.request,
 
-          verified: true,
+          {
+            success: true,
 
-          status:
-            "payment-already-verified",
+            verified: true,
 
-          paymentProvider:
-            paymentVerification
-              .paymentProvider,
+            status:
+              "payment-already-verified",
 
-          paymentId:
-            paymentVerification
-              .paymentId,
+            paymentProvider:
+              paymentVerification
+                .paymentProvider,
 
-          accessType:
-            "extension-pro",
+            paymentId:
+              paymentVerification
+                .paymentId,
 
-          product:
-            product,
+            accessType:
+              "extension-pro",
 
-          offer:
-            offer,
+            product:
+              product,
 
-          proAccessCreated:
-            false,
+            offer:
+              offer,
 
-          proAccessToken:
-            existingAccess.token,
+            proAccessCreated:
+              false,
 
-          proAccessExpiresAt:
-            Number(
-              existingAccess
-                .expires_at
-            )
-        });
+            proAccessToken:
+              existingAccess.token,
+
+            proAccessExpiresAt:
+              Number(
+                existingAccess
+                  .expires_at
+              )
+          }
+        );
       }
 
 
@@ -1123,14 +1217,6 @@ export async function onRequestPost(
 
       const now =
         Date.now();
-
-
-      /*
-        31 December 9999 UTC.
-
-        This represents effectively permanent
-        one-time-purchase access.
-      */
 
 
       const expiresAt =
@@ -1207,7 +1293,9 @@ export async function onRequestPost(
         );
 
 
-        return Response.json(
+        return jsonResponse(
+          context.request,
+
           {
             success: false,
 
@@ -1217,61 +1305,55 @@ export async function onRequestPost(
               "Payment was verified, but Scam Shield Pro access could not be created."
           },
 
-          {
-            status: 500
-          }
+          500
         );
       }
 
 
-      return Response.json({
-        success: true,
+      return jsonResponse(
+        context.request,
 
-        verified: true,
+        {
+          success: true,
 
-        status:
-          "payment-verified",
+          verified: true,
 
-        paymentProvider:
-          paymentVerification
-            .paymentProvider,
+          status:
+            "payment-verified",
 
-        paymentId:
-          paymentVerification
-            .paymentId,
+          paymentProvider:
+            paymentVerification
+              .paymentProvider,
 
-        accessType:
-          "extension-pro",
+          paymentId:
+            paymentVerification
+              .paymentId,
 
-        product:
-          product,
+          accessType:
+            "extension-pro",
 
-        offer:
-          offer,
+          product:
+            product,
 
-        proAccessCreated:
-          true,
+          offer:
+            offer,
 
-        proAccessToken:
-          token,
+          proAccessCreated:
+            true,
 
-        proAccessExpiresAt:
-          expiresAt
-      });
+          proAccessToken:
+            token,
+
+          proAccessExpiresAt:
+            expiresAt
+        }
+      );
     }
 
 
     /*
       ==========================================================
       EXISTING REPORT PRODUCT FLOW
-      ==========================================================
-
-      CTC Reality
-      Exit Date
-      Brand Rate
-
-      These continue using temporary 30-minute
-      report access tokens.
       ==========================================================
     */
 
@@ -1312,34 +1394,38 @@ export async function onRequestPost(
         Date.now()
     ) {
 
-      return Response.json({
-        success: true,
+      return jsonResponse(
+        context.request,
 
-        verified: true,
+        {
+          success: true,
 
-        status:
-          "payment-already-verified",
+          verified: true,
 
-        paymentProvider:
-          paymentVerification
-            .paymentProvider,
+          status:
+            "payment-already-verified",
 
-        paymentId:
-          paymentVerification
-            .paymentId,
+          paymentProvider:
+            paymentVerification
+              .paymentProvider,
 
-        reportAccessCreated:
-          false,
+          paymentId:
+            paymentVerification
+              .paymentId,
 
-        reportToken:
-          existingAccess.token,
+          reportAccessCreated:
+            false,
 
-        reportExpiresAt:
-          Number(
-            existingAccess
-              .expires_at
-          )
-      });
+          reportToken:
+            existingAccess.token,
+
+          reportExpiresAt:
+            Number(
+              existingAccess
+                .expires_at
+            )
+        }
+      );
     }
 
 
@@ -1416,7 +1502,9 @@ export async function onRequestPost(
       );
 
 
-      return Response.json(
+      return jsonResponse(
+        context.request,
+
         {
           success: false,
 
@@ -1426,9 +1514,7 @@ export async function onRequestPost(
             "Payment was verified, but report access could not be created."
         },
 
-        {
-          status: 500
-        }
+        500
       );
     }
 
@@ -1440,31 +1526,35 @@ export async function onRequestPost(
     */
 
 
-    return Response.json({
-      success: true,
+    return jsonResponse(
+      context.request,
 
-      verified: true,
+      {
+        success: true,
 
-      status:
-        "payment-verified",
+        verified: true,
 
-      paymentProvider:
-        paymentVerification
-          .paymentProvider,
+        status:
+          "payment-verified",
 
-      paymentId:
-        paymentVerification
-          .paymentId,
+        paymentProvider:
+          paymentVerification
+            .paymentProvider,
 
-      reportAccessCreated:
-        true,
+        paymentId:
+          paymentVerification
+            .paymentId,
 
-      reportToken:
-        token,
+        reportAccessCreated:
+          true,
 
-      reportExpiresAt:
-        expiresAt
-    });
+        reportToken:
+          token,
+
+        reportExpiresAt:
+          expiresAt
+      }
+    );
 
 
   } catch (error) {
@@ -1475,7 +1565,9 @@ export async function onRequestPost(
     );
 
 
-    return Response.json(
+    return jsonResponse(
+      context.request,
+
       {
         success: false,
 
@@ -1485,9 +1577,7 @@ export async function onRequestPost(
           "Unable to verify payment."
       },
 
-      {
-        status: 500
-      }
+      500
     );
   }
 }
