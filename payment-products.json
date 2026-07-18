@@ -48,6 +48,22 @@
           }
         }
       }
+    },
+    "scam-shield": {
+      "name": "Scam Shield",
+      "offers": {
+        "pro": {
+          "name": "Scam Shield Pro",
+          "india": {
+            "currency": "INR",
+            "amount": 19900
+          },
+          "international": {
+            "currency": "USD",
+            "amount": 400
+          }
+        }
+      }
     }
   }
 }
