@@ -153,6 +153,12 @@ export async function onRequestPost(context) {
         : "";
 
 
+    const installationId =
+      typeof body.installationId === "string"
+        ? body.installationId.trim()
+        : "";
+
+
     if (!token) {
       return jsonResponse(
         context.request,
@@ -167,13 +173,24 @@ export async function onRequestPost(context) {
     }
 
 
+    if (!installationId) {
+      return jsonResponse(
+        context.request,
+        {
+          success: false,
+          activated: false,
+          error:
+            "Missing installation ID."
+        },
+        400
+      );
+    }
+
+
     /*
     ========================================================
     VALIDATE TOKEN FORMAT
     ========================================================
-
-    Scam Shield Pro tokens are expected
-    to be 64-character hexadecimal values.
     */
 
     if (
@@ -196,6 +213,36 @@ export async function onRequestPost(context) {
 
     /*
     ========================================================
+    VALIDATE INSTALLATION ID
+    ========================================================
+
+    Installation IDs are generated locally by
+    the Scam Shield extension.
+
+    Limit the length to prevent invalid or
+    excessively large values being stored.
+    */
+
+    if (
+      installationId.length < 16 ||
+      installationId.length > 128
+    ) {
+      return jsonResponse(
+        context.request,
+        {
+          success: false,
+          activated: false,
+          valid: false,
+          error:
+            "Invalid installation ID."
+        },
+        400
+      );
+    }
+
+
+    /*
+    ========================================================
     CHECK DATABASE BINDING
     ========================================================
     */
@@ -211,13 +258,6 @@ export async function onRequestPost(context) {
     ========================================================
     FIND SCAM SHIELD PRO ACCESS
     ========================================================
-
-    Look only for Scam Shield Pro access.
-
-    Tokens belonging to Brand Rate,
-    CTC Reality, Exit Date, or any other
-    Arthiva product cannot activate
-    Scam Shield Pro.
     */
 
     const access =
@@ -294,15 +334,137 @@ export async function onRequestPost(context) {
 
     /*
     ========================================================
-    ACTIVATE PRO
+    CHECK EXISTING INSTALLATION
     ========================================================
 
-    Valid Scam Shield Pro entitlement.
+    If this exact installation has already
+    activated this token, allow it again.
 
-    This endpoint does NOT mark the token
-    as used because Scam Shield Pro is a
-    persistent entitlement rather than a
-    one-time report download.
+    This ensures existing activated devices
+    continue to work.
+    */
+
+    const existingInstallation =
+      await context.env.DB
+        .prepare(
+          `
+          SELECT
+            id
+          FROM scam_shield_activations
+          WHERE
+            token = ?
+            AND installation_id = ?
+          LIMIT 1
+          `
+        )
+        .bind(
+          token,
+          installationId
+        )
+        .first();
+
+
+    if (existingInstallation) {
+      return jsonResponse(
+        context.request,
+        {
+          success: true,
+          activated: true,
+          valid: true,
+          pro: true,
+          product:
+            "scam-shield",
+          offer:
+            "pro",
+          accessType:
+            "extension-pro",
+          expiresAt:
+            expiresAt
+        }
+      );
+    }
+
+
+    /*
+    ========================================================
+    COUNT ACTIVATED INSTALLATIONS
+    ========================================================
+
+    Each Scam Shield Pro activation code may
+    activate a maximum of two unique extension
+    installations.
+    */
+
+    const activationCount =
+      await context.env.DB
+        .prepare(
+          `
+          SELECT
+            COUNT(*) AS count
+          FROM scam_shield_activations
+          WHERE
+            token = ?
+          `
+        )
+        .bind(
+          token
+        )
+        .first();
+
+
+    const currentActivations =
+      Number(
+        activationCount?.count || 0
+      );
+
+
+    if (
+      currentActivations >= 2
+    ) {
+      return jsonResponse(
+        context.request,
+        {
+          success: true,
+          activated: false,
+          valid: true,
+          pro: false,
+          error:
+            "This activation code has already been activated on the maximum number of devices."
+        }
+      );
+    }
+
+
+    /*
+    ========================================================
+    REGISTER NEW INSTALLATION
+    ========================================================
+    */
+
+    await context.env.DB
+      .prepare(
+        `
+        INSERT INTO scam_shield_activations
+        (
+          token,
+          installation_id,
+          activated_at
+        )
+        VALUES (?, ?, ?)
+        `
+      )
+      .bind(
+        token,
+        installationId,
+        Date.now()
+      )
+      .run();
+
+
+    /*
+    ========================================================
+    ACTIVATE PRO
+    ========================================================
     */
 
     return jsonResponse(
