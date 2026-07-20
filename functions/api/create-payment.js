@@ -150,7 +150,7 @@ function getProductReturnUrl(
       "https://scam-shield-2sn.pages.dev/",
 
     "date-shield":
-      "https://scam-shield-2sn.pages.dev/"
+     "https://scam-shield-2sn.pages.dev/date-shield-checkout.html"
   };
 
   return (
