@@ -147,6 +147,9 @@ function getProductReturnUrl(
       "/products/brand-rate/",
 
     "scam-shield":
+      "https://scam-shield-2sn.pages.dev/",
+
+    "date-shield":
       "https://scam-shield-2sn.pages.dev/"
   };
 
