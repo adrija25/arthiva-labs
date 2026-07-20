@@ -64,6 +64,22 @@
           }
         }
       }
+    },
+    "date-shield": {
+      "name": "Date Shield",
+      "offers": {
+        "pro": {
+          "name": "Date Shield Pro",
+          "india": {
+            "currency": "INR",
+            "amount": 29900
+          },
+          "international": {
+            "currency": "USD",
+            "amount": 600
+          }
+        }
+      }
     }
   }
 }
