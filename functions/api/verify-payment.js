@@ -18,6 +18,7 @@ import {
 
   EXTENSION PRODUCTS
   - Scam Shield Pro
+  - Date Shield Pro
 
   Payment providers:
   - Razorpay for India
@@ -196,13 +197,30 @@ function isScamShieldPro(
 }
 
 
+function isDateShieldPro(
+  product,
+  offer
+) {
+  return (
+    product === "date-shield" &&
+    offer === "pro"
+  );
+}
+
+
 function isExtensionProduct(
   product,
   offer
 ) {
-  return isScamShieldPro(
-    product,
-    offer
+  return (
+    isScamShieldPro(
+      product,
+      offer
+    ) ||
+    isDateShieldPro(
+      product,
+      offer
+    )
   );
 }
 
@@ -949,7 +967,7 @@ export async function onRequestPost(
       ----------------------------------------------------------
       REPORT PRODUCTS REQUIRE REPORT DATA
 
-      Scam Shield Pro does NOT require reportData.
+      Extension Pro products do NOT require reportData.
       ----------------------------------------------------------
     */
 
@@ -1132,7 +1150,7 @@ export async function onRequestPost(
 
     /*
       ==========================================================
-      SCAM SHIELD PRO
+      EXTENSION PRO PRODUCTS
       ==========================================================
     */
 
@@ -1238,7 +1256,7 @@ export async function onRequestPost(
             "pro",
 
           access:
-            "unlimited-scans",
+            "pro-features",
 
           studio:
             "Arthiva Labs",
@@ -1302,7 +1320,7 @@ export async function onRequestPost(
             verified: true,
 
             error:
-              "Payment was verified, but Scam Shield Pro access could not be created."
+              "Payment was verified, but extension Pro access could not be created."
           },
 
           500
