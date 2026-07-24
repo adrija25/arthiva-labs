@@ -80,6 +80,22 @@
           }
         }
       }
+    },
+    "media-shield": {
+      "name": "Media Shield",
+      "offers": {
+        "pro": {
+          "name": "Media Shield Pro",
+          "india": {
+            "currency": "INR",
+            "amount": 39900
+          },
+          "international": {
+            "currency": "USD",
+            "amount": 800
+          }
+        }
+      }
     }
   }
 }
