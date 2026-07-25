@@ -19,6 +19,7 @@ import {
   EXTENSION PRODUCTS
   - Scam Shield Pro
   - Date Shield Pro
+  - Media Shield Pro
 
   Payment providers:
   - Razorpay for India
@@ -208,6 +209,17 @@ function isDateShieldPro(
 }
 
 
+function isMediaShieldPro(
+  product,
+  offer
+) {
+  return (
+    product === "media-shield" &&
+    offer === "pro"
+  );
+}
+
+
 function isExtensionProduct(
   product,
   offer
@@ -218,6 +230,10 @@ function isExtensionProduct(
       offer
     ) ||
     isDateShieldPro(
+      product,
+      offer
+    ) ||
+    isMediaShieldPro(
       product,
       offer
     )
