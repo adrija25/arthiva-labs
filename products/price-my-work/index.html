@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Price My Work — Know What Your Work Is Worth | Arthiva Labs</title>
+
+  <meta
+    name="description"
+    content="Calculate a practical freelance rate or salary negotiation target based on your income goals, workload and compensation."
+  >
+
+  <meta name="robots" content="index, follow">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a href="/" class="logo">PRICE MY WORK</a>
+
+      <nav class="nav">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#about">About</a>
+      </nav>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero-content">
+
+        <p class="eyebrow">WORK VALUE CALCULATOR</p>
+
+        <h1>Know What Your Work Is Worth.</h1>
+
+        <p class="hero-description">
+          Calculate a practical freelance rate or salary negotiation
+          target using your goals, workload and compensation.
+        </p>
+
+        <div class="mode-selector">
+
+          <a href="#freelance" class="mode-card">
+
+            <span class="mode-label">FREELANCE PRICING</span>
+
+            <h2>What should I charge?</h2>
+
+            <p>
+              Calculate an hourly rate and project price based on
+              your income goals and working time.
+            </p>
+
+            <span class="mode-link">
+              Calculate My Freelance Rate →
+            </span>
+
+          </a>
+
+
+          <a href="#salary" class="mode-card">
+
+            <span class="mode-label">SALARY NEGOTIATION</span>
+
+            <h2>What should I ask for?</h2>
+
+            <p>
+              Build a minimum, target and opening salary figure
+              for your next negotiation.
+            </p>
+
+            <span class="mode-link">
+              Calculate My Salary Target →
+            </span>
+
+          </a>
+
+        </div>
+
+        <p class="trust-line">
+          Free to calculate. No account required.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="section">
+
+      <div class="container">
+
+        <div class="section-heading">
+
+          <p class="eyebrow">HOW IT WORKS</p>
+
+          <h2>Different work. Same question.</h2>
+
+          <p>What is my work worth?</p>
+
+        </div>
+
+
+        <div class="steps">
+
+          <div class="step">
+
+            <span class="step-number">01</span>
+
+            <h3>Tell us about your work</h3>
+
+            <p>
+              Enter a few simple numbers about your income,
+              workload and goals.
+            </p>
+
+          </div>
+
+
+          <div class="step">
+
+            <span class="step-number">02</span>
+
+            <h3>We calculate your target</h3>
+
+            <p>
+              See the numbers behind your recommended rate
+              or salary target.
+            </p>
+
+          </div>
+
+
+          <div class="step">
+
+            <span class="step-number">03</span>
+
+            <h3>Use it to make a decision</h3>
+
+            <p>
+              Price a project or walk into your next salary
+              conversation prepared.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FREELANCE CALCULATOR -->
+    <section id="freelance" class="section section-alt">
+
+      <div class="container calculator-section">
+
+        <div class="calculator-intro">
+
+          <p class="eyebrow">FREELANCE PRICING</p>
+
+          <h2>What should you charge?</h2>
+
+          <p>
+            Calculate a practical hourly rate based on the income
+            you want, your working time and the costs of running
+            your freelance work.
+          </p>
+
+        </div>
+
+
+        <div class="calculator-card">
+
+          <form id="freelance-form">
+
+            <div class="form-group">
+
+              <label for="monthly-income">
+                Desired monthly income
+              </label>
+
+              <div class="input-prefix">
+
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="monthly-income"
+                  min="1"
+                  step="1000"
+                  placeholder="100000"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="monthly-expenses">
+                Monthly business expenses
+              </label>
+
+              <div class="input-prefix">
+
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="monthly-expenses"
+                  min="0"
+                  step="500"
+                  placeholder="20000"
+                  required
+                >
+
+              </div>
+
+              <small>
+                Software, equipment, workspace and other work costs.
+              </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="hours-per-week">
+                Working hours per week
+              </label>
+
+              <input
+                type="number"
+                id="hours-per-week"
+                min="1"
+                max="168"
+                step="1"
+                placeholder="40"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="billable-percentage">
+                Estimated billable percentage
+              </label>
+
+              <div class="input-suffix">
+
+                <input
+                  type="number"
+                  id="billable-percentage"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="60"
+                  required
+                >
+
+                <span>%</span>
+
+              </div>
+
+              <small>
+                The percentage of your working time you can actually
+                bill to clients.
+              </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="weeks-per-year">
+                Weeks worked per year
+              </label>
+
+              <input
+                type="number"
+                id="weeks-per-year"
+                min="1"
+                max="52"
+                step="1"
+                value="48"
+                required
+              >
+
+            </div>
+
+
+            <button type="submit" class="primary-button">
+              Calculate My Rate
+            </button>
+
+          </form>
+
+
+          <div
+            id="freelance-result"
+            class="result-card"
+            hidden
+          >
+
+            <p class="result-label">
+              YOUR RECOMMENDED HOURLY RATE
+            </p>
+
+            <div
+              id="freelance-hourly-rate"
+              class="result-number"
+            >
+              ₹0
+            </div>
+
+
+            <div class="result-divider"></div>
+
+
+            <div class="result-detail">
+
+              <span>Annual income goal</span>
+
+              <strong id="freelance-annual-income">
+                ₹0
+              </strong>
+
+            </div>
+
+
+            <div class="result-detail">
+
+              <span>Annual business expenses</span>
+
+              <strong id="freelance-annual-expenses">
+                ₹0
+              </strong>
+
+            </div>
+
+
+            <div class="result-detail">
+
+              <span>Estimated billable hours</span>
+
+              <strong id="freelance-billable-hours">
+                0
+              </strong>
+
+            </div>
+
+
+            <div class="project-price-box">
+
+              <p>PROJECT PRICE EXAMPLE</p>
+
+              <label for="project-hours">
+                How many hours will the project take?
+              </label>
+
+              <div class="input-suffix project-input">
+
+                <input
+                  type="number"
+                  id="project-hours"
+                  min="1"
+                  step="1"
+                  value="8"
+                >
+
+                <span>hrs</span>
+
+              </div>
+
+
+              <div
+                id="project-price"
+                class="project-price"
+              >
+                ₹0
+              </div>
+
+            </div>
+
+
+            <p class="result-note">
+              This is a planning estimate based on the information
+              you provided. It is not a guarantee of what clients
+              will pay.
+            </p>
+
+
+            <div class="premium-result">
+
+              <p class="eyebrow">PREMIUM</p>
+
+              <h3>
+                Want to use your numbers professionally?
+              </h3>
+
+              <p>
+                Get practical pricing templates to help turn your
+                calculation into a rate card and project quotation.
+              </p>
+
+              <button
+                type="button"
+                class="secondary-button"
+              >
+                Premium Pack — ₹299
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SALARY CALCULATOR -->
+    <section id="salary" class="section">
+
+      <div class="container calculator-section">
+
+        <div class="calculator-intro">
+
+          <p class="eyebrow">SALARY NEGOTIATION</p>
+
+          <h2>What should you ask for?</h2>
+
+          <p>
+            Build a practical minimum, target and opening salary
+            figure before your next compensation conversation.
+          </p>
+
+        </div>
+
+
+        <div class="calculator-card">
+
+          <form id="salary-form">
+
+            <div class="form-group">
+
+              <label for="current-salary">
+                Current annual salary
+              </label>
+
+              <div class="input-prefix">
+
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="current-salary"
+                  min="1"
+                  step="10000"
+                  placeholder="1000000"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="experience">
+                Years of professional experience
+              </label>
+
+              <input
+                type="number"
+                id="experience"
+                min="0"
+                max="60"
+                step="0.5"
+                placeholder="5"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="current-role">
+                Current role
+              </label>
+
+              <input
+                type="text"
+                id="current-role"
+                placeholder="e.g. Product Designer"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="target-role">
+                Target role
+              </label>
+
+              <input
+                type="text"
+                id="target-role"
+                placeholder="e.g. Senior Product Designer"
+                required
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="target-salary">
+                Target annual salary
+                <span class="optional">(optional)</span>
+              </label>
+
+              <div class="input-prefix">
+
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="target-salary"
+                  min="0"
+                  step="10000"
+                  placeholder="Leave blank to calculate"
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label for="desired-increase">
+                Desired salary increase
+              </label>
+
+              <div class="input-suffix">
+
+                <input
+                  type="number"
+                  id="desired-increase"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value="25"
+                  required
+                >
+
+                <span>%</span>
+
+              </div>
+
+              <small>
+                Used only when you don't enter a target salary.
+              </small>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Calculate My Salary Target
+            </button>
+
+          </form>
+
+
+          <div
+            id="salary-result"
+            class="result-card"
+            hidden
+          >
+
+            <p class="result-label">
+              YOUR NEGOTIATION RANGE
+            </p>
+
+
+            <div class="salary-results">
+
+              <div class="salary-result-item">
+
+                <span>Minimum</span>
+
+                <strong id="salary-minimum">
+                  ₹0
+                </strong>
+
+              </div>
+
+
+              <div class="salary-result-item featured">
+
+                <span>Target</span>
+
+                <strong id="salary-target">
+                  ₹0
+                </strong>
+
+              </div>
+
+
+              <div class="salary-result-item">
+
+                <span>Opening Ask</span>
+
+                <strong id="salary-opening">
+                  ₹0
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="result-divider"></div>
+
+
+            <div class="result-detail">
+
+              <span>Current salary</span>
+
+              <strong id="salary-current">
+                ₹0
+              </strong>
+
+            </div>
+
+
+            <div class="result-detail">
+
+              <span>Target increase</span>
+
+              <strong id="salary-increase">
+                0%
+              </strong>
+
+            </div>
+
+
+            <p class="result-note">
+              These figures are negotiation-planning estimates based
+              on your inputs. They do not represent guaranteed market
+              compensation for a particular role.
+            </p>
+
+
+            <div class="premium-result">
+
+              <p class="eyebrow">PREMIUM</p>
+
+              <h3>
+                Go into the negotiation prepared.
+              </h3>
+
+              <p>
+                Get practical templates for salary negotiation,
+                compensation preparation and evaluating an offer.
+              </p>
+
+              <button
+                type="button"
+                class="secondary-button"
+              >
+                Premium Pack — ₹299
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PREMIUM -->
+    <section id="pricing" class="section premium-section">
+
+      <div class="container premium-content">
+
+        <p class="eyebrow">PREMIUM</p>
+
+        <h2>Take your number with you.</h2>
+
+        <p>
+          Turn your calculation into practical tools for pricing
+          your work or preparing for a salary negotiation.
+        </p>
+
+
+        <div class="premium-card">
+
+          <div>
+
+            <h3>
+              Price My Work Premium Pack
+            </h3>
+
+            <p>
+              Practical templates designed to help you use your
+              calculation in the real world.
+            </p>
+
+          </div>
+
+
+          <div class="premium-price">
+            ₹299
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ABOUT -->
+    <section id="about" class="section">
+
+      <div class="container about-section">
+
+        <p class="eyebrow">
+          ABOUT PRICE MY WORK
+        </p>
+
+        <h2>
+          A simple tool for better work decisions.
+        </h2>
+
+        <p>
+          Price My Work helps freelancers and professionals make
+          clearer decisions about pricing and compensation using
+          straightforward calculations.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <div class="container footer-inner">
+
+      <div>
+
+        <strong>PRICE MY WORK</strong>
+
+        <p>
+          Know what your work is worth.
+        </p>
+
+      </div>
+
+
+      <div class="footer-links">
+
+        <a href="#how-it-works">
+          How It Works
+        </a>
+
+        <a href="#pricing">
+          Pricing
+        </a>
+
+        <a href="#about">
+          About
+        </a>
+
+        <a href="#">
+          Privacy
+        </a>
+
+        <a href="#">
+          Terms
+        </a>
+
+        <a href="#">
+          Disclaimer
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="container disclaimer">
+
+      <p>
+        Price My Work provides calculation and planning tools for
+        informational purposes. Results are estimates based on the
+        information provided and are not professional financial,
+        employment or compensation advice.
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <script src="calculator.js"></script>
+
+  <script>
+
+    /* ================================
+       FREELANCE CALCULATOR
+    ================================= */
+
+    const freelanceForm =
+      document.getElementById("freelance-form");
+
+    const freelanceResult =
+      document.getElementById("freelance-result");
+
+    const freelanceHourlyRate =
+      document.getElementById("freelance-hourly-rate");
+
+    const freelanceAnnualIncome =
+      document.getElementById("freelance-annual-income");
+
+    const freelanceAnnualExpenses =
+      document.getElementById("freelance-annual-expenses");
+
+    const freelanceBillableHours =
+      document.getElementById("freelance-billable-hours");
+
+    const projectHours =
+      document.getElementById("project-hours");
+
+    const projectPrice =
+      document.getElementById("project-price");
+
+
+    let currentFreelanceHourlyRate = 0;
+
+
+    freelanceForm.addEventListener("submit", function(event) {
+
+      event.preventDefault();
+
+
+      const monthlyIncome =
+        Number(
+          document.getElementById("monthly-income").value
+        );
+
+
+      const monthlyExpenses =
+        Number(
+          document.getElementById("monthly-expenses").value
+        );
+
+
+      const hoursPerWeek =
+        Number(
+          document.getElementById("hours-per-week").value
+        );
+
+
+      const billablePercentage =
+        Number(
+          document.getElementById("billable-percentage").value
+        );
+
+
+      const weeksPerYear =
+        Number(
+          document.getElementById("weeks-per-year").value
+        );
+
+
+      const result = calculateFreelanceRate({
+        monthlyIncome,
+        monthlyExpenses,
+        hoursPerWeek,
+        billablePercentage,
+        weeksPerYear
+      });
+
+
+      if (!result) {
+
+        alert("Please enter valid values.");
+
+        return;
+
+      }
+
+
+      currentFreelanceHourlyRate =
+        result.hourlyRate;
+
+
+      freelanceHourlyRate.textContent =
+        formatCurrency(result.hourlyRate);
+
+
+      freelanceAnnualIncome.textContent =
+        formatCurrency(result.annualIncome);
+
+
+      freelanceAnnualExpenses.textContent =
+        formatCurrency(result.annualExpenses);
+
+
+      freelanceBillableHours.textContent =
+        Math.round(
+          result.billableHours
+        ).toLocaleString("en-IN");
+
+
+      updateProjectPrice();
+
+
+      freelanceResult.hidden = false;
+
+
+      freelanceResult.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    });
+
+
+    function updateProjectPrice() {
+
+      const hours =
+        Number(projectHours.value);
+
+
+      const calculatedPrice =
+        calculateProjectPrice(
+          currentFreelanceHourlyRate,
+          hours
+        );
+
+
+      if (!calculatedPrice) {
+
+        projectPrice.textContent = "—";
+
+        return;
+
+      }
+
+
+      projectPrice.textContent =
+        formatCurrency(calculatedPrice);
+
+    }
+
+
+    projectHours.addEventListener(
+      "input",
+      updateProjectPrice
+    );
+
+
+    /* ================================
+       SALARY CALCULATOR
+    ================================= */
+
+    const salaryForm =
+      document.getElementById("salary-form");
+
+    const salaryResult =
+      document.getElementById("salary-result");
+
+
+    salaryForm.addEventListener("submit", function(event) {
+
+      event.preventDefault();
+
+
+      const currentSalary =
+        Number(
+          document.getElementById("current-salary").value
+        );
+
+
+      const targetSalary =
+        Number(
+          document.getElementById("target-salary").value
+        ) || 0;
+
+
+      const desiredIncrease =
+        Number(
+          document.getElementById("desired-increase").value
+        );
+
+
+      /*
+       * Initial negotiation-planning assumptions.
+       * These must be tested and refined before launch.
+       */
+
+      const minimumPercentage = 10;
+
+      const openingPercentage = 10;
+
+
+      const result =
+        calculateSalaryNegotiation({
+
+          currentSalary,
+
+          targetSalary,
+
+          desiredIncrease,
+
+          minimumPercentage,
+
+          openingPercentage
+
+        });
+
+
+      if (!result) {
+
+        alert("Please enter valid values.");
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "salary-minimum"
+      ).textContent =
+        formatCurrency(
+          result.minimumSalary
+        );
+
+
+      document.getElementById(
+        "salary-target"
+      ).textContent =
+        formatCurrency(
+          result.targetSalary
+        );
+
+
+      document.getElementById(
+        "salary-opening"
+      ).textContent =
+        formatCurrency(
+          result.openingSalary
+        );
+
+
+      document.getElementById(
+        "salary-current"
+      ).textContent =
+        formatCurrency(
+          result.currentSalary
+        );
+
+
+      document.getElementById(
+        "salary-increase"
+      ).textContent =
+        result.desiredIncrease + "%";
+
+
+      salaryResult.hidden = false;
+
+
+      salaryResult.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>
