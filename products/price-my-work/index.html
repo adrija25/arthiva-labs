@@ -20,7 +20,6 @@
 
   <header class="site-header">
     <div class="container header-inner">
-
       <a href="/" class="logo">PRICE MY WORK</a>
 
       <nav class="nav">
@@ -28,7 +27,6 @@
         <a href="#pricing">Pricing</a>
         <a href="#about">About</a>
       </nav>
-
     </div>
   </header>
 
@@ -51,7 +49,6 @@
         <div class="mode-selector">
 
           <a href="#freelance" class="mode-card">
-
             <span class="mode-label">FREELANCE PRICING</span>
 
             <h2>What should I charge?</h2>
@@ -64,12 +61,10 @@
             <span class="mode-link">
               Calculate My Freelance Rate →
             </span>
-
           </a>
 
 
           <a href="#salary" class="mode-card">
-
             <span class="mode-label">SALARY NEGOTIATION</span>
 
             <h2>What should I ask for?</h2>
@@ -82,7 +77,6 @@
             <span class="mode-link">
               Calculate My Salary Target →
             </span>
-
           </a>
 
         </div>
@@ -97,7 +91,6 @@
 
     <!-- HOW IT WORKS -->
     <section id="how-it-works" class="section">
-
       <div class="container">
 
         <div class="section-heading">
@@ -157,7 +150,6 @@
         </div>
 
       </div>
-
     </section>
 
 
@@ -198,13 +190,18 @@
                 <input
                   type="number"
                   id="monthly-income"
-                  min="1"
-                  step="1000"
+                  min="15000"
+                  max="30000000"
+                  step="1"
                   placeholder="100000"
                   required
                 >
 
               </div>
+
+              <small>
+                Enter an amount between ₹15,000 and ₹3 crore.
+              </small>
 
             </div>
 
@@ -223,7 +220,8 @@
                   type="number"
                   id="monthly-expenses"
                   min="0"
-                  step="500"
+                  max="30000000"
+                  step="1"
                   placeholder="20000"
                   required
                 >
@@ -329,7 +327,6 @@
               ₹0
             </div>
 
-
             <div class="result-divider"></div>
 
 
@@ -410,9 +407,7 @@
 
               <p class="eyebrow">PREMIUM</p>
 
-              <h3>
-                Want to use your numbers professionally?
-              </h3>
+              <h3>Want to use your numbers professionally?</h3>
 
               <p>
                 Get practical pricing templates to help turn your
@@ -473,13 +468,18 @@
                 <input
                   type="number"
                   id="current-salary"
-                  min="1"
-                  step="10000"
+                  min="15000"
+                  max="30000000"
+                  step="1"
                   placeholder="1000000"
                   required
                 >
 
               </div>
+
+              <small>
+                Enter an amount between ₹15,000 and ₹3 crore.
+              </small>
 
             </div>
 
@@ -538,8 +538,13 @@
             <div class="form-group">
 
               <label for="target-salary">
+
                 Target annual salary
-                <span class="optional">(optional)</span>
+
+                <span class="optional">
+                  (optional)
+                </span>
+
               </label>
 
               <div class="input-prefix">
@@ -549,12 +554,17 @@
                 <input
                   type="number"
                   id="target-salary"
-                  min="0"
-                  step="10000"
+                  min="15000"
+                  max="30000000"
+                  step="1"
                   placeholder="Leave blank to calculate"
                 >
 
               </div>
+
+              <small>
+                Enter an amount between ₹15,000 and ₹3 crore.
+              </small>
 
             </div>
 
@@ -588,10 +598,7 @@
             </div>
 
 
-            <button
-              type="submit"
-              class="primary-button"
-            >
+            <button type="submit" class="primary-button">
               Calculate My Salary Target
             </button>
 
@@ -784,7 +791,9 @@
 
       <div>
 
-        <strong>PRICE MY WORK</strong>
+        <strong>
+          PRICE MY WORK
+        </strong>
 
         <p>
           Know what your work is worth.
@@ -840,6 +849,7 @@
 
   <script src="calculator.js"></script>
 
+
   <script>
 
     /* ================================
@@ -874,111 +884,150 @@
     let currentFreelanceHourlyRate = 0;
 
 
-    freelanceForm.addEventListener("submit", function(event) {
+    freelanceForm.addEventListener(
+      "submit",
+      function(event) {
 
-      event.preventDefault();
-
-
-      const monthlyIncome =
-        Number(
-          document.getElementById("monthly-income").value
-        );
+        event.preventDefault();
 
 
-      const monthlyExpenses =
-        Number(
-          document.getElementById("monthly-expenses").value
-        );
+        const monthlyIncome =
+          Number(
+            document.getElementById(
+              "monthly-income"
+            ).value
+          );
 
 
-      const hoursPerWeek =
-        Number(
-          document.getElementById("hours-per-week").value
-        );
+        const monthlyExpenses =
+          Number(
+            document.getElementById(
+              "monthly-expenses"
+            ).value
+          );
 
 
-      const billablePercentage =
-        Number(
-          document.getElementById("billable-percentage").value
-        );
+        const hoursPerWeek =
+          Number(
+            document.getElementById(
+              "hours-per-week"
+            ).value
+          );
 
 
-      const weeksPerYear =
-        Number(
-          document.getElementById("weeks-per-year").value
-        );
+        const billablePercentage =
+          Number(
+            document.getElementById(
+              "billable-percentage"
+            ).value
+          );
 
 
-      const result = calculateFreelanceRate({
-        monthlyIncome,
-        monthlyExpenses,
-        hoursPerWeek,
-        billablePercentage,
-        weeksPerYear
-      });
+        const weeksPerYear =
+          Number(
+            document.getElementById(
+              "weeks-per-year"
+            ).value
+          );
 
 
-      if (!result) {
+        const result =
+          calculateFreelanceRate({
 
-        alert("Please enter valid values.");
+            monthlyIncome,
 
-        return;
+            monthlyExpenses,
+
+            hoursPerWeek,
+
+            billablePercentage,
+
+            weeksPerYear
+
+          });
+
+
+        if (!result) {
+
+          alert(
+            "Please enter valid values."
+          );
+
+          return;
+
+        }
+
+
+        currentFreelanceHourlyRate =
+          result.hourlyRate;
+
+
+        freelanceHourlyRate.textContent =
+          formatCurrency(
+            result.hourlyRate
+          );
+
+
+        freelanceAnnualIncome.textContent =
+          formatCurrency(
+            result.annualIncome
+          );
+
+
+        freelanceAnnualExpenses.textContent =
+          formatCurrency(
+            result.annualExpenses
+          );
+
+
+        freelanceBillableHours.textContent =
+          Math.round(
+            result.billableHours
+          ).toLocaleString(
+            "en-IN"
+          );
+
+
+        updateProjectPrice();
+
+
+        freelanceResult.hidden = false;
+
+
+        freelanceResult.scrollIntoView({
+
+          behavior: "smooth",
+
+          block: "start"
+
+        });
 
       }
-
-
-      currentFreelanceHourlyRate =
-        result.hourlyRate;
-
-
-      freelanceHourlyRate.textContent =
-        formatCurrency(result.hourlyRate);
-
-
-      freelanceAnnualIncome.textContent =
-        formatCurrency(result.annualIncome);
-
-
-      freelanceAnnualExpenses.textContent =
-        formatCurrency(result.annualExpenses);
-
-
-      freelanceBillableHours.textContent =
-        Math.round(
-          result.billableHours
-        ).toLocaleString("en-IN");
-
-
-      updateProjectPrice();
-
-
-      freelanceResult.hidden = false;
-
-
-      freelanceResult.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    });
+    );
 
 
     function updateProjectPrice() {
 
       const hours =
-        Number(projectHours.value);
+        Number(
+          projectHours.value
+        );
 
 
       const calculatedPrice =
         calculateProjectPrice(
+
           currentFreelanceHourlyRate,
+
           hours
+
         );
 
 
       if (!calculatedPrice) {
 
-        projectPrice.textContent = "—";
+        projectPrice.textContent =
+          "—";
 
         return;
 
@@ -986,7 +1035,9 @@
 
 
       projectPrice.textContent =
-        formatCurrency(calculatedPrice);
+        formatCurrency(
+          calculatedPrice
+        );
 
     }
 
@@ -1002,117 +1053,137 @@
     ================================= */
 
     const salaryForm =
-      document.getElementById("salary-form");
+      document.getElementById(
+        "salary-form"
+      );
+
 
     const salaryResult =
-      document.getElementById("salary-result");
+      document.getElementById(
+        "salary-result"
+      );
 
 
-    salaryForm.addEventListener("submit", function(event) {
+    salaryForm.addEventListener(
+      "submit",
+      function(event) {
 
-      event.preventDefault();
-
-
-      const currentSalary =
-        Number(
-          document.getElementById("current-salary").value
-        );
+        event.preventDefault();
 
 
-      const targetSalary =
-        Number(
-          document.getElementById("target-salary").value
-        ) || 0;
+        const currentSalary =
+          Number(
+            document.getElementById(
+              "current-salary"
+            ).value
+          );
 
 
-      const desiredIncrease =
-        Number(
-          document.getElementById("desired-increase").value
-        );
+        const targetSalary =
+          Number(
+            document.getElementById(
+              "target-salary"
+            ).value
+          ) || 0;
 
 
-      /*
-       * Initial negotiation-planning assumptions.
-       * These must be tested and refined before launch.
-       */
-
-      const minimumPercentage = 10;
-
-      const openingPercentage = 10;
+        const desiredIncrease =
+          Number(
+            document.getElementById(
+              "desired-increase"
+            ).value
+          );
 
 
-      const result =
-        calculateSalaryNegotiation({
+        /*
+         * Initial negotiation-planning assumptions.
+         * These will be tested and refined before launch.
+         */
 
-          currentSalary,
+        const minimumPercentage = 10;
 
-          targetSalary,
+        const openingPercentage = 10;
 
-          desiredIncrease,
 
-          minimumPercentage,
+        const result =
+          calculateSalaryNegotiation({
 
-          openingPercentage
+            currentSalary,
+
+            targetSalary,
+
+            desiredIncrease,
+
+            minimumPercentage,
+
+            openingPercentage
+
+          });
+
+
+        if (!result) {
+
+          alert(
+            "Please enter valid values."
+          );
+
+          return;
+
+        }
+
+
+        document.getElementById(
+          "salary-minimum"
+        ).textContent =
+          formatCurrency(
+            result.minimumSalary
+          );
+
+
+        document.getElementById(
+          "salary-target"
+        ).textContent =
+          formatCurrency(
+            result.targetSalary
+          );
+
+
+        document.getElementById(
+          "salary-opening"
+        ).textContent =
+          formatCurrency(
+            result.openingSalary
+          );
+
+
+        document.getElementById(
+          "salary-current"
+        ).textContent =
+          formatCurrency(
+            result.currentSalary
+          );
+
+
+        document.getElementById(
+          "salary-increase"
+        ).textContent =
+          result.desiredIncrease +
+          "%";
+
+
+        salaryResult.hidden = false;
+
+
+        salaryResult.scrollIntoView({
+
+          behavior: "smooth",
+
+          block: "start"
 
         });
 
-
-      if (!result) {
-
-        alert("Please enter valid values.");
-
-        return;
-
       }
-
-
-      document.getElementById(
-        "salary-minimum"
-      ).textContent =
-        formatCurrency(
-          result.minimumSalary
-        );
-
-
-      document.getElementById(
-        "salary-target"
-      ).textContent =
-        formatCurrency(
-          result.targetSalary
-        );
-
-
-      document.getElementById(
-        "salary-opening"
-      ).textContent =
-        formatCurrency(
-          result.openingSalary
-        );
-
-
-      document.getElementById(
-        "salary-current"
-      ).textContent =
-        formatCurrency(
-          result.currentSalary
-        );
-
-
-      document.getElementById(
-        "salary-increase"
-      ).textContent =
-        result.desiredIncrease + "%";
-
-
-      salaryResult.hidden = false;
-
-
-      salaryResult.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    });
+    );
 
   </script>
 
